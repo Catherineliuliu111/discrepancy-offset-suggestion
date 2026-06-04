@@ -3509,19 +3509,100 @@
       background: #fff;
     }
 
-    #sourcePaymentModal .source-table {
-      min-width: 1160px;
-      width: 100%;
-    }
+	    #sourcePaymentModal .source-table {
+	      min-width: 1380px;
+	      width: 100%;
+	    }
 
     #sourcePaymentModal .source-table tbody tr {
       cursor: pointer;
     }
 
-    #sourcePaymentModal .source-table tbody tr.selected td {
-      background: #eaf6ff;
-      box-shadow: inset 0 0 0 1px #91caff;
-    }
+	    #sourcePaymentModal .source-table tbody tr.selected td {
+	      background: #eaf6ff;
+	      box-shadow: inset 0 0 0 1px #91caff;
+	    }
+
+	    #sourcePaymentModal .source-table tbody tr:has(.source-extra-info[open]) td,
+	    #batchSourcePaymentModal .source-table tbody tr:has(.source-extra-info[open]) td {
+	      background: #dff5ff;
+	    }
+
+	    .source-extra-cell {
+	      min-width: 420px;
+	      white-space: normal;
+	    }
+
+	    .source-extra-info {
+	      min-width: 360px;
+	      max-width: 720px;
+	      color: #1f2937;
+	      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+	      font-size: 12px;
+	      line-height: 1.55;
+	    }
+
+	    .source-extra-info summary {
+	      display: inline-flex;
+	      align-items: center;
+	      gap: 6px;
+	      cursor: pointer;
+	      list-style: none;
+	      white-space: nowrap;
+	    }
+
+	    .source-extra-info summary::-webkit-details-marker {
+	      display: none;
+	    }
+
+	    .json-caret {
+	      color: #0f8f9e;
+	      font-size: 12px;
+	    }
+
+	    .json-caret::before {
+	      content: "▸";
+	    }
+
+	    .source-extra-info[open] .json-caret::before {
+	      content: "▾";
+	    }
+
+	    .json-key {
+	      color: #334155;
+	      font-weight: 700;
+	    }
+
+	    .json-preview {
+	      color: #f05d23;
+	      font-weight: 700;
+	    }
+
+	    .json-count {
+	      color: #94a3b8;
+	      font-style: italic;
+	    }
+
+	    .json-copy {
+	      appearance: none;
+	      border: 0;
+	      background: transparent;
+	      padding: 0;
+	      color: #1683f7;
+	      font-family: inherit;
+	      font-weight: 800;
+	      cursor: pointer;
+	    }
+
+	    .source-extra-body {
+	      margin: 8px 0 4px 22px;
+	      white-space: pre-wrap;
+	      color: #334155;
+	    }
+
+	    .json-string {
+	      color: #f05d23;
+	    }
 
     #sourcePaymentModal .modal-foot {
       justify-content: flex-end;
@@ -3585,10 +3666,10 @@
       background: #fff;
     }
 
-    #batchSourcePaymentModal .source-table {
-      min-width: 1180px;
-      width: 100%;
-    }
+	    #batchSourcePaymentModal .source-table {
+	      min-width: 1420px;
+	      width: 100%;
+	    }
 
     #batchSourcePaymentModal .modal-foot {
       justify-content: flex-end;
@@ -6466,8 +6547,8 @@
       <div class="source-filter-row">
         <label class="source-field">
           <span><span class="required-mark">*</span> Action :</span>
-          <select id="sourceActionSelect">
-            <option>Link Source Payment</option>
+	          <select id="sourceActionSelect" disabled>
+	            <option value="Link Source Payment" selected>Link Source Payment</option>
           </select>
         </label>
         <label class="source-field">
@@ -6920,7 +7001,10 @@
 	        status: "Success",
 	        paymentType: "FPX Payment",
 	        amount: "RM39.45",
-	        extraInfo: "Matched demo payment; Journal not received by reconciliation"
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          voucher_extra_info: "{\"TID\":\"T116913076619\",\"journal_status\":\"not_received\"}"
+	        }
 	      },
 	      {
 	        systemCode: "INBOUND",
@@ -6928,7 +7012,10 @@
 	        status: "Success",
 	        paymentType: "FPX Payment",
 	        amount: "RM82.88",
-	        extraInfo: "Matched demo payment; Journal not received by reconciliation"
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          voucher_extra_info: "{\"TID\":\"T116913076620\",\"journal_status\":\"not_received\"}"
+	        }
 	      },
 	      {
 	        systemCode: "INBOUND",
@@ -6936,7 +7023,10 @@
 	        status: "Success",
 	        paymentType: "FPX Payment",
 	        amount: "RM15.72",
-	        extraInfo: "Matched demo payment; Journal not received by reconciliation"
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          voucher_extra_info: "{\"TID\":\"T116913076621\",\"journal_status\":\"not_received\"}"
+	        }
 	      },
 	      {
 	        systemCode: "INBOUND",
@@ -6944,7 +7034,10 @@
 	        status: "Success",
 	        paymentType: "FPX Payment",
 	        amount: "RM39.45",
-	        extraInfo: "MQ delivery missed; matched by reference and amount"
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          voucher_extra_info: "{\"reference_match\":\"amount_and_reference\",\"journal_status\":\"missed_by_mq\"}"
+	        }
 	      },
 	      {
 	        systemCode: "INBOUND",
@@ -6952,7 +7045,10 @@
 	        status: "Success",
 	        paymentType: "FPX Payment",
 	        amount: "RM15.72",
-	        extraInfo: "MQ delivery missed; matched by payment evidence"
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          voucher_extra_info: "{\"reference_match\":\"payment_evidence\",\"journal_status\":\"missed_by_mq\"}"
+	        }
 	      },
 	      {
 	        systemCode: "INBOUND",
@@ -6960,7 +7056,10 @@
 	        status: "Processing",
 	        paymentType: "FPX Payment",
 	        amount: "RM82.88",
-	        extraInfo: "Not allowed for supplement until upstream status is Success"
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          validation_message: "Not allowed for supplement until upstream status is Success"
+	        }
 	      },
 	      {
 	        systemCode: "OUTBOUND",
@@ -6968,7 +7067,10 @@
 	        status: "Failed",
 	        paymentType: "Payout",
 	        amount: "RM39.45",
-	        extraInfo: "Outbound source payment failed; eligible for manual supplement"
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          voucher_extra_info: "{\"failure_reason\":\"payout_failed\",\"manual_supplement\":\"allowed\"}"
+	        }
 	      },
 	      {
 	        systemCode: "OUTBOUND",
@@ -6976,7 +7078,10 @@
 	        status: "Failed",
 	        paymentType: "Payout",
 	        amount: "RM82.88",
-	        extraInfo: "Outbound source payment failed; eligible for manual supplement"
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          voucher_extra_info: "{\"failure_reason\":\"payout_failed\",\"manual_supplement\":\"allowed\"}"
+	        }
 	      },
 	      {
 	        systemCode: "OUTBOUND",
@@ -6984,7 +7089,10 @@
 	        status: "Success",
 	        paymentType: "Payout",
 	        amount: "RM15.72",
-	        extraInfo: "Not eligible here; outbound manual supplement expects Failed source status"
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          validation_message: "Not eligible here; outbound manual supplement expects Failed source status"
+	        }
 	      }
 	    ];
 
@@ -7108,9 +7216,63 @@
       updatePagination();
     }
 
-    function escapeHtml(text) {
-      return String(text ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
-    }
+	    function escapeHtml(text) {
+	      return String(text ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
+	    }
+
+	    function getSourceExtraInfoRoot(extraInfo) {
+	      if (extraInfo && typeof extraInfo === "object" && !Array.isArray(extraInfo)) {
+	        return extraInfo.root && typeof extraInfo.root === "object" ? extraInfo.root : extraInfo;
+	      }
+	      if (!hasFieldValue(extraInfo)) return {};
+	      return { message: String(extraInfo) };
+	    }
+
+	    function formatSourceExtraInfoValue(value) {
+	      if (typeof value === "string") return JSON.stringify(value);
+	      return JSON.stringify(value, null, 2);
+	    }
+
+	    function renderSourceExtraInfo(extraInfo) {
+	      const root = getSourceExtraInfoRoot(extraInfo);
+	      const entries = Object.entries(root);
+	      if (!entries.length) return "-";
+	      const itemLabel = entries.length === 1 ? "1 item" : `${entries.length} items`;
+	      const copyText = JSON.stringify({ root }, null, 2);
+	      const lines = entries.map(([key, value]) => {
+	        return `  <span class="json-key">"${escapeHtml(key)}"</span> :\n  <span class="json-string">${escapeHtml(formatSourceExtraInfoValue(value))}</span>`;
+	      }).join("\n");
+	      return `
+	        <details class="source-extra-info">
+	          <summary>
+	            <span class="json-caret"></span>
+	            <span class="json-key">"root"</span>
+	            <span>:</span>
+	            <span class="json-preview">{...}</span>
+	            <span class="json-count">${itemLabel}</span>
+	            <button type="button" class="json-copy" data-copy-extra-info="${escapeHtml(copyText)}" aria-label="Copy Extra Info">⧉</button>
+	          </summary>
+	          <div class="source-extra-body"><span class="json-key">"root"</span> : {
+${lines}
+}</div>
+	        </details>
+	      `;
+	    }
+
+	    function attachSourceExtraInfoActions(container) {
+	      container.querySelectorAll(".source-extra-info").forEach(node => {
+	        node.addEventListener("click", event => event.stopPropagation());
+	      });
+	      container.querySelectorAll("[data-copy-extra-info]").forEach(node => {
+	        node.addEventListener("click", event => {
+	          event.preventDefault();
+	          event.stopPropagation();
+	          const text = event.currentTarget.dataset.copyExtraInfo || "";
+	          navigator.clipboard?.writeText(text);
+	          showToast("Extra Info copied.", "success");
+	        });
+	      });
+	    }
 
     function renderReferenceChips() {
       referenceChips.innerHTML = "";
@@ -7788,6 +7950,7 @@
 	    function openSourcePaymentModal(rowId) {
 	      state.activeSourceRowId = rowId;
 	      state.selectedSourcePaymentId = "";
+	      document.getElementById("sourceActionSelect").value = "Link Source Payment";
 	      document.getElementById("sourceSystemCodeSelect").value = state.supplementLinks[rowId]?.systemCode || "INBOUND";
 	      document.getElementById("sourcePaymentInput").value = state.supplementLinks[rowId]?.paymentId || "";
 	      document.getElementById("sourcePaymentSelectBtn").disabled = true;
@@ -7817,10 +7980,11 @@
 	            <td><span class="refund-tag ${statusTone}">${escapeHtml(item.status)}</span></td>
 	            <td>${escapeHtml(item.paymentType)}</td>
 	            <td>${escapeHtml(item.amount)}</td>
-	            <td>${escapeHtml(item.extraInfo)}</td>
+	            <td class="source-extra-cell">${renderSourceExtraInfo(item.extraInfo)}</td>
 	          </tr>
 	        `;
 	      }).join("");
+	      attachSourceExtraInfoActions(body);
 
 	      body.querySelectorAll("[data-source-payment-option]").forEach(row => {
 	        row.addEventListener("click", () => {
@@ -7930,10 +8094,11 @@
 	            <td><span class="refund-tag ${statusTone}">${escapeHtml(result.status || "-")}</span></td>
 	            <td>${escapeHtml(result.amount || "-")}</td>
 	            <td><span class="refund-tag ${result.linked ? "success" : "warn"}">${escapeHtml(result.linkResult)}</span></td>
-	            <td>${escapeHtml(result.extraInfo || "-")}</td>
+	            <td class="source-extra-cell">${renderSourceExtraInfo(result.extraInfo)}</td>
 	          </tr>
 	        `;
 	      }).join("");
+	      attachSourceExtraInfoActions(body);
 
       body.querySelectorAll("[data-batch-source-checkbox]").forEach(input => {
         input.addEventListener("change", (event) => {
