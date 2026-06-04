@@ -3740,7 +3740,15 @@
 	    }
 
 	    .manual-supplement-table {
-	      min-width: 1420px !important;
+	      min-width: 1180px !important;
+	    }
+
+	    .supplement-notes-grid .notes-row {
+	      grid-template-columns: 180px minmax(0, 1fr);
+	    }
+
+	    .supplement-notes-grid .notes-label {
+	      white-space: nowrap;
 	    }
 
     .bank-detail-report-page .report-summary-row {
@@ -6086,15 +6094,11 @@
         </section>
 
         <section class="hidden" id="supplementTransactionPage">
-          <div class="manual-refund-shell operation-page-shell">
-            <div class="manual-refund-top">
-              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
-              <div class="supplement-actions">
-                <span class="supplement-submit-hint" id="supplementSubmitHint">Link source payment before submit</span>
-                <button class="btn primary" id="supplementTransactionSubmitBtn" disabled>Submit</button>
-              </div>
-              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
-            </div>
+	          <div class="manual-refund-shell operation-page-shell">
+	            <div class="manual-refund-top">
+	              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
+	              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
+	            </div>
 
             <div class="info-card">
               <div class="info-card-head">Select</div>
@@ -6112,14 +6116,8 @@
               </div>
             </div>
 
-            <div class="info-card">
-              <div class="info-card-head" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
-                <span>Supplement List</span>
-                <div class="supplement-actions">
-                  <button class="btn" id="batchLinkPaymentBtn">Batch Link Source Payment ID</button>
-                  <button class="btn">↔</button>
-                </div>
-              </div>
+	            <div class="info-card">
+	              <div class="info-card-head">Supplement List</div>
               <div class="manual-table-wrap">
                 <table class="manual-table manual-supplement-table">
                   <thead>
@@ -6128,22 +6126,17 @@
                       <th>Reference ID</th>
 	                      <th>Source Payment ID</th>
 	                      <th>Source Status</th>
-	                      <th>Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
-	                      <th><span class="required-mark">*</span>Biz Code <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
-	                      <th>Agreement Item</th>
-                      <th>Channel Reference</th>
-                      <th>Bank Reference</th>
-                      <th>Amount</th>
-                      <th>Transaction Time</th>
+		                      <th>Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
+		                      <th><span class="required-mark">*</span>Biz Code <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
+		                      <th>Agreement Item</th>
+	                      <th>Amount</th>
+	                      <th>Transaction Time</th>
                     </tr>
                   </thead>
                   <tbody id="supplementTransactionTableBody"></tbody>
                 </table>
               </div>
-              <div class="table-card-tools">
-                <div class="h-scroll-bar"></div>
-              </div>
-              <div class="manual-table-footer">
+	              <div class="manual-table-footer">
                 <span>‹</span>
                 <div class="pager-chip">1</div>
                 <span>›</span>
@@ -6155,13 +6148,13 @@
 
             <div class="info-card">
               <div class="info-card-head">Notes</div>
-              <div class="info-card-body confirm-notes-grid">
-                <div class="notes-row">
-                  <span><span class="required-mark">*</span> Supplement Reason :</span>
-                  <span class="inline-field operation-select-input"><span>Payment transaction missed by MQ</span><span class="field-caret">⌄</span></span>
-                </div>
-                <div class="notes-row">
-                  <span>Remark :</span>
+	              <div class="info-card-body confirm-notes-grid supplement-notes-grid">
+	                <div class="notes-row">
+	                  <span class="notes-label"><span class="required-mark">*</span> Supplement Reason :</span>
+	                  <span class="inline-field operation-select-input"><span>Payment transaction missed by MQ</span><span class="field-caret">⌄</span></span>
+	                </div>
+	                <div class="notes-row">
+	                  <span class="notes-label">Remark :</span>
                   <input class="remark-input operation-wide-input" name="supplementTransactionRemark" />
                 </div>
               </div>
@@ -7906,13 +7899,11 @@ ${lines}
           <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
 	          <td>${renderSourcePaymentCell(item)}</td>
 	          <td>${renderLinkedSourceStatus(item)}</td>
-	          <td><span class="inline-field compact">${escapeHtml(currentIsoDate())}<span class="field-caret">□</span></span></td>
-	          <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
-	          <td>${escapeHtml(item.agreement || "-")}</td>
-	          <td>${escapeHtml(item.channelRef || "-")}</td>
-	          <td>${escapeHtml(item.bankRef || "-")}</td>
-          <td>${escapeHtml(item.amount || "-")}</td>
-          <td>${escapeHtml(item.txnTime || "-")}</td>
+		          <td><span class="inline-field compact">${escapeHtml(currentIsoDate())}<span class="field-caret">□</span></span></td>
+		          <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
+		          <td>${escapeHtml(item.agreement || "-")}</td>
+	          <td>${escapeHtml(item.amount || "-")}</td>
+	          <td>${escapeHtml(item.txnTime || "-")}</td>
         </tr>
       `).join("");
 
@@ -7939,12 +7930,15 @@ ${lines}
 	
 	    function updateSupplementSubmitState() {
 	      const { rows } = getSupplementTransactionRows();
-	      const allLinkedAllowed = rows.length > 0 && rows.every(row => isSourcePaymentStatusAllowed(state.supplementLinks[row.id]));
-	      const submitBtn = document.getElementById("supplementTransactionSubmitBtn");
-	      submitBtn.disabled = !allLinkedAllowed;
-	      document.getElementById("supplementSubmitHint").textContent = allLinkedAllowed
-	        ? "All source payments are linked with eligible source status"
-	        : "Link source payment before submit";
+		      const allLinkedAllowed = rows.length > 0 && rows.every(row => isSourcePaymentStatusAllowed(state.supplementLinks[row.id]));
+		      const submitBtn = document.getElementById("supplementTransactionSubmitBtn");
+		      if (submitBtn) submitBtn.disabled = !allLinkedAllowed;
+		      const submitHint = document.getElementById("supplementSubmitHint");
+		      if (submitHint) {
+		        submitHint.textContent = allLinkedAllowed
+		          ? "All source payments are linked with eligible source status"
+		          : "Link source payment before submit";
+		      }
 	    }
 
 	    function openSourcePaymentModal(rowId) {
@@ -8234,7 +8228,7 @@ ${lines}
       }
     });
     document.getElementById("sourcePaymentSelectBtn").addEventListener("click", selectSourcePayment);
-    document.getElementById("batchLinkPaymentBtn").addEventListener("click", openBatchSourcePaymentModal);
+    document.getElementById("batchLinkPaymentBtn")?.addEventListener("click", openBatchSourcePaymentModal);
     document.getElementById("batchPaymentMultipleBtn").addEventListener("click", openMultipleInputModal);
     document.getElementById("multiplePaymentInput").addEventListener("input", updateMultiplePaymentCount);
     document.getElementById("multiplePaymentOkBtn").addEventListener("click", confirmMultiplePaymentInput);
@@ -8339,7 +8333,7 @@ ${lines}
 
     document.getElementById("exportBtn").addEventListener("click", () => showToast("Export task created. File will be generated shortly.", "success"));
     document.getElementById("holdBtn").addEventListener("click", () => showToast(`Moved ${state.selectedRowIds.size} rows to hold queue`, "warn"));
-	    document.getElementById("supplementTransactionSubmitBtn").addEventListener("click", () => showToast("Manual Supplement submitted for approval.", "success"));
+	    document.getElementById("supplementTransactionSubmitBtn")?.addEventListener("click", () => showToast("Manual Supplement submitted for approval.", "success"));
     document.getElementById("closeActiveTab").addEventListener("click", () => showToast("Active tab cannot be closed in the clone page", "warn"));
     document.getElementById("ignoreOffsetSuggestion").addEventListener("click", () => {
       document.getElementById("offsetSuggestionBanner").classList.add("hidden");
