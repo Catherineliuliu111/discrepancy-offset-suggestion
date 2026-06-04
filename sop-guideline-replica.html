@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MY Accounting Portal</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23f5f5f5'/%3E%3Ctext x='50%25' y='57%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='36' font-weight='700' fill='%23222'%3ES%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --sidebar: #001529;
+      --sidebar-muted: rgba(255, 255, 255, 0.65);
+      --primary: #1890ff;
+      --page-bg: #f5f5f5;
+      --card-border: #f0f0f0;
+      --line: #d9d9d9;
+      --text: #1f272e;
+      --muted: rgba(0, 0, 0, 0.45);
+      --red: #ff4d4f;
+      --orange: #fa8c16;
+      --green: #52c41a;
+      --radius: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      color: rgba(0, 0, 0, 0.85);
+      background: #fff;
+      font: 13px/1.5715 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .portal {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      background: var(--page-bg);
+    }
+
+    .sidebar {
+      position: relative;
+      flex: 0 0 240px;
+      width: 240px;
+      height: 100vh;
+      color: var(--sidebar-muted);
+      background: var(--sidebar);
+      overflow: hidden;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      height: 64px;
+      padding: 13px 24px 10px;
+      color: #fff;
+    }
+
+    .logo-bag {
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      width: 36px;
+      height: 30px;
+      margin-right: 8px;
+      border: 2px solid #f7f7f7;
+      border-radius: 3px;
+      color: #3b3d42;
+      background: #fff;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .logo-bag::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 9px;
+      width: 15px;
+      height: 9px;
+      border: 2px solid #f7f7f7;
+      border-bottom: 0;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .logo-word {
+      color: #fff;
+      font-size: 29px;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+    }
+
+    .side-search {
+      position: relative;
+      height: 40px;
+      padding: 10px 20px 8px;
+    }
+
+    .side-search input {
+      width: 200px;
+      height: 30px;
+      padding: 0 34px 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 16px;
+      color: #fff;
+      background: #5b5b5b;
+      outline: 0;
+    }
+
+    .side-search svg {
+      position: absolute;
+      top: 17px;
+      right: 30px;
+      width: 14px;
+      height: 14px;
+      color: rgba(255, 255, 255, 0.85);
+      pointer-events: none;
+    }
+
+    .menu {
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--sidebar-muted);
+    }
+
+    .menu-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 40px;
+      margin: 4px 0 8px;
+      padding: 0 16px 0 20px;
+      color: inherit;
+      font-size: 16px;
+      line-height: 40px;
+      white-space: nowrap;
+    }
+
+    .menu-item.active {
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .menu-item:hover {
+      color: #fff;
+    }
+
+    .menu-icon {
+      flex: 0 0 14px;
+      width: 14px;
+      height: 14px;
+      margin-right: 9px;
+      color: currentColor;
+      opacity: 0.95;
+    }
+
+    .menu-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .menu-caret {
+      margin-left: auto;
+      width: 12px;
+      height: 12px;
+      opacity: 0.8;
+    }
+
+    .side-footer {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      height: 46px;
+      padding: 0 10px;
+      gap: 10px;
+      background: var(--sidebar);
+      color: #fff;
+      font-size: 15px;
+    }
+
+    .avatar {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #13a8b5;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .region-tag {
+      display: inline-block;
+      height: 22px;
+      padding: 0 7px;
+      border: 1px solid #ffe58f;
+      border-radius: var(--radius);
+      color: #d48806;
+      background: #fffbe6;
+      font-size: 12px;
+      line-height: 20px;
+    }
+
+    .footer-icon {
+      width: 19px;
+      height: 19px;
+      color: #fff;
+    }
+
+    .footer-time {
+      margin-left: auto;
+      min-width: 45px;
+      text-align: right;
+      font-size: 15px;
+    }
+
+    .main {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 100vh;
+      background: var(--page-bg);
+    }
+
+    .tabs-nav {
+      display: flex;
+      align-items: flex-start;
+      width: 100%;
+      height: 42.84375px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .tab-more {
+      width: 45px;
+      height: 42.84375px;
+      border-right: 1px solid var(--primary);
+      border-bottom: 2px solid var(--primary);
+      color: var(--text);
+      background: #fff;
+      font-size: 13px;
+      line-height: 30px;
+    }
+
+    .tab-active {
+      display: flex;
+      align-items: center;
+      height: 42.84375px;
+      min-width: 215px;
+      padding: 9px 12px 9px 16px;
+      border: 2px solid var(--primary);
+      border-bottom-color: transparent;
+      border-radius: var(--radius) var(--radius) 0 0;
+      color: var(--primary);
+      background: #fff;
+      line-height: 20.4295px;
+    }
+
+    .tab-close {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 20px;
+      margin-left: 8px;
+      color: rgba(0, 0, 0, 0.45);
+      background: transparent;
+    }
+
+    .tab-rest {
+      flex: 1 1 auto;
+      height: 42.84375px;
+      border-bottom: 2px solid var(--primary);
+      background: #fff;
+    }
+
+    .content-scroll {
+      height: calc(100vh - 42.84375px);
+      padding: 24px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: var(--page-bg);
+      scrollbar-color: #bfbfbf transparent;
+    }
+
+    .content-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .content-scroll::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: #bfbfbf;
+    }
+
+    h2 {
+      margin: 0 0 24px;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .card {
+      position: relative;
+      margin: 0 0 24px;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    .filter-card .card-body {
+      min-height: 125.46875px;
+    }
+
+    .filter-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .filter-title svg {
+      width: 14px;
+      height: 14px;
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    .filter-title strong {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .bank-label {
+      margin-bottom: 2px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .tag {
+      display: inline-block;
+      height: 22px;
+      padding: 0 7px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--text);
+      background: #fafafa;
+      font-size: 12px;
+      line-height: 20px;
+      white-space: nowrap;
+    }
+
+    .tag-black {
+      color: #fff;
+      border-color: #000;
+      background: #000;
+    }
+
+    .tag-sla {
+      margin-left: 12px;
+      color: #fff;
+      border-color: transparent;
+      background: var(--red);
+    }
+
+    .tag-orange {
+      background: var(--orange);
+    }
+
+    .tag-green {
+      background: var(--green);
+    }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 22.421875px;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      color: var(--primary);
+      background: transparent;
+    }
+
+    .link-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .step-card .card-body {
+      padding: 24px;
+    }
+
+    .step-heading {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      column-gap: 16px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+
+    .step-num {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: #000;
+      background: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 22px;
+    }
+
+    .step-title-line {
+      display: flex;
+      align-items: center;
+      min-height: 25px;
+      gap: 9px;
+    }
+
+    .step-icon {
+      flex: 0 0 18px;
+      width: 18px;
+      height: 18px;
+      color: var(--primary);
+    }
+
+    .step-icon.warn {
+      color: var(--orange);
+    }
+
+    h4 {
+      margin: 0;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .step-desc {
+      margin-top: 8px;
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 13px;
+      line-height: 20.4295px;
+    }
+
+    .collapse-list {
+      margin-left: 40px;
+      margin-right: -8px;
+    }
+
+    .collapse-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 16px;
+      color: rgba(0, 0, 0, 0.85);
+      background: transparent;
+      text-align: left;
+    }
+
+    .collapse-row:hover {
+      background: #fafafa;
+    }
+
+    .caret {
+      display: inline-block;
+      width: 16px;
+      margin-right: 10px;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 13px;
+      line-height: 1;
+      transform: translateY(-1px);
+    }
+
+    .row-date {
+      min-width: 86px;
+      color: var(--text);
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .priority-card {
+      margin: 0 -8px 40px 40px;
+      border-color: var(--line);
+      background: #fafafa;
+    }
+
+    .priority-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .priority-card .card-body {
+      padding: 24px 24px 16px;
+    }
+
+    h5 {
+      margin: 0 0 16px;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      min-height: 38.421875px;
+      margin-bottom: 16px;
+      padding: 8px 15px;
+      border: 1px solid #ffccc7;
+      border-radius: var(--radius);
+      color: var(--text);
+      background: #fff2f0;
+    }
+
+    .alert svg {
+      width: 14px;
+      height: 14px;
+      margin: 3px 9px 0 0;
+      color: var(--red);
+    }
+
+    .offset-suggestion-block {
+      margin: 0 -8px 24px 40px;
+      padding: 24px;
+      border: 1px solid #ffd591;
+      border-radius: var(--radius);
+      background: #fff7e6;
+    }
+
+    .offset-suggestion-title {
+      margin: 0 0 8px;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 22px;
+    }
+
+    .offset-suggestion-note {
+      display: flex;
+      align-items: flex-start;
+      margin: 0 0 12px;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 13px;
+      line-height: 20px;
+    }
+
+    .offset-suggestion-note svg {
+      flex: 0 0 14px;
+      width: 14px;
+      height: 14px;
+      margin: 3px 8px 0 0;
+      color: var(--orange);
+    }
+
+    .offset-suggestion-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .offset-suggestion-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 40px;
+      padding: 8px 12px;
+      border: 1px solid #ffe7ba;
+      border-radius: var(--radius);
+      background: #fff;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+    }
+
+    .offset-suggestion-item:hover {
+      border-color: #91d5ff;
+      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .offset-suggestion-name {
+      color: var(--text);
+      font-weight: 500;
+      line-height: 20px;
+    }
+
+    .offset-suggestion-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .offset-suggestion-action::after {
+      content: ">";
+      font-size: 11px;
+      line-height: 1;
+      transform: translateY(1px);
+    }
+
+    .offset-suggestion-action:hover {
+      color: #096dd9;
+      text-decoration: underline;
+    }
+
+    .offset-suggestion-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 22px;
+      padding: 0 8px;
+      border: 1px solid #91d5ff;
+      border-radius: var(--radius);
+      color: var(--primary);
+      background: #e6f7ff;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 20px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .offset-suggestion-count:hover {
+      border-color: var(--primary);
+      background: #bae7ff;
+    }
+
+    .metric {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 20.4295px;
+    }
+
+    .metric b {
+      font-weight: 700;
+    }
+
+    .divider {
+      height: 1px;
+      margin: 20px 0 13px;
+      background: var(--line);
+    }
+
+    .total-red {
+      color: var(--red);
+    }
+
+    .total-orange {
+      color: var(--orange);
+    }
+
+    .info-alert {
+      display: flex;
+      align-items: center;
+      min-height: 38.421875px;
+      margin: 0 16px 24px 40px;
+      padding: 8px 15px;
+      border: 1px solid #91d5ff;
+      border-radius: var(--radius);
+      color: var(--text);
+      background: #e6f7ff;
+    }
+
+    .info-alert svg {
+      width: 14px;
+      height: 14px;
+      margin-right: 9px;
+      color: var(--primary);
+    }
+
+    .floating-help {
+      position: fixed;
+      right: -24px;
+      bottom: 64px;
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 20;
+    }
+
+    .floating-help svg {
+      width: 24px;
+      height: 24px;
+      transform: translateX(-8px);
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow: auto;
+      }
+
+      .portal {
+        min-width: 900px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="portal">
+    <aside class="sidebar">
+      <div class="logo" aria-label="ShopeePay">
+        <span class="logo-bag">S</span>
+        <span class="logo-word">ShopeePay</span>
+      </div>
+      <div class="side-search">
+        <input id="menuSearch" name="menuSearch" aria-label="Search menu" />
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16.5 16.5 4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+
+      <ul class="menu">
+        <li class="menu-item active"><svg class="menu-icon"><use href="#i-book"/></svg><span class="menu-label">Reconciliation To-Do List</span></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-pie"/></svg><span class="menu-label">Summary</span></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-doc"/></svg><span class="menu-label">Channel Recon</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-nodes"/></svg><span class="menu-label">E2E Recon</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-grid"/></svg><span class="menu-label">Statement Recon</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-calendar"/></svg><span class="menu-label">Balance Recon</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-file"/></svg><span class="menu-label">File Transfer</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-table"/></svg><span class="menu-label">Master Data</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-branch"/></svg><span class="menu-label">Fund Tracing</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-calendar"/></svg><span class="menu-label">Ledger</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-calendar"/></svg><span class="menu-label">Fee Center</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-settings"/></svg><span class="menu-label">Configuration</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-inbox"/></svg><span class="menu-label">Dispute Center</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+        <li class="menu-item"><svg class="menu-icon"><use href="#i-pie"/></svg><span class="menu-label">PPS Reconciliation</span><svg class="menu-caret"><use href="#i-down"/></svg></li>
+      </ul>
+
+      <div class="side-footer">
+        <span class="avatar">F</span>
+        <span class="region-tag">MY</span>
+        <svg class="footer-icon"><use href="#i-bell"/></svg>
+        <span class="footer-time" id="clock">16:25</span>
+        <svg class="footer-icon"><use href="#i-fold"/></svg>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="tabs-nav">
+        <button class="tab-more">...</button>
+        <div class="tab-active">Reconciliation To-Do List <button class="tab-close" aria-label="remove"><svg width="12" height="12"><use href="#i-close"/></svg></button></div>
+        <div class="tab-rest"></div>
+      </div>
+
+      <div class="content-scroll" id="contentScroll">
+        <h2>Reconciliation To-Do List</h2>
+
+        <section class="card filter-card">
+          <div class="card-body">
+            <div class="filter-title">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16.5 16.5 4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <strong>Filter</strong>
+            </div>
+            <div class="bank-label">Bank Account:</div>
+            <div class="filter-row">
+              <span class="tag tag-black">All</span>
+              <button class="link-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Create New Filter View</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card step-card" data-step="1">
+          <div class="card-body">
+            <div class="step-heading">
+              <span class="step-num">1</span>
+              <div>
+                <div class="step-title-line">
+                  <svg class="step-icon warn"><use href="#i-warning"/></svg>
+                  <h4>Check Channel Exceptions</h4>
+                </div>
+                <div class="step-desc">Please check the channel exceptions that might affect the reconciliation result before handle the discrepancies.</div>
+              </div>
+            </div>
+            <div class="collapse-list" data-list="channel-exceptions"></div>
+          </div>
+        </section>
+
+        <section class="card step-card" data-step="2">
+          <div class="card-body">
+            <div class="step-heading">
+              <span class="step-num">2</span>
+              <div>
+                <div class="step-title-line">
+                  <svg class="step-icon warn"><use href="#i-warning"/></svg>
+                  <h4>Check Transaction Exceptions</h4>
+                </div>
+                <div class="step-desc">Please check the transaction exceptions that might affect the reconciliation result before handle the discrepancies.</div>
+              </div>
+            </div>
+            <div class="collapse-list" data-list="transaction-exceptions"></div>
+          </div>
+        </section>
+
+        <section class="card step-card" data-step="3">
+          <div class="card-body">
+            <div class="step-heading">
+              <span class="step-num">3</span>
+              <div>
+                <div class="step-title-line">
+                  <svg class="step-icon"><use href="#i-clock"/></svg>
+                  <h4>Check Channel Recon Result</h4>
+                </div>
+                <div class="step-desc">Review channel reconciliation results and prioritize over transactions FIRST</div>
+              </div>
+            </div>
+
+            <article class="offset-suggestion-block" aria-label="Discrepancy Offset Suggestion">
+              <h5 class="offset-suggestion-title">Discrepancy Offset Suggestion</h5>
+              <p class="offset-suggestion-note">
+                <svg><use href="#i-warning"/></svg>
+                <span>The system has identified discrepancies that may be eligible for offset handling.</span>
+              </p>
+              <div class="offset-suggestion-list">
+                <div class="offset-suggestion-item">
+                  <span class="offset-suggestion-name">Suggested Action: <a class="offset-suggestion-action" href="./discrepancy-offset-suggestion.html?action=offset">Offset</a></span>
+                  <a class="offset-suggestion-count" href="./discrepancy-offset-suggestion.html?action=offset">12</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="card priority-card">
+              <div class="card-body">
+                <h5>Over TXN (First Priority)</h5>
+                <div class="alert"><svg><use href="#i-error"/></svg><span>Review and update status for all Over TXN by T+1 - affects Statement Recon</span></div>
+                <p class="metric">Today's discrepancy: <b>20569</b></p>
+                <p class="metric">Historical unprocessed: <b>20563116</b></p>
+                <p class="metric">Historical processing: <b>0</b></p>
+                <div class="divider"></div>
+                <p class="metric">Total: <b class="total-red">20583685</b></p>
+              </div>
+            </article>
+
+            <article class="card priority-card">
+              <div class="card-body">
+                <h5>Diff TXN (Second Priority)</h5>
+                <p class="metric">Today's discrepancy: <b>0</b></p>
+                <p class="metric">Historical unprocessed: <b>1</b></p>
+                <p class="metric">Historical processing: <b>0</b></p>
+                <div class="divider"></div>
+                <p class="metric">Total: <b class="total-orange">1</b></p>
+              </div>
+            </article>
+
+            <article class="card priority-card">
+              <div class="card-body">
+                <h5>Less TXN (Third Priority)</h5>
+                <p class="metric">Today's discrepancy: <b>15421</b></p>
+                <p class="metric">Historical unprocessed: <b>1501220</b></p>
+                <p class="metric">Historical processing: <b>77</b></p>
+                <div class="divider"></div>
+                <p class="metric">Total: <b class="total-orange">1516718</b></p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="card step-card" data-step="4">
+          <div class="card-body">
+            <div class="step-heading">
+              <span class="step-num">4</span>
+              <div>
+                <div class="step-title-line">
+                  <svg class="step-icon"><use href="#i-clock"/></svg>
+                  <h4>Complete Statement Recon</h4>
+                </div>
+                <div class="step-desc">Please complete the statement recon by T+3.</div>
+              </div>
+            </div>
+            <div class="info-alert"><svg><use href="#i-info"/></svg><span>Bank accounts pending statement recon:</span></div>
+            <div class="collapse-list" data-list="statement-recon"></div>
+          </div>
+        </section>
+
+        <section class="card step-card" data-step="5">
+          <div class="card-body">
+            <div class="step-heading">
+              <span class="step-num">5</span>
+              <div>
+                <div class="step-title-line">
+                  <svg class="step-icon"><use href="#i-clock"/></svg>
+                  <h4>Complete Balance Recon</h4>
+                </div>
+                <div class="step-desc">Please complete the balance recon by T+3.</div>
+              </div>
+            </div>
+            <div class="info-alert"><svg><use href="#i-info"/></svg><span>Bank accounts pending balance recon:</span></div>
+            <div class="collapse-list" data-list="balance-recon"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <button class="floating-help" aria-label="user switch">
+    <svg><use href="#i-user-switch"/></svg>
+  </button>
+
+  <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3-3V4Z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5 17V5a2 2 0 0 1 2-2h10" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-pie" viewBox="0 0 24 24"><path d="M11 3a9 9 0 1 0 9 9h-9V3Z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M13 3v7h7a8 8 0 0 0-7-7Z" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6V3Z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M14 3v5h5M8 13h8M8 17h6" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-nodes" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="7" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m8.4 7.2 6.2 3.6M14.6 13.2 9.4 17" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm0 5h16M10 5v14M16 5v14" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M5 5h14v15H5V5Zm3-2v4m8-4v4M5 9h14" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 12h3v3H8z" fill="currentColor"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M5 4h14v16H5V4Zm3 4h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-table" viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm0 4h16M4 14h16M10 9v10" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-branch" viewBox="0 0 24 24"><path d="M7 5v7a5 5 0 0 0 5 5h5M7 12h7" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="7" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="14" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 3a7 7 0 0 0-1.7 1L5 6 3 9.5 5.1 11a7 7 0 0 0 0 2L3 14.5 5 18l2.4-1a7 7 0 0 0 1.7 1l.4 3h5l.4-3a7 7 0 0 0 1.7-1l2.4 1 2-3.5-2.1-1.5a7 7 0 0 0 .1-1Z" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M5 7h14l-2 10H7L5 7Zm3 0 2-3h4l2 3M7 13h4l1 2 1-2h4" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 9 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-fold" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16M8 8l-4 4 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-warning" viewBox="0 0 24 24"><path d="M12 3 22 20H2L12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9v5m0 3h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-error" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor"/><path d="m9 9 6 6M15 9l-6 6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor"/><path d="M12 10v6M12 7h.01" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-user-switch" viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4 0-7 2.1-7 5v1h11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 9v7m0 0-3-3m3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <script>
+    const lists = {
+      "channel-exceptions": [
+        ["25 Apr 2026", "4 items", "Overdue"],
+        ["26 Apr 2026", "2 items", "Overdue"],
+        ["27 Apr 2026", "1 item", "Overdue"],
+        ["28 Apr 2026", "2 items", "Overdue"],
+        ["29 Apr 2026", "3 items", "Overdue"],
+        ["30 Apr 2026", "2 items", "Overdue"],
+        ["01 May 2026", "2 items", "Overdue"],
+        ["02 May 2026", "2 items", "Overdue"],
+        ["03 May 2026", "2 items", "Overdue"],
+        ["04 May 2026", "2 items", "Overdue"],
+        ["05 May 2026", "2 items", "Overdue"],
+        ["06 May 2026", "3 items", "Overdue"],
+        ["07 May 2026", "4 items", "1 day"],
+        ["08 May 2026", "2 items", "1 day"]
+      ],
+      "transaction-exceptions": [
+        ["24 Apr 2026", "4 items", "Overdue"],
+        ["25 Apr 2026", "4 items", "Overdue"],
+        ["26 Apr 2026", "4 items", "Overdue"],
+        ["27 Apr 2026", "4 items", "Overdue"],
+        ["28 Apr 2026", "4 items", "Overdue"],
+        ["29 Apr 2026", "4 items", "Overdue"],
+        ["30 Apr 2026", "4 items", "Overdue"],
+        ["01 May 2026", "4 items", "Overdue"],
+        ["02 May 2026", "5 items", "Overdue"],
+        ["03 May 2026", "4 items", "Overdue"],
+        ["04 May 2026", "5 items", "Overdue"],
+        ["05 May 2026", "4 items", "Overdue"],
+        ["06 May 2026", "4 items", "Overdue"],
+        ["07 May 2026", "5 items", "1 day"],
+        ["08 May 2026", "4 items", "1 day"]
+      ],
+      "statement-recon": [
+        ["24 Apr 2026", "13 items", "Overdue"],
+        ["25 Apr 2026", "4 items", "Overdue"],
+        ["26 Apr 2026", "4 items", "Overdue"],
+        ["27 Apr 2026", "10 items", "Overdue"],
+        ["28 Apr 2026", "5 items", "Overdue"],
+        ["29 Apr 2026", "10 items", "Overdue"],
+        ["30 Apr 2026", "13 items", "Overdue"],
+        ["01 May 2026", "7 items", "Overdue"],
+        ["02 May 2026", "4 items", "Overdue"],
+        ["03 May 2026", "7 items", "Overdue"],
+        ["04 May 2026", "7 items", "Overdue"],
+        ["05 May 2026", "6 items", "Overdue"],
+        ["06 May 2026", "7 items", "1 day"],
+        ["07 May 2026", "8 items", "2 days"],
+        ["08 May 2026", "7 items", "3 days"],
+        ["09 May 2026", "3 items", "3 days"]
+      ],
+      "balance-recon": [
+        ["24 Apr 2026", "13 items", "Overdue"],
+        ["25 Apr 2026", "13 items", "Overdue"],
+        ["26 Apr 2026", "7 items", "Overdue"],
+        ["27 Apr 2026", "13 items", "Overdue"],
+        ["28 Apr 2026", "13 items", "Overdue"],
+        ["29 Apr 2026", "13 items", "Overdue"],
+        ["30 Apr 2026", "13 items", "Overdue"],
+        ["01 May 2026", "13 items", "Overdue"],
+        ["02 May 2026", "8 items", "Overdue"],
+        ["03 May 2026", "8 items", "Overdue"],
+        ["04 May 2026", "13 items", "Overdue"],
+        ["05 May 2026", "13 items", "Overdue"],
+        ["06 May 2026", "13 items", "1 day"],
+        ["07 May 2026", "13 items", "2 days"]
+      ]
+    };
+
+    const statusClass = (status) => {
+      if (status === "Overdue") return "";
+      if (status === "1 day") return " tag-orange";
+      return " tag-green";
+    };
+
+    const renderRow = ([date, items, status]) => `
+      <button class="collapse-row">
+        <span class="caret">▶</span>
+        <span class="row-date">${date}</span>
+        <span class="tag">${items}</span>
+        <span class="tag tag-sla${statusClass(status)}">SLA countdown: ${status}</span>
+      </button>
+    `;
+
+    Object.entries(lists).forEach(([name, data]) => {
+      const host = document.querySelector(`[data-list="${name}"]`);
+      host.innerHTML = data.map(renderRow).join("");
+    });
+
+    const clock = document.getElementById("clock");
+    const updateClock = () => {
+      const now = new Date();
+      clock.textContent = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    };
+    updateClock();
+    window.setInterval(updateClock, 30000);
+  </script>
+</body>
+</html>
