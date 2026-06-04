@@ -3652,11 +3652,15 @@
       }
     }
 
-    .wallet-refund-table,
-    .confirm-refund-table,
-    .bank-detail-report-table {
-      min-width: 1180px !important;
-    }
+	    .wallet-refund-table,
+	    .confirm-refund-table,
+	    .bank-detail-report-table {
+	      min-width: 1180px !important;
+	    }
+
+	    .manual-supplement-table {
+	      min-width: 1420px !important;
+	    }
 
     .bank-detail-report-page .report-summary-row {
       display: grid;
@@ -5385,8 +5389,8 @@
                     <span>Update to Success</span>
                     <span class="info-dot tip" data-tip="Use when the discrepant record should be corrected into a success transaction.">i</span>
                   </div>
-                  <div class="dropdown-item disabled" data-handle-title="Supplement Transaction">
-                    <span>Supplement Transaction</span>
+                  <div class="dropdown-item disabled" data-handle-title="Manual Supplement">
+                    <span>Manual Supplement</span>
                     <span class="info-dot tip" data-tip="Available only when Discrepancy Type is Less TXN, Source Status is empty, and Source Payment ID is empty.">i</span>
                   </div>
                   <div class="dropdown-item" data-handle-title="Manual Writeoff">
@@ -6003,7 +6007,7 @@
         <section class="hidden" id="supplementTransactionPage">
           <div class="manual-refund-shell operation-page-shell">
             <div class="manual-refund-top">
-              <div class="manual-refund-title" id="supplementTransactionTitle">Supplement Transaction</div>
+              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
               <div class="supplement-actions">
                 <span class="supplement-submit-hint" id="supplementSubmitHint">Link source payment before submit</span>
                 <button class="btn primary" id="supplementTransactionSubmitBtn" disabled>Submit</button>
@@ -6022,7 +6026,7 @@
                 </div>
                 <div class="operation-note">
                   <span class="operation-note-icon">i</span>
-                  <span>Use this operation when a successful payment is confirmed, but Transaction Detail cannot be generated because the Journal was not received.</span>
+                  <span>Use this operation when the source payment is confirmed, but Transaction Detail cannot be generated because the Journal was not received. Please confirm Transaction Date and Biz Code before submission.</span>
                 </div>
               </div>
             </div>
@@ -6036,14 +6040,16 @@
                 </div>
               </div>
               <div class="manual-table-wrap">
-                <table class="manual-table">
+                <table class="manual-table manual-supplement-table">
                   <thead>
                     <tr>
                       <th>Discrepancy Order ID</th>
                       <th>Reference ID</th>
-                      <th>Source Payment ID</th>
-                      <th>Source Status</th>
-                      <th>Agreement Item</th>
+	                      <th>Source Payment ID</th>
+	                      <th>Source Status</th>
+	                      <th>Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
+	                      <th><span class="required-mark">*</span>Biz Code <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
+	                      <th>Agreement Item</th>
                       <th>Channel Reference</th>
                       <th>Bank Reference</th>
                       <th>Amount</th>
@@ -6467,8 +6473,8 @@
         <label class="source-field">
           <span><span class="required-mark">*</span> System Code :</span>
           <select id="sourceSystemCodeSelect">
-            <option value="SPM_INBOUND">SPM_INBOUND</option>
-            <option value="SPM_CARD">SPM_CARD</option>
+	            <option value="INBOUND">INBOUND</option>
+	            <option value="OUTBOUND">OUTBOUND</option>
           </select>
         </label>
         <label class="source-field">
@@ -6510,8 +6516,8 @@
         <label class="source-field">
           <span><span class="required-mark">*</span> System Code :</span>
           <select id="batchSourceSystemCodeSelect">
-            <option value="SPM_INBOUND">SPM_INBOUND</option>
-            <option value="SPM_CARD">SPM_CARD</option>
+	            <option value="INBOUND">INBOUND</option>
+	            <option value="OUTBOUND">OUTBOUND</option>
           </select>
         </label>
         <label class="source-field">
@@ -6523,7 +6529,7 @@
         </label>
         <button class="btn primary" id="batchSourcePaymentAddBtn">Add</button>
       </div>
-      <div style="padding:0 36px 8px;color:#64748b;font-size:13px;font-weight:650;">Add searches every entered Payment ID. Confirm links checked Success payments to eligible discrepancy rows in the current list order.</div>
+	      <div style="padding:0 36px 8px;color:#64748b;font-size:13px;font-weight:650;">Add searches every entered Payment ID. Confirm links checked payments with eligible source status to eligible discrepancy rows in the current list order.</div>
       <div class="source-table-wrap">
         <table class="source-table">
           <thead>
@@ -6907,56 +6913,96 @@
       lastMixedProcessingStatusWarning: false
     };
 
-    const sourcePaymentOptions = [
-      {
-        systemCode: "SPM_INBOUND",
-        paymentId: "111",
-        status: "Success",
-        paymentType: "FPX Payment",
-        amount: "RM39.45",
-        extraInfo: "Matched demo payment; Journal not received by reconciliation"
-      },
-      {
-        systemCode: "SPM_INBOUND",
-        paymentId: "222",
-        status: "Success",
-        paymentType: "FPX Payment",
-        amount: "RM82.88",
-        extraInfo: "Matched demo payment; Journal not received by reconciliation"
-      },
-      {
-        systemCode: "SPM_INBOUND",
-        paymentId: "333",
-        status: "Success",
-        paymentType: "FPX Payment",
-        amount: "RM15.72",
-        extraInfo: "Matched demo payment; Journal not received by reconciliation"
-      },
-      {
-        systemCode: "SPM_INBOUND",
-        paymentId: "SPM520990225753480617",
-        status: "Success",
-        paymentType: "FPX Payment",
-        amount: "RM39.45",
-        extraInfo: "MQ delivery missed; matched by reference and amount"
-      },
-      {
-        systemCode: "SPM_INBOUND",
-        paymentId: "SPM520990225753480618",
-        status: "Success",
-        paymentType: "FPX Payment",
-        amount: "RM15.72",
-        extraInfo: "MQ delivery missed; matched by payment evidence"
-      },
-      {
-        systemCode: "SPM_INBOUND",
-        paymentId: "SPM520990225753480619",
-        status: "Processing",
-        paymentType: "FPX Payment",
-        amount: "RM82.88",
-        extraInfo: "Not allowed for supplement until upstream status is Success"
-      }
-    ];
+	    const sourcePaymentOptions = [
+	      {
+	        systemCode: "INBOUND",
+	        paymentId: "111",
+	        status: "Success",
+	        paymentType: "FPX Payment",
+	        amount: "RM39.45",
+	        extraInfo: "Matched demo payment; Journal not received by reconciliation"
+	      },
+	      {
+	        systemCode: "INBOUND",
+	        paymentId: "222",
+	        status: "Success",
+	        paymentType: "FPX Payment",
+	        amount: "RM82.88",
+	        extraInfo: "Matched demo payment; Journal not received by reconciliation"
+	      },
+	      {
+	        systemCode: "INBOUND",
+	        paymentId: "333",
+	        status: "Success",
+	        paymentType: "FPX Payment",
+	        amount: "RM15.72",
+	        extraInfo: "Matched demo payment; Journal not received by reconciliation"
+	      },
+	      {
+	        systemCode: "INBOUND",
+	        paymentId: "SPM520990225753480617",
+	        status: "Success",
+	        paymentType: "FPX Payment",
+	        amount: "RM39.45",
+	        extraInfo: "MQ delivery missed; matched by reference and amount"
+	      },
+	      {
+	        systemCode: "INBOUND",
+	        paymentId: "SPM520990225753480618",
+	        status: "Success",
+	        paymentType: "FPX Payment",
+	        amount: "RM15.72",
+	        extraInfo: "MQ delivery missed; matched by payment evidence"
+	      },
+	      {
+	        systemCode: "INBOUND",
+	        paymentId: "SPM520990225753480619",
+	        status: "Processing",
+	        paymentType: "FPX Payment",
+	        amount: "RM82.88",
+	        extraInfo: "Not allowed for supplement until upstream status is Success"
+	      },
+	      {
+	        systemCode: "OUTBOUND",
+	        paymentId: "444",
+	        status: "Failed",
+	        paymentType: "Payout",
+	        amount: "RM39.45",
+	        extraInfo: "Outbound source payment failed; eligible for manual supplement"
+	      },
+	      {
+	        systemCode: "OUTBOUND",
+	        paymentId: "555",
+	        status: "Failed",
+	        paymentType: "Payout",
+	        amount: "RM82.88",
+	        extraInfo: "Outbound source payment failed; eligible for manual supplement"
+	      },
+	      {
+	        systemCode: "OUTBOUND",
+	        paymentId: "SPMOUT990225753480620",
+	        status: "Success",
+	        paymentType: "Payout",
+	        amount: "RM15.72",
+	        extraInfo: "Not eligible here; outbound manual supplement expects Failed source status"
+	      }
+	    ];
+
+	    function normalizeSupplementSystemCode(value) {
+	      const code = String(value || "").trim().toUpperCase();
+	      if (code.includes("OUTBOUND")) return "OUTBOUND";
+	      if (code.includes("INBOUND")) return "INBOUND";
+	      return code;
+	    }
+
+	    function isSourcePaymentStatusAllowed(payment) {
+	      if (!payment) return false;
+	      const systemCode = normalizeSupplementSystemCode(payment.systemCode);
+	      const status = String(payment.status || "").trim().toLowerCase();
+	      if (systemCode === "INBOUND") return status === "success";
+	      if (systemCode === "OUTBOUND") return status === "failed";
+	      return status === "success";
+	    }
 
     const tableHeadRow = document.getElementById("tableHeadRow");
     const tableBody = document.getElementById("tableBody");
@@ -7151,7 +7197,7 @@
       state.lastMixedProcessingStatusWarning = hasMixedProcessingStatus;
 
       const supplementAllowed = selectedRows.length > 0 && selectedRows.every(isSupplementTransactionEligible);
-      document.querySelector('[data-handle-title="Supplement Transaction"]')?.classList.toggle("disabled", !supplementAllowed);
+	      document.querySelector('[data-handle-title="Manual Supplement"]')?.classList.toggle("disabled", !supplementAllowed);
     }
 
     function openModal(selector) {
@@ -7675,32 +7721,34 @@
       `;
     }
 
-    function openSupplementTransactionPage() {
-      const { rows, row, totalAmount } = getSupplementTransactionRows();
-      if (!rows.every(isSupplementTransactionEligible)) {
-        showToast("Supplement Transaction is only available for Less TXN with empty Source Status and empty Source Payment ID.", "warn");
-        return;
-      }
-      if (!rows.length) {
-        showToast("No eligible Less TXN records selected for Supplement Transaction.", "warn");
-        return;
-      }
-
-      showOperationPage("supplementTransactionPage", "Supplement Transaction");
-      document.getElementById("supplementDiscrepancyType").textContent = row.type || "Less TXN";
-      document.getElementById("supplementCount").textContent = rows.length;
-      document.getElementById("supplementDirection").textContent = row.direction || "OUT";
+	    function openSupplementTransactionPage() {
+	      const { rows, row, totalAmount } = getSupplementTransactionRows();
+	      if (!rows.every(isSupplementTransactionEligible)) {
+	        showToast("Manual Supplement is only available for Less TXN with empty Source Status and empty Source Payment ID.", "warn");
+	        return;
+	      }
+	      if (!rows.length) {
+	        showToast("No eligible Less TXN records selected for Manual Supplement.", "warn");
+	        return;
+	      }
+	
+	      showOperationPage("supplementTransactionPage", "Manual Supplement");
+	      document.getElementById("supplementDiscrepancyType").textContent = row.type || "Less TXN";
+	      document.getElementById("supplementCount").textContent = rows.length;
+	      document.getElementById("supplementDirection").textContent = row.direction || "OUT";
       document.getElementById("supplementAmount").textContent = rows.length > 1 ? `RM${totalAmount.toFixed(2)}` : row.amount;
 
       document.getElementById("supplementTransactionTableBody").innerHTML = rows.map(item => `
         <tr>
           <td>${escapeHtml(item.id)}</td>
           <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
-          <td>${renderSourcePaymentCell(item)}</td>
-          <td>${renderLinkedSourceStatus(item)}</td>
-          <td>${escapeHtml(item.agreement || "-")}</td>
-          <td>${escapeHtml(item.channelRef || "-")}</td>
-          <td>${escapeHtml(item.bankRef || "-")}</td>
+	          <td>${renderSourcePaymentCell(item)}</td>
+	          <td>${renderLinkedSourceStatus(item)}</td>
+	          <td><span class="inline-field compact">${escapeHtml(currentIsoDate())}<span class="field-caret">□</span></span></td>
+	          <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
+	          <td>${escapeHtml(item.agreement || "-")}</td>
+	          <td>${escapeHtml(item.channelRef || "-")}</td>
+	          <td>${escapeHtml(item.bankRef || "-")}</td>
           <td>${escapeHtml(item.amount || "-")}</td>
           <td>${escapeHtml(item.txnTime || "-")}</td>
         </tr>
@@ -7720,29 +7768,30 @@
       return `<span class="inline-field source-payment-link" data-source-payment-row="${escapeHtml(row.id)}">Link Source Payment <span class="field-caret">＋</span></span>`;
     }
 
-    function renderLinkedSourceStatus(row) {
-      const linked = state.supplementLinks[row.id];
-      if (!linked) return `<span class="refund-tag warn">Unlinked</span>`;
-      const tone = linked.status === "Success" ? "success" : "warn";
-      return `<span class="refund-tag ${tone}">${escapeHtml(linked.status)}</span>`;
-    }
+	    function renderLinkedSourceStatus(row) {
+	      const linked = state.supplementLinks[row.id];
+	      if (!linked) return `<span class="refund-tag warn">Unlinked</span>`;
+	      const tone = isSourcePaymentStatusAllowed(linked) ? "success" : "warn";
+	      return `<span class="refund-tag ${tone}">${escapeHtml(linked.status)}</span>`;
+	    }
+	
+	    function updateSupplementSubmitState() {
+	      const { rows } = getSupplementTransactionRows();
+	      const allLinkedAllowed = rows.length > 0 && rows.every(row => isSourcePaymentStatusAllowed(state.supplementLinks[row.id]));
+	      const submitBtn = document.getElementById("supplementTransactionSubmitBtn");
+	      submitBtn.disabled = !allLinkedAllowed;
+	      document.getElementById("supplementSubmitHint").textContent = allLinkedAllowed
+	        ? "All source payments are linked with eligible source status"
+	        : "Link source payment before submit";
+	    }
 
-    function updateSupplementSubmitState() {
-      const { rows } = getSupplementTransactionRows();
-      const allLinkedSuccess = rows.every(row => state.supplementLinks[row.id]?.status === "Success");
-      const submitBtn = document.getElementById("supplementTransactionSubmitBtn");
-      submitBtn.disabled = !allLinkedSuccess;
-      document.getElementById("supplementSubmitHint").textContent = allLinkedSuccess
-        ? "All source payments are linked with Success status"
-        : "Link source payment before submit";
-    }
-
-    function openSourcePaymentModal(rowId) {
-      state.activeSourceRowId = rowId;
-      state.selectedSourcePaymentId = "";
-      document.getElementById("sourcePaymentInput").value = state.supplementLinks[rowId]?.paymentId || "";
-      document.getElementById("sourcePaymentSelectBtn").disabled = true;
-      renderSourcePaymentResults([]);
+	    function openSourcePaymentModal(rowId) {
+	      state.activeSourceRowId = rowId;
+	      state.selectedSourcePaymentId = "";
+	      document.getElementById("sourceSystemCodeSelect").value = state.supplementLinks[rowId]?.systemCode || "INBOUND";
+	      document.getElementById("sourcePaymentInput").value = state.supplementLinks[rowId]?.paymentId || "";
+	      document.getElementById("sourcePaymentSelectBtn").disabled = true;
+	      renderSourcePaymentResults([]);
       openModal("#sourcePaymentModal");
     }
 
@@ -7757,25 +7806,29 @@
         return;
       }
 
-      body.innerHTML = results.map(item => `
-        <tr data-source-payment-option="${escapeHtml(item.paymentId)}">
-          <td><input type="radio" name="sourcePaymentCandidate" data-source-payment-radio="${escapeHtml(item.paymentId)}" ${item.status === "Success" ? "" : "disabled"} /></td>
-          <td>${escapeHtml(item.systemCode)}</td>
-          <td>${escapeHtml(item.paymentId)}</td>
-          <td><span class="refund-tag ${item.status === "Success" ? "success" : "warn"}">${escapeHtml(item.status)}</span></td>
-          <td>${escapeHtml(item.paymentType)}</td>
-          <td>${escapeHtml(item.amount)}</td>
-          <td>${escapeHtml(item.extraInfo)}</td>
-        </tr>
-      `).join("");
+	      body.innerHTML = results.map(item => {
+	        const selectable = isSourcePaymentStatusAllowed(item);
+	        const statusTone = selectable ? "success" : "warn";
+	        return `
+	          <tr data-source-payment-option="${escapeHtml(item.paymentId)}" data-source-payment-system-code="${escapeHtml(item.systemCode)}">
+	            <td><input type="radio" name="sourcePaymentCandidate" data-source-payment-radio="${escapeHtml(item.paymentId)}" ${selectable ? "" : "disabled"} /></td>
+	            <td>${escapeHtml(item.systemCode)}</td>
+	            <td>${escapeHtml(item.paymentId)}</td>
+	            <td><span class="refund-tag ${statusTone}">${escapeHtml(item.status)}</span></td>
+	            <td>${escapeHtml(item.paymentType)}</td>
+	            <td>${escapeHtml(item.amount)}</td>
+	            <td>${escapeHtml(item.extraInfo)}</td>
+	          </tr>
+	        `;
+	      }).join("");
 
-      body.querySelectorAll("[data-source-payment-option]").forEach(row => {
-        row.addEventListener("click", () => {
-          const selected = sourcePaymentOptions.find(item => item.paymentId === row.dataset.sourcePaymentOption);
-          if (selected?.status !== "Success") return;
-          body.querySelectorAll("tr").forEach(node => node.classList.remove("selected"));
-          row.classList.add("selected");
-          state.selectedSourcePaymentId = row.dataset.sourcePaymentOption;
+	      body.querySelectorAll("[data-source-payment-option]").forEach(row => {
+	        row.addEventListener("click", () => {
+	          const selected = sourcePaymentOptions.find(item => item.paymentId === row.dataset.sourcePaymentOption && item.systemCode === row.dataset.sourcePaymentSystemCode);
+	          if (!isSourcePaymentStatusAllowed(selected)) return;
+	          body.querySelectorAll("tr").forEach(node => node.classList.remove("selected"));
+	          row.classList.add("selected");
+	          state.selectedSourcePaymentId = row.dataset.sourcePaymentOption;
           const radio = row.querySelector("[data-source-payment-radio]");
           if (radio) radio.checked = true;
           document.getElementById("sourcePaymentSelectBtn").disabled = false;
@@ -7783,13 +7836,16 @@
       });
     }
 
-    function linkSourcePayment(rowId, payment) {
-      state.supplementLinks[rowId] = {
-        paymentId: payment.paymentId,
-        status: payment.status,
-        systemCode: payment.systemCode
-      };
-    }
+	    function linkSourcePayment(rowId, payment) {
+	      state.supplementLinks[rowId] = {
+	        paymentId: payment.paymentId,
+	        status: payment.status,
+	        systemCode: payment.systemCode,
+	        paymentType: payment.paymentType,
+	        amount: payment.amount,
+	        extraInfo: payment.extraInfo
+	      };
+	    }
 
     function searchSourcePayments() {
       const keyword = document.getElementById("sourcePaymentInput").value.trim();
@@ -7810,12 +7866,13 @@
       renderSourcePaymentResults(results);
     }
 
-    function selectSourcePayment() {
-      const payment = sourcePaymentOptions.find(item => item.paymentId === state.selectedSourcePaymentId);
-      if (!payment || payment.status !== "Success" || !state.activeSourceRowId) return;
-      linkSourcePayment(state.activeSourceRowId, payment);
-      closeModal("#sourcePaymentModal");
-      openSupplementTransactionPage();
+	    function selectSourcePayment() {
+	      const systemCode = document.getElementById("sourceSystemCodeSelect").value;
+	      const payment = sourcePaymentOptions.find(item => item.systemCode === systemCode && item.paymentId === state.selectedSourcePaymentId);
+	      if (!isSourcePaymentStatusAllowed(payment) || !state.activeSourceRowId) return;
+	      linkSourcePayment(state.activeSourceRowId, payment);
+	      closeModal("#sourcePaymentModal");
+	      openSupplementTransactionPage();
     }
 
     function parsePaymentIds(value) {
@@ -7862,18 +7919,21 @@
         return;
       }
 
-      body.innerHTML = results.map(result => `
-        <tr data-batch-source-row="${escapeHtml(result.batchKey || "")}">
-          <td><input type="checkbox" data-batch-source-checkbox="${escapeHtml(result.batchKey || "")}" ${result.selectable ? "" : "disabled"} /></td>
-          <td>${escapeHtml(result.rowId || "-")}</td>
-          <td>${escapeHtml(result.systemCode || "-")}</td>
-          <td>${escapeHtml(result.paymentId || "-")}</td>
-          <td><span class="refund-tag ${result.status === "Success" ? "success" : "warn"}">${escapeHtml(result.status || "-")}</span></td>
-          <td>${escapeHtml(result.amount || "-")}</td>
-          <td><span class="refund-tag ${result.linked ? "success" : "warn"}">${escapeHtml(result.linkResult)}</span></td>
-          <td>${escapeHtml(result.extraInfo || "-")}</td>
-        </tr>
-      `).join("");
+	      body.innerHTML = results.map(result => {
+	        const statusTone = isSourcePaymentStatusAllowed(result) ? "success" : "warn";
+	        return `
+	          <tr data-batch-source-row="${escapeHtml(result.batchKey || "")}">
+	            <td><input type="checkbox" data-batch-source-checkbox="${escapeHtml(result.batchKey || "")}" ${result.selectable ? "" : "disabled"} /></td>
+	            <td>${escapeHtml(result.rowId || "-")}</td>
+	            <td>${escapeHtml(result.systemCode || "-")}</td>
+	            <td>${escapeHtml(result.paymentId || "-")}</td>
+	            <td><span class="refund-tag ${statusTone}">${escapeHtml(result.status || "-")}</span></td>
+	            <td>${escapeHtml(result.amount || "-")}</td>
+	            <td><span class="refund-tag ${result.linked ? "success" : "warn"}">${escapeHtml(result.linkResult)}</span></td>
+	            <td>${escapeHtml(result.extraInfo || "-")}</td>
+	          </tr>
+	        `;
+	      }).join("");
 
       body.querySelectorAll("[data-batch-source-checkbox]").forEach(input => {
         input.addEventListener("change", (event) => {
@@ -7888,9 +7948,10 @@
       });
     }
 
-    function updateBatchSourceConfirmState() {
-      document.getElementById("batchSourcePaymentConfirmBtn").disabled = state.selectedBatchPaymentIds.size === 0;
-    }
+	    function updateBatchSourceConfirmState() {
+	      const hasEligibleSelection = state.batchSourceResults.some(result => state.selectedBatchPaymentIds.has(result.batchKey) && result.selectable && isSourcePaymentStatusAllowed(result));
+	      document.getElementById("batchSourcePaymentConfirmBtn").disabled = !hasEligibleSelection;
+	    }
 
     function applyBatchSourcePayments() {
       const ids = state.batchPaymentIds;
@@ -7903,10 +7964,10 @@
         const row = rows[index] || null;
         const payment = sourcePaymentOptions.find(item => item.systemCode === systemCode && item.paymentId === paymentId);
         const batchKey = `${row?.id || "unmapped"}::${paymentId || index}`;
-        if (payment?.status === "Success") {
-          results.push({ ...payment, rowId: row?.id || "-", batchKey, selectable: Boolean(row), linked: false, linkResult: row ? "Ready" : "No target row" });
-        } else if (payment) {
-          blockedCount += 1;
+	        if (payment && isSourcePaymentStatusAllowed(payment)) {
+	          results.push({ ...payment, rowId: row?.id || "-", batchKey, selectable: Boolean(row), linked: false, linkResult: row ? "Ready" : "No target row" });
+	        } else if (payment) {
+	          blockedCount += 1;
           results.push({ ...payment, rowId: row?.id || "-", batchKey, selectable: false, linked: false, linkResult: row ? "Blocked" : "No target row" });
         } else {
           if (paymentId) blockedCount += 1;
@@ -7932,13 +7993,13 @@
       showToast(`Search complete: ${results.length} candidates${blockedCount ? `, ${blockedCount} blocked` : ""}.`, blockedCount ? "warn" : "success");
     }
 
-    function confirmBatchSourcePayments() {
-      let linkedCount = 0;
-      state.batchSourceResults.forEach(result => {
-        if (!state.selectedBatchPaymentIds.has(result.batchKey) || result.status !== "Success" || !result.rowId) return;
-        linkSourcePayment(result.rowId, result);
-        linkedCount += 1;
-      });
+	    function confirmBatchSourcePayments() {
+	      let linkedCount = 0;
+	      state.batchSourceResults.forEach(result => {
+	        if (!state.selectedBatchPaymentIds.has(result.batchKey) || !isSourcePaymentStatusAllowed(result) || !result.rowId || result.rowId === "-") return;
+	        linkSourcePayment(result.rowId, result);
+	        linkedCount += 1;
+	      });
       closeModal("#batchSourcePaymentModal");
       openSupplementTransactionPage();
       showToast(`Batch link confirmed: ${linkedCount} linked.`, "success");
@@ -8044,12 +8105,12 @@
         openModal("#refundFundModal");
       } else if (item.dataset.handleTitle === "Claim Fund") {
         openModal("#claimFundModal");
-      } else if (item.dataset.handleTitle === "Supplement Transaction") {
-        if (item.classList.contains("disabled")) {
-          showToast("Supplement Transaction is only available for Less TXN with empty Source Status and empty Source Payment ID.", "warn");
-        } else {
-          openSupplementTransactionPage();
-        }
+	      } else if (item.dataset.handleTitle === "Manual Supplement") {
+	        if (item.classList.contains("disabled")) {
+	          showToast("Manual Supplement is only available for Less TXN with empty Source Status and empty Source Payment ID.", "warn");
+	        } else {
+	          openSupplementTransactionPage();
+	        }
       } else {
         showToast(`Handling Type: ${item.dataset.handleTitle}`, "success");
       }
@@ -8113,7 +8174,7 @@
 
     document.getElementById("exportBtn").addEventListener("click", () => showToast("Export task created. File will be generated shortly.", "success"));
     document.getElementById("holdBtn").addEventListener("click", () => showToast(`Moved ${state.selectedRowIds.size} rows to hold queue`, "warn"));
-    document.getElementById("supplementTransactionSubmitBtn").addEventListener("click", () => showToast("Supplement Transaction submitted for approval.", "success"));
+	    document.getElementById("supplementTransactionSubmitBtn").addEventListener("click", () => showToast("Manual Supplement submitted for approval.", "success"));
     document.getElementById("closeActiveTab").addEventListener("click", () => showToast("Active tab cannot be closed in the clone page", "warn"));
     document.getElementById("ignoreOffsetSuggestion").addEventListener("click", () => {
       document.getElementById("offsetSuggestionBanner").classList.add("hidden");
