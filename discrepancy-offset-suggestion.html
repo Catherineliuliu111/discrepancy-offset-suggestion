@@ -58,16 +58,7 @@
     .page {
       width: 100vw;
       height: 100vh;
-      padding: 12px 10px;
-    }
-
-    .kicker {
-      height: 10px;
-      margin: -10px 0 6px 8px;
-      color: rgba(0, 0, 0, 0.34);
-      font-size: 18px;
-      font-weight: 700;
-      line-height: 1;
+      padding: 10px;
     }
 
     .shell {
@@ -126,9 +117,9 @@
       align-items: center;
       justify-content: space-between;
       gap: 24px;
-      flex: 0 0 72px;
-      min-height: 72px;
-      padding: 10px 22px;
+      flex: 0 0 70px;
+      min-height: 70px;
+      padding: 10px 22px 11px;
       border-bottom: 1px solid #edf0f5;
       background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
     }
@@ -137,7 +128,6 @@
       display: flex;
       align-items: center;
       min-width: 0;
-      gap: 14px;
     }
 
     .title-copy {
@@ -157,37 +147,15 @@
     }
 
     .title-subtitle {
-      color: rgba(0, 0, 0, 0.48);
+      color: rgba(0, 0, 0, 0.56);
       font-size: 12px;
       line-height: 18px;
       white-space: nowrap;
     }
 
-    .offset-total-card {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 150px;
-      height: 40px;
-      padding: 0 14px;
-      border: 1px solid #bae7ff;
-      border-radius: 8px;
-      background: #e6f7ff;
-      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.08);
-      white-space: nowrap;
-    }
-
-    .offset-total-label {
-      color: rgba(0, 0, 0, 0.58);
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .offset-total-value {
+    .title-count {
       color: var(--primary);
-      font-size: 20px;
-      font-weight: 800;
-      line-height: 1;
+      font-weight: 700;
       font-variant-numeric: tabular-nums;
     }
 
@@ -785,7 +753,6 @@
 </head>
 <body>
   <div class="page">
-    <div class="kicker">title</div>
     <section class="shell">
       <div class="tabs-nav">
         <a class="tab-link" href="./sop-guideline-replica.html?from=discrepancy-offset-suggestion">Reconciliation To-Do List</a>
@@ -797,11 +764,9 @@
         <div class="title-block">
           <div class="title-copy">
             <h1>Offset Suggestions for Discrepancies</h1>
-            <div class="title-subtitle">System-detected discrepancies that may be eligible for offset handling</div>
-          </div>
-          <div class="offset-total-card" aria-label="Discrepancies need offset">
-            <span class="offset-total-label">Need Offset</span>
-            <span class="offset-total-value" id="headerOffsetCount">18</span>
+            <div class="title-subtitle" id="titleSubtitle">
+              System identified <span class="title-count" id="headerOffsetCount">18</span> discrepancies that may be handled by Offset.
+            </div>
           </div>
         </div>
         <div class="actions">
@@ -1061,6 +1026,9 @@
       const rows = filterRows(makeAllRows(config));
       document.getElementById("summaryCount").textContent = rows.length;
       document.getElementById("headerOffsetCount").textContent = rows.length;
+      const noun = rows.length === 1 ? "discrepancy" : "discrepancies";
+      document.getElementById("titleSubtitle").innerHTML =
+        `System identified <span class="title-count" id="headerOffsetCount">${rows.length}</span> ${noun} that may be handled by Offset.`;
 
       document.getElementById("tableBody").innerHTML = rows
         .map((row) => {
