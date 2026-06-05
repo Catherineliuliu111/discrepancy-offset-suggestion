@@ -794,9 +794,6 @@
         <div class="title-block">
           <div class="title-copy">
             <h1>Offset Suggestions for Discrepancies</h1>
-            <div class="title-subtitle" id="titleSubtitle">
-              System identified <span class="title-count" id="headerOffsetCount">18</span> discrepancies that may be handled by Offset.
-            </div>
           </div>
         </div>
         <div class="actions">
@@ -1076,10 +1073,6 @@
       document.getElementById("summaryTitle").textContent = config.title;
       const rows = filterRows(makeAllRows(config));
       document.getElementById("summaryCount").textContent = rows.length;
-      document.getElementById("headerOffsetCount").textContent = rows.length;
-      const noun = rows.length === 1 ? "discrepancy" : "discrepancies";
-      document.getElementById("titleSubtitle").innerHTML =
-        `System identified <span class="title-count" id="headerOffsetCount">${rows.length}</span> ${noun} that may be handled by Offset.`;
       document.getElementById("latestUpdateTime").textContent = formatUpdateTime(latestUpdateTime);
 
       document.getElementById("tableBody").innerHTML = rows
