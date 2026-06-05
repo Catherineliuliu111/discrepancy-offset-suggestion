@@ -6802,6 +6802,7 @@
       { key: "type", label: "Discrepancy Type", visible: true },
       { key: "spmRef", label: "SPM Reference ID", visible: true },
       { key: "processingStatus", label: "Processing Status", visible: true },
+      { key: "operationSuggestion", label: "Operation Suggestion", visible: true },
       { key: "assignee", label: "Assignee", visible: true },
       { key: "aging", label: "Aging", visible: true },
       { key: "ticket", label: "Ticket ID", visible: true },
@@ -7311,6 +7312,8 @@
             td.innerHTML = `<a class="linkish row-link" data-row-id="${row.id}">${row[col.key]}</a>`;
           } else if (col.key === "processingStatus") {
             td.innerHTML = `<span class="status-pill ${processingStatusClass(row[col.key])}">${row[col.key]}</span>`;
+          } else if (col.key === "operationSuggestion") {
+            td.innerHTML = row.offsetEligible ? `<span style="color:#722ed1;font-weight:700;">Offset</span>` : "-";
           } else if (col.key === "operation") {
             td.innerHTML = `<a class="linkish sync-link" data-row-id="${row.id}">sync</a>`;
           } else if (col.key === "rawData") {
