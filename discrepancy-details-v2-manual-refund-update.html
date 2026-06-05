@@ -5522,6 +5522,7 @@
               <div class="relative">
                 <button class="btn" id="uploadBtn">Upload File to Handle ▾</button>
                 <div class="dropdown" id="uploadDropdown">
+                  <div class="dropdown-item" data-upload-title="Offset">Offset</div>
                   <div class="dropdown-item">Import xlsx Template</div>
                 <div class="dropdown-item" data-upload-title="Refund Fund">Refund Fund</div>
                 <div class="dropdown-item" data-upload-title="Claim Fund">Claim Fund</div>
@@ -7119,7 +7120,12 @@
       lastMixedProcessingStatusWarning: false
     };
 
-	    const sourcePaymentOptions = [
+    const offsetSuggestionCount = 12;
+    state.rows.slice(0, offsetSuggestionCount).forEach(row => {
+      row.offsetEligible = true;
+    });
+
+    const sourcePaymentOptions = [
 	      {
 	        systemCode: "INBOUND",
 	        paymentId: "111",
@@ -7470,13 +7476,16 @@ ${lines}
       const selectedRows = state.rows.filter(row => state.selectedRowIds.has(row.id));
       const selectedProcessingStatuses = new Set(selectedRows.map(row => row.processingStatus));
       const hasMixedProcessingStatus = selectedProcessingStatuses.size > 1;
+      const hasOffsetEligible = selectedRows.some(row => row.offsetEligible);
       document.getElementById("holdBtn").disabled = !enabled;
-      document.getElementById("handlingBtn").disabled = !enabled || hasMixedProcessingStatus;
+      document.getElementById("handlingBtn").disabled = !enabled || hasMixedProcessingStatus || hasOffsetEligible;
       document.getElementById("holdBtn").classList.toggle("disabled", !enabled);
-      document.getElementById("handlingBtn").classList.toggle("disabled", !enabled || hasMixedProcessingStatus);
-      document.getElementById("handlingBtn").title = hasMixedProcessingStatus
-        ? "Please select records with the same Processing Status to operate."
-        : "";
+      document.getElementById("handlingBtn").classList.toggle("disabled", !enabled || hasMixedProcessingStatus || hasOffsetEligible);
+      document.getElementById("handlingBtn").title = hasOffsetEligible
+        ? "Offset-eligible discrepancies should be handled via Offset."
+        : hasMixedProcessingStatus
+          ? "Please select records with the same Processing Status to operate."
+          : "";
 
       if (hasMixedProcessingStatus && !state.lastMixedProcessingStatusWarning) {
         showToast("Please select records with the same Processing Status to operate.", "warn");
@@ -7487,6 +7496,15 @@ ${lines}
       document.querySelector('[data-handle-title="Manual Supplement"]')?.classList.toggle("disabled", !supplementAllowed);
       const manualClearDiffAllowed = selectedRows.length > 0 && selectedRows.every(isManualClearDiffEligible);
       document.querySelector('[data-handle-title="Manual Clear Diff"]')?.classList.toggle("disabled", !manualClearDiffAllowed);
+
+      document.querySelectorAll("#uploadDropdown .dropdown-item").forEach(item => {
+        const isOffsetItem = item.dataset.uploadTitle === "Offset";
+        if (hasOffsetEligible) {
+          item.classList.toggle("disabled", !isOffsetItem);
+        } else {
+          item.classList.remove("disabled");
+        }
+      });
     }
 
     function openModal(selector) {
@@ -8406,7 +8424,12 @@ ${lines}
     document.getElementById("uploadDropdown").addEventListener("click", (event) => {
       const item = event.target.closest(".dropdown-item");
       if (!item) return;
-      if (item.dataset.uploadTitle === "Refund Fund" || item.dataset.uploadTitle === "Confirm Refund Result") {
+      if (item.classList.contains("disabled")) return;
+      if (item.dataset.uploadTitle === "Offset") {
+        const selectedIds = Array.from(state.selectedRowIds);
+        showToast(`Offset suggested for ${selectedIds.length} discrepancy(ies). Redirecting to Offset page...`, "success");
+        window.location.href = "./discrepancy-offset-suggestion.html?action=offset&from=details";
+      } else if (item.dataset.uploadTitle === "Refund Fund" || item.dataset.uploadTitle === "Confirm Refund Result") {
         const title = item.dataset.uploadTitle || "Refund Fund";
         document.querySelector("#uploadManualRefundModal").dataset.uploadTitle = title;
         openModal("#uploadManualRefundModal");
