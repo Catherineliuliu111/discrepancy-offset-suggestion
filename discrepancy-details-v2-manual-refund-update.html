@@ -790,6 +790,12 @@
       line-height: 20px;
     }
 
+    .offset-suggestion-count-text {
+      color: #d48806;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
     .offset-suggestion-link,
     .offset-suggestion-ignore {
       color: var(--blue);
@@ -5530,7 +5536,7 @@
           <div class="offset-suggestion-banner" id="offsetSuggestionBanner">
             <span class="offset-suggestion-icon">!</span>
             <div class="offset-suggestion-copy">
-              The system has identified discrepancies that may be eligible for offset handling.
+              The system has identified <span class="offset-suggestion-count-text">12</span> discrepancies that may be eligible for offset handling.
               <a class="offset-suggestion-link" href="./discrepancy-offset-suggestion.html?action=offset&from=details">View Offset Suggestions for Discrepancies</a>
             </div>
             <button class="offset-suggestion-ignore" type="button" id="ignoreOffsetSuggestion">Ignore</button>
