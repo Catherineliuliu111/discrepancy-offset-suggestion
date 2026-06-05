@@ -1,6 +1,6 @@
-# Discrepancy Offset Suggestion
+# Offset Suggestions for Discrepancies
 
-Static HTML prototype for the Discrepancy Offset Suggestion flow.
+Static HTML prototype for the Offset Suggestions for Discrepancies flow.
 
 Public page:
 

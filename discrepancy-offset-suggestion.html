@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Discrepancy Offset Suggestion</title>
+  <title>Offset Suggestions for Discrepancies</title>
   <style>
     :root {
       --primary: #1890ff;
@@ -126,19 +126,69 @@
       align-items: center;
       justify-content: space-between;
       gap: 24px;
-      flex: 0 0 56px;
-      min-height: 56px;
-      padding: 8px 22px;
-      background: var(--header);
+      flex: 0 0 72px;
+      min-height: 72px;
+      padding: 10px 22px;
+      border-bottom: 1px solid #edf0f5;
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+    }
+
+    .title-block {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+    }
+
+    .title-copy {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      gap: 4px;
     }
 
     h1 {
       margin: 0;
       color: rgba(0, 0, 0, 0.86);
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
-      line-height: 40px;
+      line-height: 32px;
       white-space: nowrap;
+    }
+
+    .title-subtitle {
+      color: rgba(0, 0, 0, 0.48);
+      font-size: 12px;
+      line-height: 18px;
+      white-space: nowrap;
+    }
+
+    .offset-total-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 150px;
+      height: 40px;
+      padding: 0 14px;
+      border: 1px solid #bae7ff;
+      border-radius: 8px;
+      background: #e6f7ff;
+      box-shadow: 0 2px 8px rgba(24, 144, 255, 0.08);
+      white-space: nowrap;
+    }
+
+    .offset-total-label {
+      color: rgba(0, 0, 0, 0.58);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .offset-total-value {
+      color: var(--primary);
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
     }
 
     .actions {
@@ -209,6 +259,10 @@
 
     .field.field-reference {
       min-width: 220px;
+    }
+
+    .field.field-discrepancy {
+      min-width: 190px;
     }
 
     .filter-prefix {
@@ -632,6 +686,13 @@
       font-size: 10px;
     }
 
+    .tag.reason-alert {
+      color: var(--red);
+      border-color: #ffccc7;
+      background: var(--red-bg);
+      font-size: 10px;
+    }
+
     .tag.action-offset {
       color: var(--purple);
       border-color: var(--purple-line);
@@ -729,11 +790,20 @@
       <div class="tabs-nav">
         <a class="tab-link" href="./sop-guideline-replica.html?from=discrepancy-offset-suggestion">Reconciliation To-Do List</a>
         <a class="tab-link" href="./discrepancy-details-v2-manual-refund-update.html?from=discrepancy-offset-suggestion">Discrepancy Details</a>
-        <div class="tab-current">Discrepancy Offset Suggestion</div>
+        <div class="tab-current">Offset Suggestions for Discrepancies</div>
         <div class="tab-rest"></div>
       </div>
       <header class="topbar">
-        <h1>Discrepancy Offset Suggestion</h1>
+        <div class="title-block">
+          <div class="title-copy">
+            <h1>Offset Suggestions for Discrepancies</h1>
+            <div class="title-subtitle">System-detected discrepancies that may be eligible for offset handling</div>
+          </div>
+          <div class="offset-total-card" aria-label="Discrepancies need offset">
+            <span class="offset-total-label">Need Offset</span>
+            <span class="offset-total-value" id="headerOffsetCount">18</span>
+          </div>
+        </div>
         <div class="actions">
           <button class="btn primary" type="button">Hold Handling</button>
           <button class="btn" type="button">Export All</button>
@@ -767,13 +837,20 @@
             <option value="less-less">Less Payment &amp; Refund</option>
           </select>
         </div>
+        <div class="field field-discrepancy">
+          <select id="discrepancyScope">
+            <option value="">All Discrepancy</option>
+            <option value="same-reference">Same Reference ID</option>
+            <option value="biz-fuzzy">Biz Info Fuzzy Matching</option>
+            <option value="over">Over TXN</option>
+            <option value="less">Less TXN</option>
+          </select>
+        </div>
         <div class="field field-reference">
           <input class="filter-input" id="referenceInput" placeholder="Reference ID" />
           <span class="filter-plus" id="addReference">+</span>
         </div>
         <button class="filter-btn" type="button" id="searchBtn">Search</button>
-        <button class="filter-btn filter-icon-btn" type="button" id="filterBtn">▽</button>
-        <button class="filter-btn filter-icon-btn" type="button" id="wideBtn">↔</button>
       </div>
 
       <div class="summary-bar">
@@ -840,12 +917,13 @@
     const fundTag = (value) => `<span class="tag ${value === "IN" ? "in" : "out"}">${value}</span>`;
     const matchingRuleTags = (row) => {
       const fundRule = row.sameTypeOffset ? "Opposite Fund Direction" : "Fund Direction";
+      const matchReasonClass = row.matchReason === "Biz Info Fuzzy Matching" ? "reason-alert" : "reason";
       return `
         <div class="reason-list">
           <span class="tag reason">Agreement Item</span>
           <span class="tag reason">Amount</span>
           <span class="tag reason">${fundRule}</span>
-          ${row.matchReason ? `<span class="tag reason-pink">${row.matchReason}</span>` : ""}
+          ${row.matchReason ? `<span class="tag ${matchReasonClass}">${row.matchReason}</span>` : ""}
         </div>
       `;
     };
@@ -880,6 +958,7 @@
     let submittedFilters = {
       agreement: "",
       offsetType: "",
+      discrepancyScope: "",
       referenceId: ""
     };
 
@@ -923,13 +1002,20 @@
       const referenceMatch = !referenceKeyword
         || row.leftRef.toLowerCase().includes(referenceKeyword)
         || row.rightRef.toLowerCase().includes(referenceKeyword);
-      return agreementMatch && offsetTypeMatch && referenceMatch;
+      const scope = submittedFilters.discrepancyScope;
+      const discrepancyScopeMatch = !scope
+        || (scope === "same-reference" && row.leftRef === row.rightRef)
+        || (scope === "biz-fuzzy" && row.matchReason === "Biz Info Fuzzy Matching")
+        || (scope === "over" && (row.leftType === "Over TXN" || row.rightType === "Over TXN"))
+        || (scope === "less" && (row.leftType === "Less TXN" || row.rightType === "Less TXN"));
+      return agreementMatch && offsetTypeMatch && referenceMatch && discrepancyScopeMatch;
     });
 
     const submitFilters = () => {
       submittedFilters = {
         agreement: document.getElementById("agreementItem").value,
         offsetType: document.getElementById("offsetType").value,
+        discrepancyScope: document.getElementById("discrepancyScope").value,
         referenceId: document.getElementById("referenceInput").value.trim()
       };
       render();
@@ -974,6 +1060,7 @@
       document.getElementById("summaryTitle").textContent = config.title;
       const rows = filterRows(makeAllRows(config));
       document.getElementById("summaryCount").textContent = rows.length;
+      document.getElementById("headerOffsetCount").textContent = rows.length;
 
       document.getElementById("tableBody").innerHTML = rows
         .map((row) => {
@@ -985,7 +1072,7 @@
 
     const selectedRows = () => Array.from(document.querySelectorAll(".row-check:checked")).map((input) => input.dataset.rowKey);
 
-    ["agreementItem", "offsetType"].forEach((id) => {
+    ["agreementItem", "offsetType", "discrepancyScope"].forEach((id) => {
       document.getElementById(id).addEventListener("change", submitFilters);
     });
     document.getElementById("searchBtn").addEventListener("click", submitFilters);
@@ -998,15 +1085,6 @@
         submitFilters();
       }
     });
-    document.getElementById("filterBtn").addEventListener("click", () => {
-      toast.textContent = "Advanced filters are not expanded in this prototype.";
-      toast.classList.add("show");
-      window.setTimeout(() => toast.classList.remove("show"), 1600);
-    });
-    document.getElementById("wideBtn").addEventListener("click", () => {
-      document.querySelector(".table-scroll").scrollLeft = document.querySelector(".table-scroll").scrollWidth;
-    });
-
     const modal = document.getElementById("confirmModal");
     const toast = document.getElementById("toast");
     document.getElementById("confirmSuggestBtn").addEventListener("click", () => {

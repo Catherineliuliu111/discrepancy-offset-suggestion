@@ -3023,6 +3023,7 @@
     #bankDetailReportPage,
     #uploadRefundResultPage,
     #claimFundPage,
+    #manualClearDiffPage,
     #supplementTransactionPage {
       position: static;
       box-sizing: border-box;
@@ -3041,6 +3042,7 @@
     #bankDetailReportPage::after,
     #uploadRefundResultPage::after,
     #claimFundPage::after,
+    #manualClearDiffPage::after,
     #supplementTransactionPage::after {
       content: none;
     }
@@ -3056,6 +3058,7 @@
     #bankDetailReportPage .manual-refund-title::before,
     #uploadRefundResultPage .manual-refund-title::before,
     #claimFundPage .manual-refund-title::before,
+    #manualClearDiffPage .manual-refund-title::before,
     #supplementTransactionPage .manual-refund-title::before {
       content: none;
     }
@@ -5485,6 +5488,10 @@
                   <div class="dropdown-item" data-handle-title="Manual Writeoff">
                     <span>Manual Writeoff</span>
                   </div>
+                  <div class="dropdown-item disabled" data-handle-title="Manual Clear Diff">
+                    <span>Manual Clear Diff</span>
+                    <span class="info-dot tip" data-tip="Available only when Discrepancy Type is Diff TXN.">i</span>
+                  </div>
                   <div class="dropdown-item" data-handle-title="Refund Fund">
                     <span>Refund Fund</span>
                     <span class="info-dot tip" data-tip="Choose a refund handling path for the selected discrepancy records.">i</span>
@@ -5524,7 +5531,7 @@
             <span class="offset-suggestion-icon">!</span>
             <div class="offset-suggestion-copy">
               The system has identified discrepancies that may be eligible for offset handling.
-              <a class="offset-suggestion-link" href="./discrepancy-offset-suggestion.html?action=offset&from=details">View Discrepancy Offset Suggestion</a>
+              <a class="offset-suggestion-link" href="./discrepancy-offset-suggestion.html?action=offset&from=details">View Offset Suggestions for Discrepancies</a>
             </div>
             <button class="offset-suggestion-ignore" type="button" id="ignoreOffsetSuggestion">Ignore</button>
           </div>
@@ -5969,6 +5976,91 @@
 
             <div class="info-card" id="uploadRefundResultAttachmentCard">
               <div class="info-card-head" id="uploadRefundResultAttachmentTitle">Attachment</div>
+              <div class="info-card-body">
+                <div class="attachment-zone">
+                  <span class="attachment-zone-icon">⌁</span>
+                  <span>Drag and drop files, paste screenshots, or browse</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="hidden" id="manualClearDiffPage">
+          <div class="manual-refund-shell operation-page-shell">
+            <div class="manual-refund-top">
+              <div class="manual-refund-title">Manual Clear Diff</div>
+              <button class="btn primary" id="manualClearDiffSubmitBtn" disabled>Submit</button>
+              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-head">Select</div>
+              <div class="info-card-body">
+                <div class="summary-grid wide-summary-grid">
+                  <div><strong>Discrepancy Type :</strong> <span id="manualClearDiffType">Diff TXN</span></div>
+                  <div><strong>Counts :</strong> <span id="manualClearDiffCount">1</span></div>
+                  <div><strong>Fund Direction :</strong> <span class="green" id="manualClearDiffDirection">IN</span></div>
+                  <div><strong>Amount :</strong> <span id="manualClearDiffAmount">RM0.00</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-head" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+                <span>Select List</span>
+                <button class="btn">↔</button>
+              </div>
+              <div class="table-card-tools" style="display:flex;justify-content:flex-end;gap:16px;padding-top:10px;">
+                <button class="btn">Writeoff by Channel Info</button>
+                <button class="btn">Writeoff by Transaction Info</button>
+              </div>
+              <div class="manual-table-wrap">
+                <table class="manual-table">
+                  <thead>
+                    <tr>
+                      <th>Discrepancy Order ID</th>
+                      <th>Reference ID</th>
+                      <th>Voucher ID</th>
+                      <th>System Code</th>
+                      <th>Transaction Fund Direction</th>
+                      <th>Transaction Amount</th>
+                      <th>Channel Fund Direction</th>
+                      <th>Channel Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="manualClearDiffTableBody"></tbody>
+                </table>
+              </div>
+              <div class="table-card-tools">
+                <div class="h-scroll-bar"></div>
+              </div>
+              <div class="manual-table-footer">
+                <span>‹</span>
+                <div class="pager-chip">1</div>
+                <span>›</span>
+                <select class="btn" name="manualClearDiffPageSize">
+                  <option>20 / page</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-head">Notes</div>
+              <div class="info-card-body confirm-notes-grid">
+                <div class="notes-row">
+                  <span><span class="required-mark">*</span> Writeoff reason :</span>
+                  <span class="inline-field operation-select-input"><span></span><span class="field-caret">⌄</span></span>
+                </div>
+                <div class="notes-row">
+                  <span>Remark :</span>
+                  <input class="remark-input operation-wide-input" name="manualClearDiffRemark" />
+                </div>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-head">Attachment</div>
               <div class="info-card-body">
                 <div class="attachment-zone">
                   <span class="attachment-zone-icon">⌁</span>
@@ -6691,6 +6783,7 @@
   <datalist id="typeList">
     <option value="Less TXN"></option>
     <option value="Over TXN"></option>
+    <option value="Diff TXN"></option>
   </datalist>
 
   <script>
@@ -6828,6 +6921,39 @@
         updatedAt: "2026-04-19 11:10:30",
         rawData: "\"2026-04-18 15:53:41\", \"T117768067326\", \"SPM14625334510198852455(R)\", \"FPX_M2U\", \"mohd ezan bin dewa\", \"Refund for #T116716746719, Date:16-4-2026\", \"\", \"-15.72\", \"-0.45\", \"0\", \"0\", \"-15.27\", \"Success\", \"T117768067326\", \"12010652690563187342\"",
         version: "1752614338686"
+      },
+      {
+        id: "104...85589246",
+        agreement: "SPM-IPAY-PAYMENT-DUITNOW",
+        clearingDate: "2026-04-19",
+        type: "Diff TXN",
+        spmRef: "SPM4639127002194501111",
+        processingStatus: "Unprocessed",
+        assignee: "",
+        aging: "0 day",
+        ticket: "-",
+        approval: "-",
+        handlingType: "-",
+        source: "SPM_INBOUND",
+        sourceStatus: "Success",
+        sourcePaymentId: "SPM4639127002194501111",
+        operation: "sync",
+        reconId: "cmock_1774342650_528917",
+        direction: "IN",
+        amount: "RM461.39",
+        txnTime: "2026-04-18 08:47:19",
+        bankRef: "DN-993511",
+        channelRef: "CH-22911",
+        reason: "Transaction and channel detail amount mismatch",
+        referenceId: "copilot_mock_1774342650097365000_36444",
+        createdBy: "System",
+        approvedBy: "-",
+        handledBy: "-",
+        latestComment: "-",
+        tags: "manual-clear-diff",
+        updatedAt: "2026-04-19 12:03:18",
+        rawData: "\"2026-04-18 08:47:19\", \"RM461.39\", \"DuitNow\", \"Diff TXN mismatch detected\"",
+        version: "1752614338690"
       },
       {
         id: "104...22601915",
@@ -7352,7 +7478,9 @@ ${lines}
       state.lastMixedProcessingStatusWarning = hasMixedProcessingStatus;
 
       const supplementAllowed = selectedRows.length > 0 && selectedRows.every(isSupplementTransactionEligible);
-	      document.querySelector('[data-handle-title="Manual Supplement"]')?.classList.toggle("disabled", !supplementAllowed);
+      document.querySelector('[data-handle-title="Manual Supplement"]')?.classList.toggle("disabled", !supplementAllowed);
+      const manualClearDiffAllowed = selectedRows.length > 0 && selectedRows.every(isManualClearDiffEligible);
+      document.querySelector('[data-handle-title="Manual Clear Diff"]')?.classList.toggle("disabled", !manualClearDiffAllowed);
     }
 
     function openModal(selector) {
@@ -7492,6 +7620,10 @@ ${lines}
       return selectedRows.length > 1 ? `RM${totalAmount.toFixed(2)}` : (row.amount || `RM${totalAmount.toFixed(2)}`);
     }
 
+    function isManualClearDiffEligible(row) {
+      return String(row?.type || "").trim().toLowerCase() === "diff txn";
+    }
+
     function getBankDetailWithoutImpact(type) {
       const normalizedType = String(type || "").trim().toLowerCase();
       if (normalizedType === "over txn") {
@@ -7501,7 +7633,7 @@ ${lines}
     }
 
     function getOperationPageIds() {
-      return ["manualRefundPage", "walletRefundPage", "confirmRefundResultPage", "bankDetailReportPage", "uploadRefundResultPage", "claimFundPage", "supplementTransactionPage"];
+      return ["manualRefundPage", "walletRefundPage", "confirmRefundResultPage", "bankDetailReportPage", "uploadRefundResultPage", "uploadClaimFundResultPage", "claimFundPage", "manualClearDiffPage", "supplementTransactionPage"];
     }
 
     function showOperationPage(pageId, title) {
@@ -7527,6 +7659,33 @@ ${lines}
       document.getElementById("manualRefundTab").classList.remove("active");
       document.getElementById("detailsTab").classList.add("active");
       document.getElementById("detailsPage").classList.remove("hidden");
+    }
+
+    function openManualClearDiffPage() {
+      const { selectedRows, row, totalAmount } = getSelectedRefundRows();
+      const rows = selectedRows.length ? selectedRows : [row];
+      if (!rows.length || !rows.every(isManualClearDiffEligible)) {
+        showToast("Manual Clear Diff is only available for Diff TXN records.", "warn");
+        return;
+      }
+
+      showOperationPage("manualClearDiffPage", "Manual Clear Diff");
+      document.getElementById("manualClearDiffType").textContent = "Diff TXN";
+      document.getElementById("manualClearDiffCount").textContent = rows.length;
+      document.getElementById("manualClearDiffDirection").textContent = row.direction || "IN";
+      document.getElementById("manualClearDiffAmount").textContent = selectedAmountText(selectedRows, row, totalAmount);
+      document.getElementById("manualClearDiffTableBody").innerHTML = rows.map(item => `
+        <tr>
+          <td>${escapeHtml(item.id)}</td>
+          <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
+          <td>${escapeHtml(item.reconId || "-")}</td>
+          <td>${escapeHtml(item.source || "-")}</td>
+          <td><span class="green">${escapeHtml(item.direction || "IN")}</span></td>
+          <td>${escapeHtml(item.amount || "-")}</td>
+          <td><span class="green">${escapeHtml(item.direction || "IN")}</span></td>
+          <td>${escapeHtml(item.amount || "-")}</td>
+        </tr>
+      `).join("");
     }
 
     function openManualRefundPage(refundPath = "bank", title = "Manual Refund") {
@@ -7939,7 +8098,7 @@ ${lines}
 		          ? "All source payments are linked with eligible source status"
 		          : "Link source payment before submit";
 		      }
-	    }
+		    }
 
 	    function openSourcePaymentModal(rowId) {
 	      state.activeSourceRowId = rowId;
@@ -8228,7 +8387,7 @@ ${lines}
       }
     });
     document.getElementById("sourcePaymentSelectBtn").addEventListener("click", selectSourcePayment);
-    document.getElementById("batchLinkPaymentBtn")?.addEventListener("click", openBatchSourcePaymentModal);
+	    document.getElementById("batchLinkPaymentBtn")?.addEventListener("click", openBatchSourcePaymentModal);
     document.getElementById("batchPaymentMultipleBtn").addEventListener("click", openMultipleInputModal);
     document.getElementById("multiplePaymentInput").addEventListener("input", updateMultiplePaymentCount);
     document.getElementById("multiplePaymentOkBtn").addEventListener("click", confirmMultiplePaymentInput);
@@ -8270,6 +8429,12 @@ ${lines}
 	        } else {
 	          openSupplementTransactionPage();
 	        }
+      } else if (item.dataset.handleTitle === "Manual Clear Diff") {
+        if (item.classList.contains("disabled")) {
+          showToast("Manual Clear Diff is only available for Diff TXN records.", "warn");
+        } else {
+          openManualClearDiffPage();
+        }
       } else {
         showToast(`Handling Type: ${item.dataset.handleTitle}`, "success");
       }
