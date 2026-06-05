@@ -306,6 +306,20 @@
       white-space: nowrap;
     }
 
+    .refresh-btn {
+      min-width: 72px;
+      border-color: var(--primary);
+      color: var(--primary);
+      background: #fff;
+    }
+
+    .refresh-btn:disabled {
+      cursor: not-allowed;
+      border-color: #d9d9d9;
+      color: rgba(0, 0, 0, 0.35);
+      background: #f5f5f5;
+    }
+
     .filter-icon-btn {
       min-width: 34px;
       padding: 0;
@@ -321,6 +335,22 @@
       border-bottom: 1px solid #e8e8e8;
       background: #fff;
       color: rgba(0, 0, 0, 0.65);
+    }
+
+    .summary-spacer {
+      flex: 1 1 auto;
+    }
+
+    .latest-update {
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 12px;
+      line-height: 18px;
+      white-space: nowrap;
+    }
+
+    .latest-update strong {
+      color: rgba(0, 0, 0, 0.62);
+      font-weight: 600;
     }
 
     .summary-title {
@@ -816,11 +846,14 @@
           <span class="filter-plus" id="addReference">+</span>
         </div>
         <button class="filter-btn" type="button" id="searchBtn">Search</button>
+        <button class="filter-btn refresh-btn" type="button" id="refreshBtn">Refresh</button>
       </div>
 
       <div class="summary-bar">
         <span class="summary-title" id="summaryTitle">Offset Matching</span>
         <span class="count" id="summaryCount">18</span>
+        <span class="summary-spacer"></span>
+        <span class="latest-update">Latest update time: <strong id="latestUpdateTime">-</strong></span>
       </div>
 
       <section class="table-card">
@@ -926,16 +959,24 @@
       discrepancyScope: "",
       referenceId: ""
     };
+    let rematchVersion = 0;
+    let latestUpdateTime = new Date();
+
+    const formatUpdateTime = (date) => {
+      const pad = (value) => String(value).padStart(2, "0");
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    };
 
     const makeAllRows = (config) => Array.from({ length: config.rows }, (_, index) => {
       const scenario = index % 3 === 1 ? "over-over" : index % 3 === 2 ? "less-less" : "over-less";
       const sameTypeOffset = scenario !== "over-less";
       const leftFund = index % 2 === 0 ? "IN" : "OUT";
       const rightFund = sameTypeOffset ? (leftFund === "IN" ? "OUT" : "IN") : leftFund;
-      const amount = amountSamples[index % amountSamples.length];
-      const leftRef = index >= 4 ? ["AX4UR58WAW9W", "AX4UR58VY4C2", "AX4UEDUOVDAA"][index % 3] : `AX4U1M${29 + index}K29DW`;
-      const rightRef = index % 5 === 0 ? `RFND${20260600 + index}` : leftRef;
-      const matchReason = sameTypeOffset ? "" : (index % 4 === 3 ? "Biz Info Fuzzy Matching" : "Reference ID");
+      const variantIndex = index + rematchVersion;
+      const amount = amountSamples[variantIndex % amountSamples.length];
+      const leftRef = index >= 4 ? ["AX4UR58WAW9W", "AX4UR58VY4C2", "AX4UEDUOVDAA"][variantIndex % 3] : `AX4U1M${29 + variantIndex}K29DW`;
+      const rightRef = variantIndex % 5 === 0 ? `RFND${20260600 + variantIndex}` : leftRef;
+      const matchReason = sameTypeOffset ? "" : (variantIndex % 4 === 3 ? "Biz Info Fuzzy Matching" : "Reference ID");
       const leftType = scenario === "less-less" ? "Less TXN" : "Over TXN";
       const rightType = scenario === "over-over" ? "Over TXN" : "Less TXN";
       const agreement = index % 4 === 1 ? "SPM MY - Wallet" : index % 4 === 2 ? "SPM MY - Bank" : "Alto-ShopeePay-0918-Payout-AS";
@@ -1029,6 +1070,7 @@
       const noun = rows.length === 1 ? "discrepancy" : "discrepancies";
       document.getElementById("titleSubtitle").innerHTML =
         `System identified <span class="title-count" id="headerOffsetCount">${rows.length}</span> ${noun} that may be handled by Offset.`;
+      document.getElementById("latestUpdateTime").textContent = formatUpdateTime(latestUpdateTime);
 
       document.getElementById("tableBody").innerHTML = rows
         .map((row) => {
@@ -1044,6 +1086,22 @@
       document.getElementById(id).addEventListener("change", submitFilters);
     });
     document.getElementById("searchBtn").addEventListener("click", submitFilters);
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      const refreshBtn = document.getElementById("refreshBtn");
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = "Refreshing...";
+      toast.textContent = "Rematching offset suggestions...";
+      toast.classList.add("show");
+      window.setTimeout(() => {
+        rematchVersion += 1;
+        latestUpdateTime = new Date();
+        render();
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = "Refresh";
+        toast.textContent = "Offset suggestions refreshed.";
+        window.setTimeout(() => toast.classList.remove("show"), 1600);
+      }, 650);
+    });
     document.getElementById("referenceInput").addEventListener("keydown", (event) => {
       if (event.key === "Enter") submitFilters();
     });
