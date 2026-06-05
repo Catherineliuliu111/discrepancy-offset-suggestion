@@ -829,15 +829,6 @@
             <option value="less-less">Less Payment &amp; Refund</option>
           </select>
         </div>
-        <div class="field field-discrepancy">
-          <select id="discrepancyScope">
-            <option value=""></option>
-            <option value="same-reference">Same Reference ID</option>
-            <option value="biz-fuzzy">Biz Info Fuzzy Matching</option>
-            <option value="over">Over TXN</option>
-            <option value="less">Less TXN</option>
-          </select>
-        </div>
         <div class="field field-reference">
           <input class="filter-input" id="discrepancyOrderInput" placeholder="Discrepancy Order ID" />
           <span class="filter-plus" id="addDiscrepancyOrder">+</span>
@@ -957,7 +948,6 @@
     let submittedFilters = {
       agreement: "",
       offsetType: "",
-      discrepancyScope: "",
       discrepancyOrderId: "",
       referenceId: ""
     };
@@ -1014,20 +1004,13 @@
       const orderMatch = !orderKeyword
         || row.leftId.toLowerCase().includes(orderKeyword)
         || row.rightId.toLowerCase().includes(orderKeyword);
-      const scope = submittedFilters.discrepancyScope;
-      const discrepancyScopeMatch = !scope
-        || (scope === "same-reference" && row.leftRef === row.rightRef)
-        || (scope === "biz-fuzzy" && row.matchReason === "Biz Info Fuzzy Matching")
-        || (scope === "over" && (row.leftType === "Over TXN" || row.rightType === "Over TXN"))
-        || (scope === "less" && (row.leftType === "Less TXN" || row.rightType === "Less TXN"));
-      return agreementMatch && offsetTypeMatch && orderMatch && referenceMatch && discrepancyScopeMatch;
+      return agreementMatch && offsetTypeMatch && orderMatch && referenceMatch;
     });
 
     const submitFilters = () => {
       submittedFilters = {
         agreement: document.getElementById("agreementItem").value,
         offsetType: document.getElementById("offsetType").value,
-        discrepancyScope: document.getElementById("discrepancyScope").value,
         discrepancyOrderId: document.getElementById("discrepancyOrderInput").value.trim(),
         referenceId: document.getElementById("referenceInput").value.trim()
       };
@@ -1085,7 +1068,7 @@
 
     const selectedRows = () => Array.from(document.querySelectorAll(".row-check:checked")).map((input) => input.dataset.rowKey);
 
-    ["agreementItem", "offsetType", "discrepancyScope"].forEach((id) => {
+    ["agreementItem", "offsetType"].forEach((id) => {
       document.getElementById(id).addEventListener("change", submitFilters);
     });
     document.getElementById("searchBtn").addEventListener("click", submitFilters);
