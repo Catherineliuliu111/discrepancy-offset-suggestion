@@ -842,6 +842,10 @@
           </select>
         </div>
         <div class="field field-reference">
+          <input class="filter-input" id="discrepancyOrderInput" placeholder="Discrepancy Order ID" />
+          <span class="filter-plus" id="addDiscrepancyOrder">+</span>
+        </div>
+        <div class="field field-reference">
           <input class="filter-input" id="referenceInput" placeholder="Reference ID" />
           <span class="filter-plus" id="addReference">+</span>
         </div>
@@ -957,6 +961,7 @@
       agreement: "",
       offsetType: "",
       discrepancyScope: "",
+      discrepancyOrderId: "",
       referenceId: ""
     };
     let rematchVersion = 0;
@@ -1008,13 +1013,17 @@
       const referenceMatch = !referenceKeyword
         || row.leftRef.toLowerCase().includes(referenceKeyword)
         || row.rightRef.toLowerCase().includes(referenceKeyword);
+      const orderKeyword = submittedFilters.discrepancyOrderId.toLowerCase();
+      const orderMatch = !orderKeyword
+        || row.leftId.toLowerCase().includes(orderKeyword)
+        || row.rightId.toLowerCase().includes(orderKeyword);
       const scope = submittedFilters.discrepancyScope;
       const discrepancyScopeMatch = !scope
         || (scope === "same-reference" && row.leftRef === row.rightRef)
         || (scope === "biz-fuzzy" && row.matchReason === "Biz Info Fuzzy Matching")
         || (scope === "over" && (row.leftType === "Over TXN" || row.rightType === "Over TXN"))
         || (scope === "less" && (row.leftType === "Less TXN" || row.rightType === "Less TXN"));
-      return agreementMatch && offsetTypeMatch && referenceMatch && discrepancyScopeMatch;
+      return agreementMatch && offsetTypeMatch && orderMatch && referenceMatch && discrepancyScopeMatch;
     });
 
     const submitFilters = () => {
@@ -1022,6 +1031,7 @@
         agreement: document.getElementById("agreementItem").value,
         offsetType: document.getElementById("offsetType").value,
         discrepancyScope: document.getElementById("discrepancyScope").value,
+        discrepancyOrderId: document.getElementById("discrepancyOrderInput").value.trim(),
         referenceId: document.getElementById("referenceInput").value.trim()
       };
       render();
@@ -1101,6 +1111,15 @@
         toast.textContent = "Offset suggestions refreshed.";
         window.setTimeout(() => toast.classList.remove("show"), 1600);
       }, 650);
+    });
+    document.getElementById("discrepancyOrderInput").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") submitFilters();
+    });
+    document.getElementById("addDiscrepancyOrder").addEventListener("click", () => {
+      const input = document.getElementById("discrepancyOrderInput");
+      if (input.value.trim()) {
+        submitFilters();
+      }
     });
     document.getElementById("referenceInput").addEventListener("keydown", (event) => {
       if (event.key === "Enter") submitFilters();
