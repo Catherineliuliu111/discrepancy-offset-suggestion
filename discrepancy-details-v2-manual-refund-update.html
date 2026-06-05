@@ -6759,6 +6759,12 @@
           <div class="field-box"><input id="drawerTicket" placeholder="Ticket ID" /></div>
           <div class="field-box"><input id="drawerReason" placeholder="Reason" /></div>
           <div class="field-box"><input id="drawerTag" placeholder="Tags" /></div>
+          <div class="field-box">
+            <select id="drawerOperationSuggestion" style="border:none;outline:none;flex:1;background:transparent;height:100%;">
+              <option value="">Operation Suggestion</option>
+              <option value="Offset">Offset</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="drawer-foot">
@@ -7438,6 +7444,7 @@ ${lines}
       const ticket = document.getElementById("drawerTicket").value.trim().toLowerCase();
       const reason = document.getElementById("drawerReason").value.trim().toLowerCase();
       const tag = document.getElementById("drawerTag").value.trim().toLowerCase();
+      const operationSuggestion = document.getElementById("drawerOperationSuggestion").value;
 
       state.filteredRows = state.rows.filter(row => {
         const statusMatch = state.selectedStatuses.size === 0 || state.selectedStatuses.has(row.processingStatus);
@@ -7453,7 +7460,8 @@ ${lines}
         const reasonMatch = !reason || row.reason.toLowerCase().includes(reason);
         const tagMatch = !tag || (row.tags || "").toLowerCase().includes(tag);
         const refsMatch = state.referenceIds.length === 0 || state.referenceIds.some(ref => row.referenceId.includes(ref) || row.spmRef.includes(ref));
-        return statusMatch && dateMatch && agreementMatch && typeMatch && sourceMatch && directionMatch && creatorMatch && keywordMatch && assigneeMatch && ticketMatch && reasonMatch && tagMatch && refsMatch;
+        const opSuggestionMatch = !operationSuggestion || (operationSuggestion === "Offset" && row.offsetEligible);
+        return statusMatch && dateMatch && agreementMatch && typeMatch && sourceMatch && directionMatch && creatorMatch && keywordMatch && assigneeMatch && ticketMatch && reasonMatch && tagMatch && refsMatch && opSuggestionMatch;
       });
 
       state.currentPage = 1;
@@ -8512,7 +8520,7 @@ ${lines}
         chip.classList.toggle("active", active);
         chip.textContent = active ? "Unprocessed ✓" : chip.dataset.status;
       });
-      document.querySelectorAll("input").forEach(input => {
+      document.querySelectorAll("input, select").forEach(input => {
         if (!["startDate", "endDate", "pageInput"].includes(input.id)) input.value = "";
       });
       document.getElementById("startDate").value = "2026-04-12";
