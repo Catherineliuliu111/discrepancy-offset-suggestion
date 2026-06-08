@@ -6210,7 +6210,7 @@
                 </div>
                 <div class="operation-note">
                   <span class="operation-note-icon">i</span>
-                  <span>Use this operation when the source payment is confirmed, but Transaction Detail cannot be generated because the Journal was not received. Please confirm Transaction Date and Biz Code before submission.</span>
+                  <span>Please double confirm Transaction Date and Biz Code is correct. When manual write-off Less TXN, SPR will create Transaction Detail with this Transaction Date and Biz Code, and it would affect Payment Incurring and Less TXN write-off date in DFR</span>
                 </div>
               </div>
             </div>
@@ -8503,6 +8503,7 @@ ${lines}
     function openDetail(rowId) {
       const row = state.rows.find(item => item.id === rowId);
       if (!row) return;
+      const isManualSupplementEligible = row.type === "Less TXN" && !row.sourceStatus && !row.sourcePaymentId;
       document.getElementById("detailTitle").textContent = `Discrepancy Detail - ${row.id}`;
       document.getElementById("detailBody").innerHTML = columns
         .filter(col => col.key !== "select")
@@ -8512,7 +8513,12 @@ ${lines}
             <div>${escapeHtml(String(row[col.key] || "-"))}</div>
           </div>
         `)
-        .join("");
+        .join("") + (isManualSupplementEligible ? `
+          <div class="operation-note" style="margin-top:16px">
+            <span class="operation-note-icon">i</span>
+            <span>Please double confirm Transaction Date and Biz Code is correct. When manual write-off Less TXN, SPR will create Transaction Detail with this Transaction Date and Biz Code, and it would affect Payment Incurring and Less TXN write-off date in DFR</span>
+          </div>
+        ` : "");
       openModal("#detailDrawer");
     }
 
