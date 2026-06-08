@@ -7510,7 +7510,72 @@
         updatedAt: "2026-05-18 10:00:00",
         rawData: "\"2026-05-17\", \"Less TXN\", \"RM399.99\"",
         version: "1752614338MS4"
-      },
+      }
+    ];
+
+    const additionalRows = Array.from({ length: 10 }, (_, index) => {
+      const isOver = index % 2 === 1;
+      const isProcessing = index >= 5;
+      const sequence = String(index + 1).padStart(2, "0");
+      const amount = (24.5 + index * 7.35).toFixed(2);
+      return {
+        id: `104...82620${sequence}`,
+        agreement: index % 3 === 0 ? "SPM-IPAY-PAYMENT-FPX" : (index % 3 === 1 ? "SPM-IPAY-PAYMENT-DUITNOW" : "SPM-EWALLET-TNGD"),
+        clearingDate: `2026-05-${String(6 + index).padStart(2, "0")}`,
+        type: isOver ? "Over TXN" : "Less TXN",
+        spmRef: `SPM900000000000000${sequence}`,
+        processingStatus: isProcessing ? "Processing" : "Unprocessed",
+        assignee: isProcessing ? ["Rachel", "Ken", "Mira", "Dylan", "Nina"][index - 5] : "",
+        aging: `${index % 4} day${index % 4 === 1 ? "" : "s"}`,
+        ticket: isProcessing ? `TKT-990${sequence}` : "-",
+        approval: "-",
+        handlingType: isProcessing ? "Refund Fund - Processing" : "-",
+        source: "SPM_INBOUND",
+        sourceStatus: isProcessing ? "Success" : "",
+        sourcePaymentId: isProcessing ? `SPM900000000000000${sequence}` : "",
+        operation: "sync",
+        reconId: `1032000000199000${sequence}`,
+        direction: isOver ? "IN" : "OUT",
+        amount: `RM${amount}`,
+        txnTime: `2026-05-${String(5 + index).padStart(2, "0")} 10:${String(12 + index).padStart(2, "0")}:30`,
+        bankRef: isOver ? `BNK-${sequence}` : "",
+        channelRef: isOver ? `CH-${sequence}` : "",
+        reason: isOver ? "Channel over settlement" : "Refund pending confirmation",
+        referenceId: `TID:T202605${sequence}001`,
+        createdBy: "System",
+        approvedBy: "-",
+        handledBy: isProcessing ? "Ops" : "-",
+        latestComment: "-",
+        tags: "",
+        updatedAt: `2026-05-${String(6 + index).padStart(2, "0")} 11:00:00`,
+        rawData: `"2026-05-${String(5 + index).padStart(2, "0")}", "${isOver ? "Over TXN" : "Less TXN"}", "RM${amount}"`,
+        version: `17526143388${sequence}`
+      };
+    });
+
+    const state = {
+      selectedStatuses: new Set(["Unprocessed"]),
+      referenceIds: [],
+      rows: [...rawRows, ...additionalRows],
+      filteredRows: [...rawRows, ...additionalRows],
+      currentPage: 1,
+      pageSize: 20,
+      selectedRowIds: new Set(),
+      supplementLinks: {},
+      activeSourceRowId: null,
+      selectedSourcePaymentId: "",
+      batchPaymentIds: [],
+      batchSourceResults: [],
+      selectedBatchPaymentIds: new Set(),
+      lastMixedProcessingStatusWarning: false
+    };
+
+    const offsetSuggestionCount = 12;
+    state.rows.slice(0, offsetSuggestionCount).forEach(row => {
+      row.offsetEligible = true;
+    });
+
+    const prelinkedRows = [
       {
         id: "104...MS005",
         agreement: "SPM-CARD-VISA",
@@ -7578,70 +7643,8 @@
         version: "1752614338MS6"
       }
     ];
-
-    const additionalRows = Array.from({ length: 10 }, (_, index) => {
-      const isOver = index % 2 === 1;
-      const isProcessing = index >= 5;
-      const sequence = String(index + 1).padStart(2, "0");
-      const amount = (24.5 + index * 7.35).toFixed(2);
-      return {
-        id: `104...82620${sequence}`,
-        agreement: index % 3 === 0 ? "SPM-IPAY-PAYMENT-FPX" : (index % 3 === 1 ? "SPM-IPAY-PAYMENT-DUITNOW" : "SPM-EWALLET-TNGD"),
-        clearingDate: `2026-05-${String(6 + index).padStart(2, "0")}`,
-        type: isOver ? "Over TXN" : "Less TXN",
-        spmRef: `SPM900000000000000${sequence}`,
-        processingStatus: isProcessing ? "Processing" : "Unprocessed",
-        assignee: isProcessing ? ["Rachel", "Ken", "Mira", "Dylan", "Nina"][index - 5] : "",
-        aging: `${index % 4} day${index % 4 === 1 ? "" : "s"}`,
-        ticket: isProcessing ? `TKT-990${sequence}` : "-",
-        approval: "-",
-        handlingType: isProcessing ? "Refund Fund - Processing" : "-",
-        source: "SPM_INBOUND",
-        sourceStatus: isProcessing ? "Success" : "",
-        sourcePaymentId: isProcessing ? `SPM900000000000000${sequence}` : "",
-        operation: "sync",
-        reconId: `1032000000199000${sequence}`,
-        direction: isOver ? "IN" : "OUT",
-        amount: `RM${amount}`,
-        txnTime: `2026-05-${String(5 + index).padStart(2, "0")} 10:${String(12 + index).padStart(2, "0")}:30`,
-        bankRef: isOver ? `BNK-${sequence}` : "",
-        channelRef: isOver ? `CH-${sequence}` : "",
-        reason: isOver ? "Channel over settlement" : "Refund pending confirmation",
-        referenceId: `TID:T202605${sequence}001`,
-        createdBy: "System",
-        approvedBy: "-",
-        handledBy: isProcessing ? "Ops" : "-",
-        latestComment: "-",
-        tags: "",
-        updatedAt: `2026-05-${String(6 + index).padStart(2, "0")} 11:00:00`,
-        rawData: `"2026-05-${String(5 + index).padStart(2, "0")}", "${isOver ? "Over TXN" : "Less TXN"}", "RM${amount}"`,
-        version: `17526143388${sequence}`
-      };
-    });
-
-    const state = {
-      selectedStatuses: new Set(["Unprocessed"]),
-      referenceIds: [],
-      rows: [...rawRows, ...additionalRows],
-      filteredRows: [...rawRows, ...additionalRows],
-      currentPage: 1,
-      pageSize: 20,
-      selectedRowIds: new Set(),
-      supplementLinks: {},
-      activeSourceRowId: null,
-      selectedSourcePaymentId: "",
-      batchPaymentIds: [],
-      batchSourceResults: [],
-      selectedBatchPaymentIds: new Set(),
-      lastMixedProcessingStatusWarning: false
-    };
-
-    const offsetSuggestionCount = 12;
-    state.rows.slice(0, offsetSuggestionCount).forEach(row => {
-      if (!hasFieldValue(row.sourcePaymentId)) {
-        row.offsetEligible = true;
-      }
-    });
+    state.rows.push(...prelinkedRows);
+    state.filteredRows.push(...prelinkedRows);
 
     const sourcePaymentOptions = [
 	      {
