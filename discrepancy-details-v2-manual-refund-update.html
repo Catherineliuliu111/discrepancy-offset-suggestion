@@ -2114,17 +2114,7 @@
       box-shadow: 1px 0 0 var(--line);
     }
 
-    thead th:nth-child(2),
-    tbody td:nth-child(2) {
-      position: sticky;
-      left: 44px;
-      z-index: 3;
-      background: inherit;
-      box-shadow: 1px 0 0 var(--line);
-    }
-
-    thead th:first-child,
-    thead th:nth-child(2) {
+    thead th:first-child {
       z-index: 5;
       background: #f7f9fb;
     }
@@ -3471,111 +3461,198 @@
       width: min(1720px, calc(100vw - 48px));
       max-height: calc(100vh - 48px);
       margin: 24px 0;
-      border-radius: 8px;
+      border-radius: 12px;
       background: #fff;
-      box-shadow: 0 18px 56px rgba(0, 0, 0, 0.24);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    #sourcePaymentModal .source-filter-row {
-      display: grid;
-      grid-template-columns: 290px 310px minmax(260px, 1fr) auto;
-      gap: 18px;
+    #sourcePaymentModal .source-modal .modal-head {
+      padding: 20px 28px;
+      border-bottom: 1px solid #eef0f4;
+      display: flex;
       align-items: center;
-      padding: 26px 36px 18px;
+      justify-content: space-between;
+    }
+
+    #sourcePaymentModal .source-modal .modal-head strong {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a1d23;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #sourcePaymentModal .source-modal .modal-head strong::before {
+      content: "🔗";
+      font-size: 18px;
+    }
+
+    #sourcePaymentModal .source-filter-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      padding: 20px 28px 16px;
+      flex-wrap: wrap;
     }
 
     #sourcePaymentModal .source-field {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      align-items: center;
-      gap: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
       min-width: 0;
+    }
+
+    #sourcePaymentModal .source-field > span {
       color: #2b2f36;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 650;
     }
 
     #sourcePaymentModal .source-field input,
     #sourcePaymentModal .source-field select {
-      height: 42px;
-      min-width: 0;
-      border: 1px solid #e1e5ec;
+      height: 40px;
+      min-width: 180px;
+      border: 1px solid #dde1e8;
       border-radius: 8px;
-      background: #f5f7fb;
+      background: #fff;
       padding: 0 12px;
-      font: inherit;
+      font-size: 14px;
+      color: #1a1d23;
+      transition: border-color 0.15s;
+    }
+
+    #sourcePaymentModal .source-field input:focus,
+    #sourcePaymentModal .source-field select:focus {
+      border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+
+    #sourcePaymentModal .source-field input::placeholder {
+      color: #a0a7b5;
+    }
+
+    #sourcePaymentModal #sourcePaymentSearchBtn {
+      height: 40px;
+      min-width: 100px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    #sourcePaymentModal .source-hint {
+      padding: 0 28px 12px;
+      color: #4b5563;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #sourcePaymentModal .source-hint::before {
+      content: "💡";
+      font-size: 14px;
     }
 
     #sourcePaymentModal .source-table-wrap {
-      margin: 0 36px 18px;
+      margin: 0 28px 16px;
       border: 1px solid #e5e7eb;
-      border-radius: 6px;
+      border-radius: 10px;
       overflow: auto;
-      min-height: 260px;
+      min-height: 240px;
       background: #fff;
     }
 
-	    #sourcePaymentModal .source-table {
-	      min-width: 1380px;
-	      width: 100%;
-	    }
+    #sourcePaymentModal .source-table {
+      min-width: 1380px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #sourcePaymentModal .source-table thead th {
+      background: #f8fafc;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    #sourcePaymentModal .source-table tbody td {
+      padding: 12px 14px;
+      font-size: 14px;
+      color: #1f2937;
+      border-bottom: 1px solid #f1f3f7;
+      vertical-align: middle;
+    }
 
     #sourcePaymentModal .source-table tbody tr {
       cursor: pointer;
+      transition: background 0.12s;
     }
 
-	    #sourcePaymentModal .source-table tbody tr.selected td {
-	      background: #eaf6ff;
-	      box-shadow: inset 0 0 0 1px #91caff;
-	    }
+    #sourcePaymentModal .source-table tbody tr:hover td {
+      background: #f8faff;
+    }
 
-	    #sourcePaymentModal .source-table tbody tr:has(.source-extra-info[open]) td,
-	    #batchSourcePaymentModal .source-table tbody tr:has(.source-extra-info[open]) td {
-	      background: #dff5ff;
-	    }
+    #sourcePaymentModal .source-table tbody tr.selected td {
+      background: #eef6ff;
+      box-shadow: inset 0 0 0 1px #91caff;
+    }
 
-	    .source-extra-cell {
-	      min-width: 420px;
-	      white-space: normal;
-	    }
+    #sourcePaymentModal .source-table tbody tr:has(.source-extra-info[open]) td,
+    #batchSourcePaymentModal .source-table tbody tr:has(.source-extra-info[open]) td {
+      background: #dff5ff;
+    }
 
-	    .source-extra-info {
-	      min-width: 360px;
-	      max-width: 720px;
-	      color: #1f2937;
-	      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-	      font-size: 12px;
-	      line-height: 1.55;
-	    }
+    .source-extra-cell {
+      min-width: 420px;
+      white-space: normal;
+    }
 
-	    .source-extra-info summary {
-	      display: inline-flex;
-	      align-items: center;
-	      gap: 6px;
-	      cursor: pointer;
-	      list-style: none;
-	      white-space: nowrap;
-	    }
+    .source-extra-info {
+      min-width: 360px;
+      max-width: 720px;
+      color: #1f2937;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.55;
+    }
 
-	    .source-extra-info summary::-webkit-details-marker {
-	      display: none;
-	    }
+    .source-extra-info summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      list-style: none;
+      white-space: nowrap;
+    }
 
-	    .json-caret {
-	      color: #0f8f9e;
-	      font-size: 12px;
-	    }
+    .source-extra-info summary::-webkit-details-marker {
+      display: none;
+    }
 
-	    .json-caret::before {
-	      content: "▸";
-	    }
+    .json-caret {
+      color: #0f8f9e;
+      font-size: 12px;
+    }
 
-	    .source-extra-info[open] .json-caret::before {
-	      content: "▾";
-	    }
+    .json-caret::before {
+      content: "▸";
+    }
+
+    .source-extra-info[open] .json-caret::before {
+      content: "▾";
+    }
 
 	    .json-key {
 	      color: #334155;
@@ -6633,30 +6710,30 @@
   <div class="modal-backdrop" id="sourcePaymentModal">
     <div class="modal source-modal">
       <div class="modal-head">
-        <strong>Source Detail</strong>
+        <strong>Link Source Payment</strong>
         <button class="ghost-icon" data-close="#sourcePaymentModal">×</button>
       </div>
       <div class="source-filter-row">
         <label class="source-field">
-          <span><span class="required-mark">*</span> Action :</span>
+          <span><span class="required-mark">*</span> Action</span>
 	          <select id="sourceActionSelect" disabled>
 	            <option value="Link Source Payment" selected>Link Source Payment</option>
           </select>
         </label>
         <label class="source-field">
-          <span><span class="required-mark">*</span> System Code :</span>
+          <span><span class="required-mark">*</span> System Code</span>
           <select id="sourceSystemCodeSelect">
 	            <option value="INBOUND">INBOUND</option>
 	            <option value="OUTBOUND">OUTBOUND</option>
           </select>
         </label>
         <label class="source-field">
-          <span><span class="required-mark">*</span> Payment ID :</span>
+          <span><span class="required-mark">*</span> Payment ID</span>
           <input id="sourcePaymentInput" placeholder="Enter Payment ID" />
         </label>
-        <button class="btn primary" id="sourcePaymentSearchBtn">Add</button>
+        <button class="btn primary" id="sourcePaymentSearchBtn">Search</button>
       </div>
-      <div style="padding:0 36px 8px;color:#2b2f36;font-size:15px;font-weight:650;">Please select the correct Payment ID</div>
+      <div class="source-hint">Select a payment to link. Only eligible payments can be confirmed.</div>
       <div class="source-table-wrap">
         <table class="source-table">
           <thead>
@@ -7355,13 +7432,46 @@
 	      },
 	      {
 	        systemCode: "OUTBOUND",
+	        paymentId: "666",
+	        status: "Pending",
+	        paymentType: "Payout",
+	        amount: "RM120.50",
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          validation_message: "Not allowed for supplement while payment is Pending"
+	        }
+	      },
+	      {
+	        systemCode: "OUTBOUND",
+	        paymentId: "777",
+	        status: "Cancelled",
+	        paymentType: "Payout",
+	        amount: "RM99.99",
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          validation_message: "Not allowed for supplement when payment is Cancelled"
+	        }
+	      },
+	      {
+	        systemCode: "OUTBOUND",
+	        paymentId: "888",
+	        status: "Success",
+	        paymentType: "Payout",
+	        amount: "RM200.00",
+	        extraInfo: {
+	          accounting_dimensions: ["Shopee Mall MY"],
+	          voucher_extra_info: "{\"reference_match\":\"amount_and_reference\",\"journal_status\":\"received\"}"
+	        }
+	      },
+	      {
+	        systemCode: "OUTBOUND",
 	        paymentId: "SPMOUT990225753480620",
 	        status: "Success",
 	        paymentType: "Payout",
 	        amount: "RM15.72",
 	        extraInfo: {
 	          accounting_dimensions: ["Shopee Mall MY"],
-	          validation_message: "Not eligible here; outbound manual supplement expects Failed source status"
+	          voucher_extra_info: "{\"reference_match\":\"amount_and_reference\",\"journal_status\":\"received\"}"
 	        }
 	      }
 	    ];
@@ -7375,7 +7485,11 @@
 
  	    function isSourcePaymentStatusAllowed(payment) {
  	      if (!payment) return false;
+ 	      const systemCode = normalizeSupplementSystemCode(payment.systemCode);
  	      const status = String(payment.status || "").trim().toLowerCase();
+ 	      if (status === "pending" || status === "cancelled") return false;
+ 	      if (systemCode === "INBOUND") return status === "success";
+ 	      if (systemCode === "OUTBOUND") return status === "success" || status === "failed";
  	      return status === "success";
  	    }
 
