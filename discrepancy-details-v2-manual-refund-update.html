@@ -3062,7 +3062,7 @@
     .operation-page-shell .manual-refund-top {
       position: static;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) auto auto;
       align-items: center;
       gap: 12px;
       min-height: 76px;
@@ -3153,6 +3153,24 @@
       font-size: 14px;
       font-weight: 700;
       box-shadow: 0 10px 24px rgba(22, 131, 247, 0.24);
+    }
+
+    .operation-page-shell .operation-close-btn {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .supplement-top-hint {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 650;
+      min-height: 0;
+      padding: 0 0 2px;
     }
 
     .operation-page-shell .info-card {
@@ -3306,16 +3324,40 @@
       color: #ef4444;
     }
 
-    .table-info-icon,
-    .table-edit-icon {
+    .table-info-icon {
       display: inline-grid;
       place-items: center;
       width: 16px;
       height: 16px;
       margin-left: 5px;
-      color: #7a8797;
-      font-size: 12px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #6b7280;
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 800;
       vertical-align: middle;
+      cursor: help;
+    }
+
+    .table-edit-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      margin-left: 4px;
+      border-radius: 6px;
+      background: transparent;
+      color: #6b7280;
+      font-size: 13px;
+      vertical-align: middle;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .table-edit-icon:hover {
+      background: #dbeafe;
+      color: #2563eb;
     }
 
     .muted-input-cell,
@@ -3431,15 +3473,6 @@
       padding: 10px 12px;
       font: inherit;
       background: #fff;
-    }
-
-    .supplement-submit-hint {
-      display: inline-flex;
-      align-items: center;
-      min-height: 30px;
-      color: #64748b;
-      font-size: 12px;
-      font-weight: 650;
     }
 
     .payment-id-combo {
@@ -3923,12 +3956,98 @@
 	      min-width: 1180px !important;
 	    }
 
+	    .supplement-notes-grid {
+	      display: grid;
+	      gap: 14px;
+	    }
+
 	    .supplement-notes-grid .notes-row {
+	      display: grid;
 	      grid-template-columns: 180px minmax(0, 1fr);
+	      align-items: start;
+	      gap: 12px;
 	    }
 
 	    .supplement-notes-grid .notes-label {
 	      white-space: nowrap;
+	      padding-top: 10px;
+	      color: #2b2f36;
+	      font-size: 13px;
+	      font-weight: 650;
+	    }
+
+	    .form-select {
+	      height: 42px;
+	      border: 1px solid #dde1e8;
+	      border-radius: 8px;
+	      background: #fff;
+	      padding: 0 12px;
+	      font-size: 14px;
+	      color: #1a1d23;
+	      transition: border-color 0.15s;
+	    }
+
+	    .form-select:focus {
+	      border-color: #3b82f6;
+	      outline: none;
+	      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+	    }
+
+	    .form-textarea {
+	      min-height: 44px;
+	      border: 1px solid #dde1e8;
+	      border-radius: 8px;
+	      background: #fff;
+	      padding: 10px 12px;
+	      font-size: 14px;
+	      color: #1a1d23;
+	      font-family: inherit;
+	      resize: vertical;
+	      transition: border-color 0.15s;
+	    }
+
+	    .form-textarea:focus {
+	      border-color: #3b82f6;
+	      outline: none;
+	      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+	    }
+
+	    .upload-zone {
+	      display: flex;
+	      flex-direction: column;
+	      align-items: center;
+	      gap: 6px;
+	      padding: 28px 20px;
+	      border: 2px dashed #d1d5db;
+	      border-radius: 12px;
+	      background: #fafbfc;
+	      cursor: pointer;
+	      transition: border-color 0.15s, background 0.15s;
+	    }
+
+	    .upload-zone:hover {
+	      border-color: #3b82f6;
+	      background: #f0f7ff;
+	    }
+
+	    .upload-zone-icon {
+	      display: grid;
+	      place-items: center;
+	      width: 48px;
+	      height: 48px;
+	      border-radius: 50%;
+	      background: #f1f5f9;
+	    }
+
+	    .upload-zone-text {
+	      color: #374151;
+	      font-size: 14px;
+	      font-weight: 600;
+	    }
+
+	    .upload-zone-hint {
+	      color: #94a3b8;
+	      font-size: 12px;
 	    }
 
     .bank-detail-report-page .report-summary-row {
@@ -6368,25 +6487,12 @@
 	            <div class="manual-refund-top">
 	              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
 	              <button class="btn primary" id="supplementTransactionSubmitBtn" disabled>Submit</button>
-	              <span class="supplement-submit-hint" id="supplementSubmitHint">Link source payment before submit</span>
 	              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
+	              <span class="supplement-top-hint" id="supplementSubmitHint">Link source payment before submit</span>
 	            </div>
 
             <div class="info-card">
-              <div class="info-card-head">Select</div>
-              <div class="info-card-body">
-                <div class="summary-grid wide-summary-grid">
-                  <div><strong>Discrepancy Type :</strong> <span id="supplementDiscrepancyType">Less TXN</span></div>
-                  <div><strong>Counts :</strong> <span id="supplementCount">1</span></div>
-                  <div><strong>Fund Direction :</strong> <span class="green" id="supplementDirection">OUT</span></div>
-                  <div><strong>Amount :</strong> <span id="supplementAmount">RM39.45</span></div>
-                </div>
-                <div class="operation-note">
-                  <span class="operation-note-icon">i</span>
-                  <span>Use this operation when the source payment is confirmed, but Transaction Detail cannot be generated. Please double confirm Transaction Date and Biz Code is correct. When manual supplement Less TXN, SPR will create Transaction Detail with this Transaction Date and Biz Code, and it would affect Payment Incurring and Less TXN write-off date in DFR.</span>
-                </div>
-              </div>
-            </div>
+              <div class="info-card-head">Select <span class="operation-title-tag" style="margin-left:10px;">Less TXN</span></div>
 
 	            <div class="info-card">
 	              <div class="info-card-head">Supplement List</div>
@@ -6420,14 +6526,20 @@
 
             <div class="info-card">
               <div class="info-card-head">Notes</div>
-	              <div class="info-card-body confirm-notes-grid supplement-notes-grid">
-	                <div class="notes-row">
-	                  <span class="notes-label"><span class="required-mark">*</span> Supplement Reason :</span>
-	                  <span class="inline-field operation-select-input"><span>Payment transaction missed by MQ</span><span class="field-caret">⌄</span></span>
-	                </div>
-	                <div class="notes-row">
-	                  <span class="notes-label">Remark :</span>
-                  <input class="remark-input operation-wide-input" name="supplementTransactionRemark" />
+              <div class="info-card-body">
+                <div class="supplement-notes-grid">
+                  <div class="notes-row">
+                    <span class="notes-label"><span class="required-mark">*</span> Supplement Reason :</span>
+                    <select class="form-select" name="supplementTransactionReason">
+                      <option>Payment transaction missed by MQ</option>
+                      <option>Journal not received from upstream</option>
+                      <option>Bank file parse failure</option>
+                    </select>
+                  </div>
+                  <div class="notes-row">
+                    <span class="notes-label">Remark :</span>
+                    <textarea class="form-textarea" name="supplementTransactionRemark" placeholder="Optional notes about this supplement..." rows="2"></textarea>
+                  </div>
                 </div>
               </div>
             </div>
@@ -6435,9 +6547,16 @@
             <div class="info-card">
               <div class="info-card-head">Attachment</div>
               <div class="info-card-body">
-                <div class="attachment-zone">
-                  <span class="attachment-zone-icon">⌁</span>
-                  <span>Attach payment system evidence, bank file evidence, or MQ failure evidence</span>
+                <div class="upload-zone">
+                  <div class="upload-zone-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/>
+                      <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                  </div>
+                  <span class="upload-zone-text">Attach payment system evidence, bank file evidence, or MQ failure evidence</span>
+                  <span class="upload-zone-hint">Supported formats: PDF, PNG, JPG (max 10MB)</span>
                 </div>
               </div>
             </div>
