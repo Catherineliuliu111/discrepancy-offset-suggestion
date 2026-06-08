@@ -6210,7 +6210,7 @@
                 </div>
                 <div class="operation-note">
                   <span class="operation-note-icon">i</span>
-                  <span>Please double confirm Transaction Date and Biz Code is correct. When manual write-off Less TXN, SPR will create Transaction Detail with this Transaction Date and Biz Code, and it would affect Payment Incurring and Less TXN write-off date in DFR</span>
+                  <span>Use this operation when the source payment is confirmed, but Transaction Detail cannot be generated. Please double confirm Transaction Date and Biz Code is correct. When manual supplement Less TXN, SPR will create Transaction Detail with this Transaction Date and Biz Code, and it would affect Payment Incurring and Less TXN write-off date in DFR.</span>
                 </div>
               </div>
             </div>
@@ -8516,7 +8516,7 @@ ${lines}
         .join("") + (isManualSupplementEligible ? `
           <div class="operation-note" style="margin-top:16px">
             <span class="operation-note-icon">i</span>
-            <span>Please double confirm Transaction Date and Biz Code is correct. When manual write-off Less TXN, SPR will create Transaction Detail with this Transaction Date and Biz Code, and it would affect Payment Incurring and Less TXN write-off date in DFR</span>
+            <span>Use this operation when the source payment is confirmed, but Transaction Detail cannot be generated. Please double confirm Transaction Date and Biz Code is correct. When manual supplement Less TXN, SPR will create Transaction Detail with this Transaction Date and Biz Code, and it would affect Payment Incurring and Less TXN write-off date in DFR.</span>
           </div>
         ` : "");
       openModal("#detailDrawer");
