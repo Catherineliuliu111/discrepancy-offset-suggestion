@@ -3373,6 +3373,18 @@
       color: #a15c00;
     }
 
+    .refund-tag.error {
+      border-color: #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .refund-tag.muted {
+      border-color: #d1d5db;
+      background: #f9fafb;
+      color: #6b7280;
+    }
+
     .source-payment-link {
       min-width: 170px;
       justify-content: space-between;
@@ -3491,6 +3503,30 @@
       font-size: 18px;
     }
 
+    #sourcePaymentModal .source-modal .modal-head .close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      color: #6b7280;
+      font-size: 18px;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    #sourcePaymentModal .source-modal .modal-head .close-btn:hover {
+      background: #f3f4f6;
+      color: #1f2937;
+    }
+
+    #sourcePaymentModal .source-modal .modal-head .close-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
     #sourcePaymentModal .source-filter-row {
       display: flex;
       align-items: flex-end;
@@ -3538,11 +3574,20 @@
 
     #sourcePaymentModal #sourcePaymentSearchBtn {
       height: 40px;
-      min-width: 100px;
+      min-width: 110px;
       border-radius: 8px;
       font-size: 14px;
       font-weight: 600;
       flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    #sourcePaymentModal #sourcePaymentSearchBtn::before {
+      content: "🔍";
+      font-size: 14px;
     }
 
     #sourcePaymentModal .source-hint {
@@ -3558,6 +3603,35 @@
     #sourcePaymentModal .source-hint::before {
       content: "💡";
       font-size: 14px;
+    }
+
+    #sourcePaymentModal .source-disabled-row td {
+      opacity: 0.45;
+      background: #fafbfc;
+    }
+
+    #sourcePaymentModal .source-disabled-row:hover td {
+      background: #fafbfc !important;
+    }
+
+    #sourcePaymentModal .source-empty-state {
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #b8b8b8;
+    }
+
+    #sourcePaymentModal .source-empty-state-icon {
+      font-size: 32px;
+      opacity: 0.5;
+    }
+
+    #sourcePaymentModal .source-empty-state-text {
+      font-size: 14px;
+      color: #b8b8b8;
     }
 
     #sourcePaymentModal .source-table-wrap {
@@ -3692,6 +3766,26 @@
 
     #sourcePaymentModal .modal-foot {
       justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 28px;
+      border-top: 1px solid #eef0f4;
+    }
+
+    #sourcePaymentModal .modal-foot .btn:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      border-color: #e5e7eb;
+      cursor: not-allowed;
+    }
+
+    #sourcePaymentModal .modal-foot #sourcePaymentCancelBtn {
+      background: #fff;
+      border-color: #d1d5db;
+      color: #374151;
+    }
+
+    #sourcePaymentModal .modal-foot #sourcePaymentCancelBtn:hover {
+      background: #f9fafb;
     }
 
     #batchSourcePaymentModal.modal-backdrop.open,
@@ -6711,7 +6805,12 @@
     <div class="modal source-modal">
       <div class="modal-head">
         <strong>Link Source Payment</strong>
-        <button class="ghost-icon" data-close="#sourcePaymentModal">×</button>
+        <button class="close-btn" data-close="#sourcePaymentModal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
       <div class="source-filter-row">
         <label class="source-field">
@@ -6751,6 +6850,7 @@
         </table>
       </div>
       <div class="modal-foot">
+        <button class="btn" id="sourcePaymentCancelBtn" data-close="#sourcePaymentModal">Cancel</button>
         <button class="btn primary" id="sourcePaymentSelectBtn" disabled>Confirm</button>
       </div>
     </div>
@@ -8380,44 +8480,60 @@ ${lines}
 		      }
 		    }
 
-	    function openSourcePaymentModal(rowId) {
-	      state.activeSourceRowId = rowId;
-	      state.selectedSourcePaymentId = "";
-	      document.getElementById("sourceActionSelect").value = "Link Source Payment";
-	      document.getElementById("sourceSystemCodeSelect").value = state.supplementLinks[rowId]?.systemCode || "INBOUND";
-	      document.getElementById("sourcePaymentInput").value = state.supplementLinks[rowId]?.paymentId || "";
-	      document.getElementById("sourcePaymentSelectBtn").disabled = true;
-	      renderSourcePaymentResults([]);
-      openModal("#sourcePaymentModal");
-    }
+ 	    function openSourcePaymentModal(rowId) {
+ 	      state.activeSourceRowId = rowId;
+ 	      state.selectedSourcePaymentId = "";
+ 	      document.getElementById("sourceActionSelect").value = "Link Source Payment";
+ 	      document.getElementById("sourceSystemCodeSelect").value = state.supplementLinks[rowId]?.systemCode || "INBOUND";
+ 	      document.getElementById("sourcePaymentInput").value = state.supplementLinks[rowId]?.paymentId || "";
+ 	      document.getElementById("sourcePaymentSelectBtn").disabled = true;
+ 	      renderSourcePaymentResults([]);
+       openModal("#sourcePaymentModal");
+       setTimeout(() => document.getElementById("sourcePaymentInput").focus(), 100);
+     }
 
     function renderSourcePaymentResults(results) {
       const body = document.getElementById("sourcePaymentResultBody");
       if (!results.length) {
         body.innerHTML = `
           <tr>
-            <td colspan="7" style="height:180px;text-align:center;color:#b8b8b8;">No Data</td>
+            <td colspan="7">
+              <div class="source-empty-state">
+                <div class="source-empty-state-icon">📋</div>
+                <div class="source-empty-state-text">No matching payments found</div>
+              </div>
+            </td>
           </tr>
         `;
         return;
       }
 
-	      body.innerHTML = results.map(item => {
-	        const selectable = isSourcePaymentStatusAllowed(item);
-	        const statusTone = selectable ? "success" : "warn";
-	        return `
-	          <tr data-source-payment-option="${escapeHtml(item.paymentId)}" data-source-payment-system-code="${escapeHtml(item.systemCode)}">
-	            <td><input type="radio" name="sourcePaymentCandidate" data-source-payment-radio="${escapeHtml(item.paymentId)}" ${selectable ? "" : "disabled"} /></td>
-	            <td>${escapeHtml(item.systemCode)}</td>
-	            <td>${escapeHtml(item.paymentId)}</td>
-	            <td><span class="refund-tag ${statusTone}">${escapeHtml(item.status)}</span></td>
-	            <td>${escapeHtml(item.paymentType)}</td>
-	            <td>${escapeHtml(item.amount)}</td>
-	            <td class="source-extra-cell">${renderSourceExtraInfo(item.extraInfo)}</td>
-	          </tr>
-	        `;
-	      }).join("");
-	      attachSourceExtraInfoActions(body);
+      function statusTone(status) {
+        const s = String(status || "").trim().toLowerCase();
+        if (s === "success") return "success";
+        if (s === "failed") return "error";
+        if (s === "pending") return "warn";
+        if (s === "cancelled") return "muted";
+        return "warn";
+      }
+
+      body.innerHTML = results.map(item => {
+        const selectable = isSourcePaymentStatusAllowed(item);
+        const tone = statusTone(item.status);
+        const disabledClass = selectable ? "" : "source-disabled-row";
+        return `
+          <tr class="${disabledClass}" data-source-payment-option="${escapeHtml(item.paymentId)}" data-source-payment-system-code="${escapeHtml(item.systemCode)}">
+            <td><input type="radio" name="sourcePaymentCandidate" data-source-payment-radio="${escapeHtml(item.paymentId)}" ${selectable ? "" : "disabled"} /></td>
+            <td>${escapeHtml(item.systemCode)}</td>
+            <td>${escapeHtml(item.paymentId)}</td>
+            <td><span class="refund-tag ${tone}">${escapeHtml(item.status)}</span></td>
+            <td>${escapeHtml(item.paymentType)}</td>
+            <td>${escapeHtml(item.amount)}</td>
+            <td class="source-extra-cell">${renderSourceExtraInfo(item.extraInfo)}</td>
+          </tr>
+        `;
+      }).join("");
+      attachSourceExtraInfoActions(body);
 
 	      body.querySelectorAll("[data-source-payment-option]").forEach(row => {
 	        row.addEventListener("click", () => {
