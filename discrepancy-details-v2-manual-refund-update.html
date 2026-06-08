@@ -5660,7 +5660,7 @@
                   </div>
                   <div class="dropdown-item disabled" data-handle-title="Manual Supplement">
                     <span>Manual Supplement</span>
-                    <span class="info-dot tip" data-tip="Available only when Discrepancy Type is Less TXN, Source Status is empty, and Source Payment ID is empty.">i</span>
+                    <span class="info-dot tip" data-tip="Available only when Discrepancy Type is Less TXN.">i</span>
                   </div>
                   <div class="dropdown-item" data-handle-title="Manual Writeoff">
                     <span>Manual Writeoff</span>
@@ -6367,6 +6367,8 @@
 	          <div class="manual-refund-shell operation-page-shell">
 	            <div class="manual-refund-top">
 	              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
+	              <button class="btn primary" id="supplementTransactionSubmitBtn" disabled>Submit</button>
+	              <span class="supplement-submit-hint" id="supplementSubmitHint">Link source payment before submit</span>
 	              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
 	            </div>
 
