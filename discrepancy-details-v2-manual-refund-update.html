@@ -6493,8 +6493,21 @@
 
             <div class="info-card">
               <div class="info-card-head">Select <span class="operation-title-tag" style="margin-left:10px;">Less TXN</span></div>
+              <div class="info-card-body">
+                <div class="summary-grid wide-summary-grid">
+                  <div><strong>Discrepancy Type :</strong> <span id="supplementDiscrepancyType">Less TXN</span></div>
+                  <div><strong>Counts :</strong> <span id="supplementCount">1</span></div>
+                  <div><strong>Fund Direction :</strong> <span class="green" id="supplementDirection">OUT</span></div>
+                  <div><strong>Amount :</strong> <span id="supplementAmount">RM39.45</span></div>
+                </div>
+                <div class="operation-note">
+                  <span class="operation-note-icon">i</span>
+                  <span>Use this operation when the source payment is confirmed, but Transaction Detail cannot be generated. Please double confirm Transaction Date and Biz Code is correct. When manual supplement Less TXN, SPR will create Transaction Detail with this Transaction Date and Biz Code, and it would affect Payment Incurring and Less TXN write-off date in DFR.</span>
+                </div>
+              </div>
+            </div>
 
-	            <div class="info-card">
+            <div class="info-card">
 	              <div class="info-card-head">Supplement List</div>
               <div class="manual-table-wrap">
                 <table class="manual-table manual-supplement-table">
@@ -7497,6 +7510,72 @@
         updatedAt: "2026-05-18 10:00:00",
         rawData: "\"2026-05-17\", \"Less TXN\", \"RM399.99\"",
         version: "1752614338MS4"
+      },
+      {
+        id: "104...MS005",
+        agreement: "SPM-CARD-VISA",
+        clearingDate: "2026-05-19",
+        type: "Less TXN",
+        spmRef: "SPMMS000000000000005",
+        processingStatus: "Unprocessed",
+        assignee: "",
+        aging: "0 day",
+        ticket: "-",
+        approval: "-",
+        handlingType: "-",
+        source: "SPM_INBOUND",
+        sourceStatus: "",
+        sourcePaymentId: "222",
+        operation: "sync",
+        reconId: "1032000000199MS05",
+        direction: "OUT",
+        amount: "RM156.00",
+        txnTime: "2026-05-18 08:30:00",
+        bankRef: "",
+        channelRef: "",
+        reason: "Refund pending confirmation",
+        referenceId: "TID:T2026MS005001",
+        createdBy: "System",
+        approvedBy: "-",
+        handledBy: "-",
+        latestComment: "-",
+        tags: "",
+        updatedAt: "2026-05-19 10:00:00",
+        rawData: "\"2026-05-18\", \"Less TXN\", \"RM156.00\"",
+        version: "1752614338MS5"
+      },
+      {
+        id: "104...MS006",
+        agreement: "SPM-IPAY-PAYMENT-FPX",
+        clearingDate: "2026-05-20",
+        type: "Less TXN",
+        spmRef: "SPMMS000000000000006",
+        processingStatus: "Unprocessed",
+        assignee: "",
+        aging: "1 day",
+        ticket: "-",
+        approval: "-",
+        handlingType: "-",
+        source: "SPM_OUTBOUND",
+        sourceStatus: "",
+        sourcePaymentId: "888",
+        operation: "sync",
+        reconId: "1032000000199MS06",
+        direction: "OUT",
+        amount: "RM520.00",
+        txnTime: "2026-05-19 15:45:00",
+        bankRef: "",
+        channelRef: "",
+        reason: "Refund pending confirmation",
+        referenceId: "TID:T2026MS006001",
+        createdBy: "System",
+        approvedBy: "-",
+        handledBy: "-",
+        latestComment: "-",
+        tags: "",
+        updatedAt: "2026-05-20 10:00:00",
+        rawData: "\"2026-05-19\", \"Less TXN\", \"RM520.00\"",
+        version: "1752614338MS6"
       }
     ];
 
@@ -8046,8 +8125,7 @@ ${lines}
 
     function isSupplementTransactionEligible(row) {
       return String(row.type || "").trim().toLowerCase() === "less txn"
-        && !hasFieldValue(row.sourceStatus)
-        && !hasFieldValue(row.sourcePaymentId);
+        && !hasFieldValue(row.sourceStatus);
     }
 
     function getDefaultSupplementRows() {
@@ -8056,7 +8134,7 @@ ${lines}
 
     function getSupplementTransactionRows() {
       const selectedRows = state.rows.filter(row => state.selectedRowIds.has(row.id));
-      const rows = selectedRows.length ? selectedRows : getDefaultSupplementRows().slice(0, 1);
+      const rows = selectedRows.length ? selectedRows : getDefaultSupplementRows();
       const row = rows[0];
       const totalAmount = rows.reduce((sum, item) => sum + Number((item.amount || "RM0").replace(/[^\d.-]/g, "")), 0);
       return { rows, row, totalAmount };
@@ -8537,7 +8615,7 @@ ${lines}
 	    function openSupplementTransactionPage() {
 	      const { rows, row, totalAmount } = getSupplementTransactionRows();
 	      if (!rows.every(isSupplementTransactionEligible)) {
-	        showToast("Manual Supplement is only available for Less TXN with empty Source Status and empty Source Payment ID.", "warn");
+	        showToast("Manual Supplement is only available for Less TXN with empty Source Status.", "warn");
 	        return;
 	      }
 	      if (!rows.length) {
@@ -8546,6 +8624,26 @@ ${lines}
 	      }
 	
 	      showOperationPage("supplementTransactionPage", "Manual Supplement");
+
+	      rows.forEach(item => {
+	        if (!state.supplementLinks[item.id] && hasFieldValue(item.sourcePaymentId)) {
+	          const systemCode = normalizeSupplementSystemCode(item.source);
+	          const payment = sourcePaymentOptions.find(p =>
+	            p.paymentId === item.sourcePaymentId && normalizeSupplementSystemCode(p.systemCode) === systemCode
+	          );
+	          if (payment) {
+	            state.supplementLinks[item.id] = {
+	              paymentId: payment.paymentId,
+	              status: payment.status,
+	              systemCode: payment.systemCode,
+	              paymentType: payment.paymentType,
+	              amount: payment.amount,
+	              extraInfo: payment.extraInfo
+	            };
+	          }
+	        }
+	      });
+
 	      document.getElementById("supplementDiscrepancyType").textContent = row.type || "Less TXN";
 	      document.getElementById("supplementCount").textContent = rows.length;
 	      document.getElementById("supplementDirection").textContent = row.direction || "OUT";
