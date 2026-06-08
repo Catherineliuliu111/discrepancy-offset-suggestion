@@ -7373,14 +7373,11 @@
 	      return code;
 	    }
 
-	    function isSourcePaymentStatusAllowed(payment) {
-	      if (!payment) return false;
-	      const systemCode = normalizeSupplementSystemCode(payment.systemCode);
-	      const status = String(payment.status || "").trim().toLowerCase();
-	      if (systemCode === "INBOUND") return status === "success";
-	      if (systemCode === "OUTBOUND") return status === "failed";
-	      return status === "success";
-	    }
+ 	    function isSourcePaymentStatusAllowed(payment) {
+ 	      if (!payment) return false;
+ 	      const status = String(payment.status || "").trim().toLowerCase();
+ 	      return status === "success";
+ 	    }
 
     const tableHeadRow = document.getElementById("tableHeadRow");
     const tableBody = document.getElementById("tableBody");
