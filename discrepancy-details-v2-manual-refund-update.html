@@ -6228,7 +6228,6 @@
 		                      <th>Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
 		                      <th><span class="required-mark">*</span>Biz Code <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
 		                      <th>Agreement Item</th>
-	                      <th>Amount</th>
 	                      <th>Channel Amount</th>
 	                      <th>Extra Info</th>
                     </tr>
@@ -8220,9 +8219,8 @@ ${lines}
 	      document.getElementById("supplementDirection").textContent = row.direction || "OUT";
       document.getElementById("supplementAmount").textContent = rows.length > 1 ? `RM${totalAmount.toFixed(2)}` : row.amount;
 
-      document.getElementById("supplementTransactionTableBody").innerHTML = rows.map(item => {
-        const linked = state.supplementLinks[item.id];
-        const extraInfo = linked?.extraInfo ? renderSourceExtraInfo(linked.extraInfo) : "-";
+      document.getElementById("supplementTransactionTableBody").innerHTML = rows.map((item, idx) => {
+        const extraInfo = `TID:T${String(Math.floor(Math.random() * 900000000) + 100000000)}`;
         return `
         <tr>
           <td>${escapeHtml(item.id)}</td>
@@ -8233,11 +8231,9 @@ ${lines}
 		          <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
 		          <td>${escapeHtml(item.agreement || "-")}</td>
 	          <td>${escapeHtml(item.amount || "-")}</td>
-	          <td>${escapeHtml(item.amount || "-")}</td>
 	          <td>${extraInfo}</td>
         </tr>
       `}).join("");
-      attachSourceExtraInfoActions(document.getElementById("supplementTransactionTableBody"));
 
       document.querySelectorAll("[data-source-payment-row]").forEach(node => {
         node.addEventListener("click", () => openSourcePaymentModal(node.dataset.sourcePaymentRow));
