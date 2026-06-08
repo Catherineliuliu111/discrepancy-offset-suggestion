@@ -7638,7 +7638,9 @@
 
     const offsetSuggestionCount = 12;
     state.rows.slice(0, offsetSuggestionCount).forEach(row => {
-      row.offsetEligible = true;
+      if (!hasFieldValue(row.sourcePaymentId)) {
+        row.offsetEligible = true;
+      }
     });
 
     const sourcePaymentOptions = [
@@ -8674,7 +8676,7 @@ ${lines}
     function renderSourcePaymentCell(row) {
       const linked = state.supplementLinks[row.id];
       if (linked) {
-        return `<span class="inline-field source-payment-link linked" data-source-payment-row="${escapeHtml(row.id)}">${escapeHtml(linked.paymentId)} <span class="field-caret">↗</span></span>`;
+        return `<span class="inline-field source-payment-link linked">${escapeHtml(linked.paymentId)} <span class="field-caret">↗</span></span>`;
       }
       return `<span class="inline-field source-payment-link" data-source-payment-row="${escapeHtml(row.id)}">Link Source Payment <span class="field-caret">＋</span></span>`;
     }
