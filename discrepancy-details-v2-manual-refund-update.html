@@ -6381,9 +6381,6 @@
                   <tbody id="claimFundTableBody"></tbody>
                 </table>
               </div>
-              <div class="table-card-tools">
-                <div class="h-scroll-bar"></div>
-              </div>
               <div class="manual-table-footer">
                 <span>‹</span>
                 <div class="pager-chip">1</div>
@@ -8446,6 +8443,10 @@ ${lines}
           prompt: getClaimPrompt(row.type),
           tableHead: row.type && String(row.type).trim().toLowerCase() === "over txn"
             ? [
+                "Deduct Status",
+                "Deduct Destination",
+                "Destination Name",
+                "Destination No",
                 "Discrepancy Order ID",
                 "Reference ID",
                 "Payment ID",
@@ -8459,6 +8460,10 @@ ${lines}
                 "Extra Info"
               ]
             : [
+                "Deduct Status",
+                "Deduct Destination",
+                "Destination Name",
+                "Destination No",
                 "Discrepancy Order ID",
                 "Reference ID",
                 "Voucher ID",
@@ -8471,6 +8476,10 @@ ${lines}
               ],
           rowCells: row.type && String(row.type).trim().toLowerCase() === "over txn"
             ? [
+                `<select class="operation-select-control compact" required><option value="">Select</option><option>Success</option><option>Failed</option></select>`,
+                `<input class="inline-field-input compact" placeholder="Enter destination" required />`,
+                `<input class="inline-field-input compact" placeholder="Enter name" />`,
+                `<input class="inline-field-input compact" placeholder="Enter number" />`,
                 row.id,
                 cleanReferenceId(row.referenceId),
                 row.reconId,
@@ -8484,6 +8493,10 @@ ${lines}
                 row.latestComment || row.reason || "-"
               ]
             : [
+                `<select class="operation-select-control compact" required><option value="">Select</option><option>Success</option><option>Failed</option></select>`,
+                `<input class="inline-field-input compact" placeholder="Enter destination" required />`,
+                `<input class="inline-field-input compact" placeholder="Enter name" />`,
+                `<input class="inline-field-input compact" placeholder="Enter number" />`,
                 row.id,
                 cleanReferenceId(row.referenceId),
                 row.reconId,
@@ -8535,7 +8548,7 @@ ${lines}
       document.getElementById("claimFundTableHeadRow").innerHTML = (meta.tableHead || []).map(col => `<th>${col}</th>`).join("");
       document.getElementById("claimFundTableBody").innerHTML = `
         <tr>
-          ${(meta.rowCells || []).map(cell => `<td>${escapeHtml(String(cell ?? "-"))}</td>`).join("")}
+          ${(meta.rowCells || []).map((cell, i) => `<td>${i < 4 ? cell : escapeHtml(String(cell ?? "-"))}</td>`).join("")}
         </tr>
       `;
     }
