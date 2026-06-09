@@ -751,73 +751,6 @@
       border-left-color: var(--orange);
     }
 
-    .offset-suggestion-banner {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin: 0 0 14px;
-      padding: 10px 14px;
-      border: 1px solid #ffd591;
-      border-radius: 8px;
-      color: rgba(0, 0, 0, 0.78);
-      background: #fff7e6;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-    }
-
-    .offset-suggestion-banner.hidden {
-      display: none;
-    }
-
-    .offset-suggestion-icon {
-      flex: 0 0 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 18px;
-      height: 18px;
-      margin-top: 1px;
-      border-radius: 50%;
-      color: #fff;
-      background: #faad14;
-      font-size: 12px;
-      font-weight: 700;
-      line-height: 18px;
-    }
-
-    .offset-suggestion-copy {
-      flex: 1 1 auto;
-      min-width: 0;
-      line-height: 20px;
-    }
-
-    .offset-suggestion-count-text {
-      color: #d48806;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .offset-suggestion-link,
-    .offset-suggestion-ignore {
-      color: var(--blue);
-      border: 0;
-      background: transparent;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .offset-suggestion-link:hover,
-    .offset-suggestion-ignore:hover {
-      color: #0958d9;
-      text-decoration: underline;
-    }
-
-    .offset-suggestion-ignore {
-      flex: 0 0 auto;
-      padding: 0;
-      line-height: 20px;
-    }
-
     .refund-modal {
       width: min(1040px, calc(100vw - 48px));
       border-radius: 10px;
@@ -3376,6 +3309,25 @@
       min-width: 126px;
     }
 
+    .inline-field-input {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      color: #1f2937;
+      font: inherit;
+      outline: none;
+      width: 120px;
+    }
+
+    .inline-field-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+
     .field-caret {
       margin-left: auto;
       color: #9aa4b2;
@@ -5812,7 +5764,6 @@
               <div class="relative">
                 <button class="btn" id="uploadBtn">Upload File to Handle ▾</button>
                 <div class="dropdown" id="uploadDropdown">
-                  <div class="dropdown-item" data-upload-title="Offset">Offset</div>
                   <div class="dropdown-item">Import xlsx Template</div>
                 <div class="dropdown-item" data-upload-title="Refund Fund">Refund Fund</div>
                 <div class="dropdown-item" data-upload-title="Claim Fund">Claim Fund</div>
@@ -5822,15 +5773,6 @@
               </div>
               <button class="btn" id="exportBtn">Export All</button>
             </div>
-          </div>
-
-          <div class="offset-suggestion-banner" id="offsetSuggestionBanner">
-            <span class="offset-suggestion-icon">!</span>
-            <div class="offset-suggestion-copy">
-              The system has identified <span class="offset-suggestion-count-text">12</span> discrepancies that may be eligible for offset handling.
-              <a class="offset-suggestion-link" href="./discrepancy-offset-suggestion.html?action=offset&from=details">View Offset Suggestions for Discrepancies</a>
-            </div>
-            <button class="offset-suggestion-ignore" type="button" id="ignoreOffsetSuggestion">Ignore</button>
           </div>
 
           <div class="filters">
@@ -6107,7 +6049,10 @@
                       <th>Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
                       <th><span class="required-mark">*</span>Biz Code <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
                       <th>Business Entity <span class="table-edit-icon">✎</span></th>
-                      <th>Refund status</th>
+                      <th><span class="required-mark">*</span>Refund Status</th>
+                      <th><span class="required-mark">*</span>Refund Destination</th>
+                      <th>Destination Name</th>
+                      <th>Destination No</th>
                       <th>Source Status</th>
                       <th>Channel Amount</th>
                     </tr>
@@ -7070,12 +7015,6 @@
           <div class="field-box"><input id="drawerTicket" placeholder="Ticket ID" /></div>
           <div class="field-box"><input id="drawerReason" placeholder="Reason" /></div>
           <div class="field-box"><input id="drawerTag" placeholder="Tags" /></div>
-          <div class="field-box">
-            <select id="drawerOperationSuggestion" style="border:none;outline:none;flex:1;background:transparent;height:100%;">
-              <option value="">Operation Suggestion</option>
-              <option value="Offset">Offset</option>
-            </select>
-          </div>
         </div>
       </div>
       <div class="drawer-foot">
@@ -7119,7 +7058,7 @@
       { key: "type", label: "Discrepancy Type", visible: true },
       { key: "spmRef", label: "SPM Reference ID", visible: true },
       { key: "processingStatus", label: "Processing Status", visible: true },
-      { key: "operationSuggestion", label: "Operation Suggestion", visible: true },
+
       { key: "assignee", label: "Assignee", visible: true },
       { key: "aging", label: "Aging", visible: true },
       { key: "ticket", label: "Ticket ID", visible: true },
@@ -7570,11 +7509,6 @@
       lastMixedProcessingStatusWarning: false
     };
 
-    const offsetSuggestionCount = 12;
-    state.rows.slice(0, offsetSuggestionCount).forEach(row => {
-      row.offsetEligible = true;
-    });
-
     const prelinkedRows = [
       {
         id: "104...MS005",
@@ -7866,8 +7800,7 @@
             td.innerHTML = `<a class="linkish row-link" data-row-id="${row.id}">${row[col.key]}</a>`;
           } else if (col.key === "processingStatus") {
             td.innerHTML = `<span class="status-pill ${processingStatusClass(row[col.key])}">${row[col.key]}</span>`;
-          } else if (col.key === "operationSuggestion") {
-            td.innerHTML = row.offsetEligible ? `<span style="color:#722ed1;font-weight:700;">Offset</span>` : "-";
+
           } else if (col.key === "operation") {
             td.innerHTML = `<a class="linkish sync-link" data-row-id="${row.id}">sync</a>`;
           } else if (col.key === "rawData") {
@@ -7992,8 +7925,6 @@ ${lines}
       const ticket = document.getElementById("drawerTicket").value.trim().toLowerCase();
       const reason = document.getElementById("drawerReason").value.trim().toLowerCase();
       const tag = document.getElementById("drawerTag").value.trim().toLowerCase();
-      const operationSuggestion = document.getElementById("drawerOperationSuggestion").value;
-
       state.filteredRows = state.rows.filter(row => {
         const statusMatch = state.selectedStatuses.size === 0 || state.selectedStatuses.has(row.processingStatus);
         const dateMatch = (!startDate || row.clearingDate >= startDate) && (!endDate || row.clearingDate <= endDate);
@@ -8008,8 +7939,7 @@ ${lines}
         const reasonMatch = !reason || row.reason.toLowerCase().includes(reason);
         const tagMatch = !tag || (row.tags || "").toLowerCase().includes(tag);
         const refsMatch = state.referenceIds.length === 0 || state.referenceIds.some(ref => row.referenceId.includes(ref) || row.spmRef.includes(ref));
-        const opSuggestionMatch = !operationSuggestion || (operationSuggestion === "Offset" && row.offsetEligible);
-        return statusMatch && dateMatch && agreementMatch && typeMatch && sourceMatch && directionMatch && creatorMatch && keywordMatch && assigneeMatch && ticketMatch && reasonMatch && tagMatch && refsMatch && opSuggestionMatch;
+        return statusMatch && dateMatch && agreementMatch && typeMatch && sourceMatch && directionMatch && creatorMatch && keywordMatch && assigneeMatch && ticketMatch && reasonMatch && tagMatch && refsMatch;
       });
 
       state.currentPage = 1;
@@ -8035,16 +7965,13 @@ ${lines}
       const selectedRows = state.rows.filter(row => state.selectedRowIds.has(row.id));
       const selectedProcessingStatuses = new Set(selectedRows.map(row => row.processingStatus));
       const hasMixedProcessingStatus = selectedProcessingStatuses.size > 1;
-      const hasOffsetEligible = selectedRows.some(row => row.offsetEligible);
       document.getElementById("holdBtn").disabled = !enabled;
-      document.getElementById("handlingBtn").disabled = !enabled || hasMixedProcessingStatus || hasOffsetEligible;
+      document.getElementById("handlingBtn").disabled = !enabled || hasMixedProcessingStatus;
       document.getElementById("holdBtn").classList.toggle("disabled", !enabled);
-      document.getElementById("handlingBtn").classList.toggle("disabled", !enabled || hasMixedProcessingStatus || hasOffsetEligible);
-      document.getElementById("handlingBtn").title = hasOffsetEligible
-        ? "Offset-eligible discrepancies should be handled via Offset."
-        : hasMixedProcessingStatus
-          ? "Please select records with the same Processing Status to operate."
-          : "";
+      document.getElementById("handlingBtn").classList.toggle("disabled", !enabled || hasMixedProcessingStatus);
+      document.getElementById("handlingBtn").title = hasMixedProcessingStatus
+        ? "Please select records with the same Processing Status to operate."
+        : "";
 
       if (hasMixedProcessingStatus && !state.lastMixedProcessingStatusWarning) {
         showToast("Please select records with the same Processing Status to operate.", "warn");
@@ -8057,12 +7984,7 @@ ${lines}
       document.querySelector('[data-handle-title="Manual Clear Diff"]')?.classList.toggle("disabled", !manualClearDiffAllowed);
 
       document.querySelectorAll("#uploadDropdown .dropdown-item").forEach(item => {
-        const isOffsetItem = item.dataset.uploadTitle === "Offset";
-        if (hasOffsetEligible) {
-          item.classList.toggle("disabled", !isOffsetItem);
-        } else {
-          item.classList.remove("disabled");
-        }
+        item.classList.remove("disabled");
       });
     }
 
@@ -8344,11 +8266,22 @@ ${lines}
           <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
           <td><span class="inline-field compact">SHOPEE-MY <span class="field-caret">⌄</span></span></td>
           <td>
-            <select class="operation-select-control compact">
+            <select class="operation-select-control compact" required>
+              <option value="">Select</option>
               <option>Success</option>
               <option>Failed</option>
             </select>
           </td>
+          <td>
+            <select class="operation-select-control compact" required>
+              <option value="">Select</option>
+              <option>Wallet</option>
+              <option>Bank Account</option>
+              <option>SOF</option>
+            </select>
+          </td>
+          <td><input class="inline-field-input compact" placeholder="Enter name" /></td>
+          <td><input class="inline-field-input compact" placeholder="Enter number" /></td>
           <td>${escapeHtml(item.sourceStatus || "-")}</td>
           <td>${escapeHtml(item.amount)}</td>
         </tr>
@@ -9027,11 +8960,7 @@ ${lines}
       const item = event.target.closest(".dropdown-item");
       if (!item) return;
       if (item.classList.contains("disabled")) return;
-      if (item.dataset.uploadTitle === "Offset") {
-        const selectedIds = Array.from(state.selectedRowIds);
-        showToast(`Offset suggested for ${selectedIds.length} discrepancy(ies). Redirecting to Offset page...`, "success");
-        window.location.href = "./discrepancy-offset-suggestion.html?action=offset&from=details";
-      } else if (item.dataset.uploadTitle === "Refund Fund" || item.dataset.uploadTitle === "Confirm Refund Result") {
+      if (item.dataset.uploadTitle === "Refund Fund" || item.dataset.uploadTitle === "Confirm Refund Result") {
         const title = item.dataset.uploadTitle || "Refund Fund";
         document.querySelector("#uploadManualRefundModal").dataset.uploadTitle = title;
         openModal("#uploadManualRefundModal");
@@ -9131,10 +9060,6 @@ ${lines}
     document.getElementById("holdBtn").addEventListener("click", () => showToast(`Moved ${state.selectedRowIds.size} rows to hold queue`, "warn"));
 	    document.getElementById("supplementTransactionSubmitBtn")?.addEventListener("click", () => showToast("Manual Supplement submitted for approval.", "success"));
     document.getElementById("closeActiveTab").addEventListener("click", () => showToast("Active tab cannot be closed in the clone page", "warn"));
-    document.getElementById("ignoreOffsetSuggestion").addEventListener("click", () => {
-      document.getElementById("offsetSuggestionBanner").classList.add("hidden");
-      showToast("Offset suggestion hidden for this visit.", "warn");
-    });
     document.querySelectorAll("[data-operation-close]").forEach(btn => {
       btn.addEventListener("click", closeOperationPage);
     });
