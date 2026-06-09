@@ -6060,9 +6060,6 @@
                   <tbody id="confirmRefundTableBody"></tbody>
                 </table>
               </div>
-              <div class="table-card-tools">
-                <div class="h-scroll-bar"></div>
-              </div>
               <div class="manual-table-footer">
                 <span>‹</span>
                 <div class="pager-chip">1</div>
@@ -8265,14 +8262,7 @@ ${lines}
               <option>Failed</option>
             </select>
           </td>
-          <td>
-            <select class="operation-select-control compact" required>
-              <option value="">Select</option>
-              <option>Wallet</option>
-              <option>Bank Account</option>
-              <option>SOF</option>
-            </select>
-          </td>
+          <td><input class="inline-field-input compact" placeholder="Enter destination" required /></td>
           <td><input class="inline-field-input compact" placeholder="Enter name" /></td>
           <td><input class="inline-field-input compact" placeholder="Enter number" /></td>
           <td>${escapeHtml(item.id)}</td>
