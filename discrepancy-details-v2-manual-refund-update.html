@@ -3657,6 +3657,38 @@
       font-size: 14px;
     }
 
+    #sourcePaymentNotFoundBox {
+      padding: 0 28px 12px;
+    }
+
+    #sourcePaymentNotFoundBox .source-not-found-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+
+    #sourcePaymentNotFoundBox .source-not-found-label {
+      color: #4b5563;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    #sourcePaymentNotFoundBox .source-not-found-value {
+      color: #1677ff;
+      font-weight: 700;
+      font-size: 13px;
+      flex: 1;
+    }
+
+    #sourcePaymentNotFoundBox .source-not-found-actions {
+      display: flex;
+      gap: 8px;
+    }
+
     #sourcePaymentModal .source-disabled-row td {
       opacity: 0.45;
       background: #fafbfc;
@@ -6965,25 +6997,39 @@
       <div class="source-filter-row">
         <label class="source-field">
           <span><span class="required-mark">*</span> Action</span>
-	          <select id="sourceActionSelect" disabled>
+	          <select id="sourceActionSelect">
 	            <option value="Link Source Payment" selected>Link Source Payment</option>
+	            <option value="Link Source Payment (Payment Not Found)">Link Source Payment (Payment Not Found)</option>
           </select>
         </label>
-        <label class="source-field">
+        <label class="source-field" id="sourceSystemCodeField">
           <span><span class="required-mark">*</span> System Code</span>
           <select id="sourceSystemCodeSelect">
-	            <option value="INBOUND">INBOUND</option>
-	            <option value="OUTBOUND">OUTBOUND</option>
+	            <option value="APCC">APCC</option>
+	            <option value="APM_INBOUND">APM_INBOUND</option>
+	            <option value="SPM_INBOUND">SPM_INBOUND</option>
+	            <option value="SPM_OUTBOUND">SPM_OUTBOUND</option>
+	            <option value="APM_OUTBOUND">APM_OUTBOUND</option>
           </select>
         </label>
-        <label class="source-field">
+        <label class="source-field" id="sourcePaymentIdField">
           <span><span class="required-mark">*</span> Payment ID</span>
           <input id="sourcePaymentInput" placeholder="Enter Payment ID" />
         </label>
         <button class="btn primary" id="sourcePaymentSearchBtn">Search</button>
       </div>
-      <div class="source-hint">Select a payment to link. Only eligible payments can be confirmed.</div>
-      <div class="source-table-wrap">
+      <div id="sourcePaymentNotFoundBox" class="hidden">
+        <div class="source-not-found-row">
+          <span class="source-not-found-label">System Code :</span>
+          <span class="source-not-found-value" id="sourceNotFoundSystemCode">-</span>
+          <span class="source-not-found-actions">
+            <button class="btn" id="sourceNotFoundRemoveBtn">Remove</button>
+            <button class="btn primary" id="sourceNotFoundConfirmBtn">Confirm</button>
+          </span>
+        </div>
+      </div>
+      <div class="source-hint" id="sourcePaymentHint">Select a payment to link. Only eligible payments can be confirmed.</div>
+      <div class="source-table-wrap" id="sourcePaymentTableWrap">
         <table class="source-table">
           <thead>
             <tr>
@@ -7800,8 +7846,9 @@
 
  	    function isSourcePaymentStatusAllowed(payment) {
  	      if (!payment) return false;
- 	      const systemCode = normalizeSupplementSystemCode(payment.systemCode);
  	      const status = String(payment.status || "").trim().toLowerCase();
+ 	      if (status === "payment not found") return true;
+ 	      const systemCode = normalizeSupplementSystemCode(payment.systemCode);
  	      if (status === "pending" || status === "cancelled") return false;
  	      if (systemCode === "INBOUND") return status === "success";
  	      if (systemCode === "OUTBOUND") return status === "success" || status === "failed";
@@ -8705,7 +8752,8 @@ ${lines}
     function renderSourcePaymentCell(row) {
       const linked = state.supplementLinks[row.id];
       if (linked) {
-        return `<span class="inline-field source-payment-link linked">${escapeHtml(linked.paymentId)} <span class="field-caret">↗</span></span>`;
+        const label = linked.status === "Payment Not Found" ? linked.systemCode : linked.paymentId;
+        return `<span class="inline-field source-payment-link linked">${escapeHtml(label)} <span class="field-caret">↗</span></span>`;
       }
       return `<span class="inline-field source-payment-link" data-source-payment-row="${escapeHtml(row.id)}">Link Source Payment <span class="field-caret">＋</span></span>`;
     }
@@ -8730,17 +8778,37 @@ ${lines}
 		      }
 		    }
 
+ 	    function toggleSourcePaymentMode(action) {
+ 	      const isNotFound = action === "Link Source Payment (Payment Not Found)";
+ 	      document.getElementById("sourcePaymentIdField").classList.toggle("hidden", isNotFound);
+ 	      document.getElementById("sourcePaymentTableWrap").classList.toggle("hidden", isNotFound);
+ 	      document.getElementById("sourcePaymentHint").classList.toggle("hidden", isNotFound);
+ 	      document.getElementById("sourcePaymentNotFoundBox").classList.toggle("hidden", !isNotFound);
+ 	      document.getElementById("sourcePaymentSelectBtn").classList.toggle("hidden", isNotFound);
+ 	      if (isNotFound) {
+ 	        document.getElementById("sourceNotFoundSystemCode").textContent = "-";
+ 	        document.getElementById("sourceNotFoundConfirmBtn").disabled = true;
+ 	      }
+ 	    }
+
  	    function openSourcePaymentModal(rowId) {
  	      state.activeSourceRowId = rowId;
  	      state.selectedSourcePaymentId = "";
- 	      document.getElementById("sourceActionSelect").value = "Link Source Payment";
- 	      document.getElementById("sourceSystemCodeSelect").value = state.supplementLinks[rowId]?.systemCode || "INBOUND";
- 	      document.getElementById("sourcePaymentInput").value = state.supplementLinks[rowId]?.paymentId || "";
+ 	      const linked = state.supplementLinks[rowId];
+ 	      const isNotFound = linked && linked.status === "Payment Not Found";
+ 	      document.getElementById("sourceActionSelect").value = isNotFound ? "Link Source Payment (Payment Not Found)" : "Link Source Payment";
+ 	      document.getElementById("sourceSystemCodeSelect").value = linked?.systemCode || "APCC";
+ 	      document.getElementById("sourcePaymentInput").value = linked?.paymentId || "";
  	      document.getElementById("sourcePaymentSelectBtn").disabled = true;
  	      renderSourcePaymentResults([]);
-       openModal("#sourcePaymentModal");
-       setTimeout(() => document.getElementById("sourcePaymentInput").focus(), 100);
-     }
+ 	      toggleSourcePaymentMode(document.getElementById("sourceActionSelect").value);
+ 	      if (isNotFound) {
+ 	        document.getElementById("sourceNotFoundSystemCode").textContent = linked.systemCode;
+ 	        document.getElementById("sourceNotFoundConfirmBtn").disabled = false;
+ 	      }
+        openModal("#sourcePaymentModal");
+        setTimeout(() => document.getElementById("sourcePaymentInput").focus(), 100);
+      }
 
     function renderSourcePaymentResults(results) {
       const body = document.getElementById("sourcePaymentResultBody");
@@ -8811,8 +8879,16 @@ ${lines}
 	    }
 
     function searchSourcePayments() {
-      const keyword = document.getElementById("sourcePaymentInput").value.trim();
+      const action = document.getElementById("sourceActionSelect").value;
       const systemCode = document.getElementById("sourceSystemCodeSelect").value;
+
+      if (action === "Link Source Payment (Payment Not Found)") {
+        document.getElementById("sourceNotFoundSystemCode").textContent = systemCode;
+        document.getElementById("sourceNotFoundConfirmBtn").disabled = false;
+        return;
+      }
+
+      const keyword = document.getElementById("sourcePaymentInput").value.trim();
       let results = sourcePaymentOptions.filter(item => item.systemCode === systemCode);
 
       if (keyword) {
@@ -8829,14 +8905,47 @@ ${lines}
       renderSourcePaymentResults(results);
     }
 
-	    function selectSourcePayment() {
-	      const systemCode = document.getElementById("sourceSystemCodeSelect").value;
-	      const payment = sourcePaymentOptions.find(item => item.systemCode === systemCode && item.paymentId === state.selectedSourcePaymentId);
-	      if (!isSourcePaymentStatusAllowed(payment) || !state.activeSourceRowId) return;
-	      linkSourcePayment(state.activeSourceRowId, payment);
-	      closeModal("#sourcePaymentModal");
-	      openSupplementTransactionPage();
-    }
+ 	    function selectSourcePayment() {
+ 	      const action = document.getElementById("sourceActionSelect").value;
+ 	      if (!state.activeSourceRowId) return;
+
+ 	      if (action === "Link Source Payment (Payment Not Found)") {
+ 	        const systemCode = document.getElementById("sourceSystemCodeSelect").value;
+ 	        linkSystemCodeOnly(state.activeSourceRowId, systemCode);
+ 	        closeModal("#sourcePaymentModal");
+ 	        openSupplementTransactionPage();
+ 	        return;
+ 	      }
+
+ 	      const systemCode = document.getElementById("sourceSystemCodeSelect").value;
+ 	      const payment = sourcePaymentOptions.find(item => item.systemCode === systemCode && item.paymentId === state.selectedSourcePaymentId);
+ 	      if (!isSourcePaymentStatusAllowed(payment) || !state.activeSourceRowId) return;
+ 	      linkSourcePayment(state.activeSourceRowId, payment);
+ 	      closeModal("#sourcePaymentModal");
+ 	      openSupplementTransactionPage();
+     }
+
+ 	    function linkSourcePayment(rowId, payment) {
+ 	      state.supplementLinks[rowId] = {
+ 	        paymentId: payment.paymentId,
+ 	        status: payment.status,
+ 	        systemCode: payment.systemCode,
+ 	        paymentType: payment.paymentType,
+ 	        amount: payment.amount,
+ 	        extraInfo: payment.extraInfo
+ 	      };
+ 	    }
+
+ 	    function linkSystemCodeOnly(rowId, systemCode) {
+ 	      state.supplementLinks[rowId] = {
+ 	        paymentId: "",
+ 	        status: "Payment Not Found",
+ 	        systemCode: systemCode,
+ 	        paymentType: "",
+ 	        amount: "",
+ 	        extraInfo: ""
+ 	      };
+ 	    }
 
     function parsePaymentIds(value) {
       return String(value || "")
@@ -9031,6 +9140,13 @@ ${lines}
       btn.addEventListener("click", () => closeModal(btn.dataset.close));
     });
 
+    document.getElementById("sourceActionSelect").addEventListener("change", (event) => {
+      toggleSourcePaymentMode(event.target.value);
+      document.getElementById("sourceSystemCodeSelect").value = "APCC";
+      document.getElementById("sourcePaymentInput").value = "";
+      renderSourcePaymentResults([]);
+      document.getElementById("sourcePaymentSelectBtn").disabled = true;
+    });
     document.getElementById("sourcePaymentSearchBtn").addEventListener("click", searchSourcePayments);
     document.getElementById("sourcePaymentInput").addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -9039,6 +9155,11 @@ ${lines}
       }
     });
     document.getElementById("sourcePaymentSelectBtn").addEventListener("click", selectSourcePayment);
+    document.getElementById("sourceNotFoundConfirmBtn").addEventListener("click", selectSourcePayment);
+    document.getElementById("sourceNotFoundRemoveBtn").addEventListener("click", () => {
+      document.getElementById("sourceNotFoundSystemCode").textContent = "-";
+      document.getElementById("sourceNotFoundConfirmBtn").disabled = true;
+    });
 	    document.getElementById("batchLinkPaymentBtn")?.addEventListener("click", openBatchSourcePaymentModal);
     document.getElementById("batchPaymentMultipleBtn").addEventListener("click", openMultipleInputModal);
     document.getElementById("multiplePaymentInput").addEventListener("input", updateMultiplePaymentCount);
