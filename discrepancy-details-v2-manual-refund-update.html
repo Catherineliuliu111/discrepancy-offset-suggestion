@@ -6042,6 +6042,10 @@
                 <table class="manual-table confirm-refund-table">
                   <thead>
                     <tr id="confirmRefundTableHeadRow">
+                      <th><span class="required-mark">*</span>Refund Status</th>
+                      <th><span class="required-mark">*</span>Refund Destination</th>
+                      <th>Destination Name</th>
+                      <th>Destination No</th>
                       <th>Discrepancy Order ID</th>
                       <th>Reference ID</th>
                       <th>Voucher ID</th>
@@ -6049,10 +6053,6 @@
                       <th>Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
                       <th><span class="required-mark">*</span>Biz Code <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
                       <th>Business Entity <span class="table-edit-icon">✎</span></th>
-                      <th><span class="required-mark">*</span>Refund Status</th>
-                      <th><span class="required-mark">*</span>Refund Destination</th>
-                      <th>Destination Name</th>
-                      <th>Destination No</th>
                       <th>Source Status</th>
                       <th>Channel Amount</th>
                     </tr>
@@ -8258,13 +8258,6 @@ ${lines}
       const confirmRows = selectedRows.length ? selectedRows : [row];
       document.getElementById("confirmRefundTableBody").innerHTML = confirmRows.map(item => `
         <tr>
-          <td>${escapeHtml(item.id)}</td>
-          <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
-          <td>${escapeHtml(item.reconId)}</td>
-          <td>${escapeHtml(item.source)}</td>
-          <td><span class="inline-field compact">${escapeHtml(currentIsoDate())}<span class="field-caret">□</span></span></td>
-          <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
-          <td><span class="inline-field compact">SHOPEE-MY <span class="field-caret">⌄</span></span></td>
           <td>
             <select class="operation-select-control compact" required>
               <option value="">Select</option>
@@ -8282,6 +8275,13 @@ ${lines}
           </td>
           <td><input class="inline-field-input compact" placeholder="Enter name" /></td>
           <td><input class="inline-field-input compact" placeholder="Enter number" /></td>
+          <td>${escapeHtml(item.id)}</td>
+          <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
+          <td>${escapeHtml(item.reconId)}</td>
+          <td>${escapeHtml(item.source)}</td>
+          <td><span class="inline-field compact">${escapeHtml(currentIsoDate())}<span class="field-caret">□</span></span></td>
+          <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
+          <td><span class="inline-field compact">SHOPEE-MY <span class="field-caret">⌄</span></span></td>
           <td>${escapeHtml(item.sourceStatus || "-")}</td>
           <td>${escapeHtml(item.amount)}</td>
         </tr>
