@@ -779,6 +779,76 @@
     .toast.show {
       display: block;
     }
+
+    .offset-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 18px;
+      padding: 12px 16px;
+      border: 1px solid var(--blue-line);
+      border-radius: 6px;
+      background: var(--blue-bg);
+      color: rgba(0, 0, 0, 0.72);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .offset-banner .banner-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 28px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .offset-banner .banner-text {
+      flex: 1 1 auto;
+    }
+
+    .offset-banner .banner-text strong {
+      color: var(--primary);
+    }
+
+    .field-date.disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      background: #f0f0f0;
+    }
+
+    .field-date.disabled .date-value {
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    .field-date.disabled .filter-calendar {
+      color: rgba(0, 0, 0, 0.25);
+    }
+
+    .field-date.disabled:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.78);
+      color: #fff;
+      font-size: 11px;
+      white-space: nowrap;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .field-date {
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -797,20 +867,22 @@
           </div>
         </div>
         <div class="actions">
-          <button class="btn primary" type="button">Hold Handling</button>
-          <button class="btn" type="button">Export All</button>
-          <button class="btn" type="button">Upload File to Handle</button>
           <button class="btn warning" type="button">Decline Suggestion</button>
           <button class="btn confirm" type="button" id="confirmSuggestBtn">Confirm Suggestion</button>
         </div>
       </header>
 
+      <div class="offset-banner">
+        <span class="banner-icon">⛓</span>
+        <span class="banner-text">Based on the existing suggestions, you can also choose to <strong>offset (balance)</strong> the amounts between matched discrepancies. This will net out the payable and receivable amounts where applicable.</span>
+      </div>
+
       <div class="filters">
-        <div class="field field-date">
+        <div class="field field-date disabled" data-tooltip="The suggestion pool only queries data with Clearing Date within two weeks of the system date.">
           <span class="filter-prefix">Clearing Date <span class="filter-caret">⌄</span></span>
-          <span class="date-value">2026-05-28</span>
+          <span class="date-value" id="clearingDateFrom"></span>
           <span class="date-arrow">→</span>
-          <span class="date-value">2026-06-04</span>
+          <span class="date-value" id="clearingDateTo"></span>
           <span class="filter-calendar">▣</span>
         </div>
         <div class="field">
@@ -877,11 +949,12 @@
   <script>
     const columns = {
       offset: [
-        ["", 42, "left-order first-group"], ["Discrepancy Order ID", 142, "left-order"], ["Agreement Item", 210, "left-order"],
-        ["Discrepancy Type", 110, "left-order"], ["Fund Direction", 108, "left-order"], ["Reference ID", 138, "left-order"],
-        ["Amount", 96, "left-order last-group"], ["Operate Suggestion", 128, "operation-cell"], ["Discrepancy Order ID", 142, "right-order first-group"],
-        ["Agreement Item", 210, "right-order"], ["Discrepancy Type", 110, "right-order"], ["Fund Direction", 108, "right-order"],
-        ["Reference ID", 138, "right-order"], ["Amount", 96, "right-order last-group"], ["Matching Reason", 460, "matching-rule-cell"]
+        ["", 42, "left-order first-group"], ["Discrepancy Order ID", 142, "left-order"], ["Clearing Date", 110, "left-order"],
+        ["Agreement Item", 180, "left-order"], ["Discrepancy Type", 110, "left-order"], ["Fund Direction", 108, "left-order"],
+        ["Reference ID", 138, "left-order"], ["Amount", 96, "left-order last-group"],
+        ["Discrepancy Order ID", 142, "right-order first-group"], ["Clearing Date", 110, "right-order"],
+        ["Agreement Item", 180, "right-order"], ["Discrepancy Type", 110, "right-order"], ["Fund Direction", 108, "right-order"],
+        ["Reference ID", 138, "right-order"], ["Amount", 96, "right-order last-group"], ["Matching Reason", 400, "matching-rule-cell"]
       ]
     };
 
@@ -914,6 +987,7 @@
           <span class="tag reason">Amount</span>
           <span class="tag reason">${fundRule}</span>
           ${row.matchReason ? `<span class="tag ${matchReasonClass}">${row.matchReason}</span>` : ""}
+          <span class="tag reason">CD Gap: ${row.matchingClearingDateGap}d</span>
         </div>
       `;
     };
@@ -945,6 +1019,18 @@
       "less-less": "Less Payment & Refund"
     };
 
+    const padDate = (value) => String(value).padStart(2, "0");
+    const formatDate = (date) => `${date.getFullYear()}-${padDate(date.getMonth() + 1)}-${padDate(date.getDate())}`;
+
+    const setClearingDateRange = () => {
+      const now = new Date();
+      const to = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const from = new Date(to);
+      from.setDate(from.getDate() - 13);
+      document.getElementById("clearingDateFrom").textContent = formatDate(from);
+      document.getElementById("clearingDateTo").textContent = formatDate(to);
+    };
+
     let submittedFilters = {
       agreement: "",
       offsetType: "",
@@ -957,6 +1043,26 @@
     const formatUpdateTime = (date) => {
       const pad = (value) => String(value).padStart(2, "0");
       return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    };
+
+    const generateClearingDates = (index, scenario) => {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const twoWeeksAgo = new Date(today);
+      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+      const isWithinWindow = index % 4 !== 0;
+      const gap = scenario === "over-less" ? 3 : 7;
+      const baseDate = isWithinWindow
+        ? new Date(twoWeeksAgo.getTime() + Math.random() * (today.getTime() - twoWeeksAgo.getTime() - gap * 86400000))
+        : new Date(twoWeeksAgo.getTime() - (1 + Math.random() * 3) * 86400000);
+      const leftDate = new Date(baseDate);
+      const rightDate = new Date(baseDate);
+      rightDate.setDate(rightDate.getDate() + gap);
+      return {
+        leftClearingDate: formatDate(leftDate),
+        rightClearingDate: formatDate(rightDate),
+        matchingClearingDateGap: gap
+      };
     };
 
     const makeAllRows = (config) => Array.from({ length: config.rows }, (_, index) => {
@@ -972,6 +1078,7 @@
       const leftType = scenario === "less-less" ? "Less TXN" : "Over TXN";
       const rightType = scenario === "over-over" ? "Over TXN" : "Less TXN";
       const agreement = index % 4 === 1 ? "SPM MY - Wallet" : index % 4 === 2 ? "SPM MY - Bank" : "Alto-ShopeePay-0918-Payout-AS";
+      const { leftClearingDate, rightClearingDate, matchingClearingDateGap } = generateClearingDates(index, scenario);
       return {
         checked: index === 0,
         key: `${currentAction}-${index}`,
@@ -989,7 +1096,10 @@
         matchReason,
         sameTypeOffset,
         systemCode: "SPM_INBOUND",
-        sourcePaymentId: sourcePaymentIds[index % sourcePaymentIds.length]
+        sourcePaymentId: sourcePaymentIds[index % sourcePaymentIds.length],
+        leftClearingDate,
+        rightClearingDate,
+        matchingClearingDateGap
       };
     });
 
@@ -1021,36 +1131,35 @@
       window.setTimeout(() => toast.classList.remove("show"), 1600);
     };
 
-    const bridgeCell = () => `<td class="arrow-cell operation-cell"><div class="match-bridge"><span class="offset-bridge"><span class="offset-badge">Offset</span></span></div></td>`;
-
     const commonLeftCells = (row, config) => `
       <td class="check-cell left-order first-group"><input class="row-check" type="checkbox" data-row-key="${row.key}" ${row.checked ? "checked" : ""} /></td>
       <td class="left-order"><a class="link" href="#">${row.leftId}</a></td>
+      <td class="left-order">${row.leftClearingDate}</td>
       <td class="left-order">${row.agreement}</td>
       <td class="left-order">${typeTag(row.leftType)}</td>
       <td class="left-order">${fundTag(row.leftFund)}</td>
       <td class="left-order"><span class="ref">${row.leftRef}</span></td>
       <td class="left-order last-group">${row.amount}</td>
-      ${bridgeCell(config)}
     `;
 
     const renderOffsetRow = (row, config) => `
       <tr data-row-key="${row.key}" class="${confirmedRows.has(row.key) ? "confirmed" : ""}">
         ${commonLeftCells(row, config)}
         <td class="right-order first-group"><a class="link" href="#">${row.rightId}</a></td>
+        <td class="right-order">${row.rightClearingDate}</td>
         <td class="right-order">${row.agreement}</td>
         <td class="right-order">${typeTag(row.rightType)}</td>
         <td class="right-order">${fundTag(row.rightFund)}</td>
         <td class="right-order"><span class="ref">${row.rightRef}</span></td>
         <td class="right-order last-group"><span class="amount-value">${row.amount}</span></td>
-        <td class="matching-rule-cell" title="Agreement Item / Amount / ${row.sameTypeOffset ? "Opposite Fund Direction" : `Fund Direction / ${row.matchReason}`}">${matchingRuleTags(row)}</td>
+        <td class="matching-rule-cell" title="Agreement Item / Amount / ${row.sameTypeOffset ? "Opposite Fund Direction" : `Fund Direction / ${row.matchReason}`} / CD Gap: ${row.matchingClearingDateGap}d">${matchingRuleTags(row)}</td>
       </tr>
     `;
 
     const render = () => {
       const config = configs[currentAction];
       const activeColumns = columns[config.columnSet];
-      document.getElementById("resultsTable").style.minWidth = "2240px";
+      document.getElementById("resultsTable").style.minWidth = "2340px";
       document.getElementById("colGroup").innerHTML = activeColumns.map(([, width]) => `<col style="width:${width}px" />`).join("");
       document.getElementById("headerRow").innerHTML = activeColumns.map(([label, , className]) => `<th class="${className || ""}">${label}</th>`).join("");
       document.getElementById("summaryTitle").textContent = config.title;
@@ -1081,7 +1190,8 @@
       window.setTimeout(() => {
         rematchVersion += 1;
         latestUpdateTime = new Date();
-        render();
+    setClearingDateRange();
+    render();
         refreshBtn.disabled = false;
         refreshBtn.textContent = "Refresh";
         toast.textContent = "Offset suggestions refreshed.";
@@ -1139,6 +1249,7 @@
       url.searchParams.set("action", currentAction);
       window.history.replaceState(null, "", url);
     }
+    setClearingDateRange();
     render();
   </script>
 </body>
