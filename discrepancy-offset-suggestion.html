@@ -816,6 +816,40 @@
       color: var(--primary);
     }
 
+    .help-tip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.35);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 15px;
+      cursor: help;
+      margin-left: 4px;
+      position: relative;
+    }
+
+    .help-tip:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 10px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.82);
+      color: #fff;
+      font-size: 11px;
+      line-height: 1.4;
+      white-space: nowrap;
+      z-index: 20;
+      pointer-events: none;
+    }
+
     .field-date.disabled {
       opacity: 0.7;
       cursor: not-allowed;
@@ -872,14 +906,9 @@
         </div>
       </header>
 
-      <div class="offset-banner">
-        <span class="banner-icon">⛓</span>
-        <span class="banner-text">Based on the existing suggestions, you can also choose to <strong>offset (balance)</strong> the amounts between matched discrepancies. This will net out the payable and receivable amounts where applicable.</span>
-      </div>
-
       <div class="filters">
         <div class="field field-date disabled" data-tooltip="The suggestion pool only queries data with Clearing Date within two weeks of the system date.">
-          <span class="filter-prefix">Clearing Date <span class="filter-caret">⌄</span></span>
+          <span class="filter-prefix">Clearing Date <span class="filter-caret">⌄</span> <span class="help-tip" data-tooltip="the system filters Discrepancy Order data from the past 14 days to generate offset matching suggestions by default.">?</span></span>
           <span class="date-value" id="clearingDateFrom"></span>
           <span class="date-arrow">→</span>
           <span class="date-value" id="clearingDateTo"></span>
@@ -952,6 +981,7 @@
         ["", 42, "left-order first-group"], ["Discrepancy Order ID", 142, "left-order"], ["Clearing Date", 110, "left-order"],
         ["Agreement Item", 180, "left-order"], ["Discrepancy Type", 110, "left-order"], ["Fund Direction", 108, "left-order"],
         ["Reference ID", 138, "left-order"], ["Amount", 96, "left-order last-group"],
+        ["", 82, "operation-cell"],
         ["Discrepancy Order ID", 142, "right-order first-group"], ["Clearing Date", 110, "right-order"],
         ["Agreement Item", 180, "right-order"], ["Discrepancy Type", 110, "right-order"], ["Fund Direction", 108, "right-order"],
         ["Reference ID", 138, "right-order"], ["Amount", 96, "right-order last-group"], ["Matching Reason", 400, "matching-rule-cell"]
@@ -1131,6 +1161,8 @@
       window.setTimeout(() => toast.classList.remove("show"), 1600);
     };
 
+    const bridgeCell = () => `<td class="arrow-cell operation-cell"><div class="match-bridge"><span class="offset-bridge"><span class="offset-badge">Offset</span></span></div></td>`;
+
     const commonLeftCells = (row, config) => `
       <td class="check-cell left-order first-group"><input class="row-check" type="checkbox" data-row-key="${row.key}" ${row.checked ? "checked" : ""} /></td>
       <td class="left-order"><a class="link" href="#">${row.leftId}</a></td>
@@ -1140,6 +1172,7 @@
       <td class="left-order">${fundTag(row.leftFund)}</td>
       <td class="left-order"><span class="ref">${row.leftRef}</span></td>
       <td class="left-order last-group">${row.amount}</td>
+      ${bridgeCell()}
     `;
 
     const renderOffsetRow = (row, config) => `
@@ -1159,7 +1192,7 @@
     const render = () => {
       const config = configs[currentAction];
       const activeColumns = columns[config.columnSet];
-      document.getElementById("resultsTable").style.minWidth = "2340px";
+      document.getElementById("resultsTable").style.minWidth = "2422px";
       document.getElementById("colGroup").innerHTML = activeColumns.map(([, width]) => `<col style="width:${width}px" />`).join("");
       document.getElementById("headerRow").innerHTML = activeColumns.map(([label, , className]) => `<th class="${className || ""}">${label}</th>`).join("");
       document.getElementById("summaryTitle").textContent = config.title;
