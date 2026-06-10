@@ -7709,7 +7709,7 @@
 
     const sourcePaymentOptions = [
 	      {
-	        systemCode: "INBOUND",
+	        systemCode: "APCC",
 	        paymentId: "111",
 	        status: "Success",
 	        paymentType: "FPX Payment",
@@ -7720,7 +7720,7 @@
 	        }
 	      },
 	      {
-	        systemCode: "INBOUND",
+	        systemCode: "SPM_INBOUND",
 	        paymentId: "222",
 	        status: "Success",
 	        paymentType: "FPX Payment",
@@ -7731,7 +7731,7 @@
 	        }
 	      },
 	      {
-	        systemCode: "INBOUND",
+	        systemCode: "APM_INBOUND",
 	        paymentId: "333",
 	        status: "Failed",
 	        paymentType: "FPX Payment",
@@ -7742,7 +7742,7 @@
 	        }
 	      },
 	      {
-	        systemCode: "INBOUND",
+	        systemCode: "SPM_INBOUND",
 	        paymentId: "SPM520990225753480617",
 	        status: "Success",
 	        paymentType: "FPX Payment",
@@ -7753,7 +7753,7 @@
 	        }
 	      },
 	      {
-	        systemCode: "INBOUND",
+	        systemCode: "APM_INBOUND",
 	        paymentId: "SPM520990225753480618",
 	        status: "Success",
 	        paymentType: "FPX Payment",
@@ -7764,7 +7764,7 @@
 	        }
 	      },
 	      {
-	        systemCode: "INBOUND",
+	        systemCode: "SPM_INBOUND",
 	        paymentId: "SPM520990225753480619",
 	        status: "Processing",
 	        paymentType: "FPX Payment",
@@ -7775,7 +7775,7 @@
 	        }
 	      },
 	      {
-	        systemCode: "OUTBOUND",
+	        systemCode: "SPM_OUTBOUND",
 	        paymentId: "444",
 	        status: "Failed",
 	        paymentType: "Payout",
@@ -7786,7 +7786,7 @@
 	        }
 	      },
 	      {
-	        systemCode: "OUTBOUND",
+	        systemCode: "APM_OUTBOUND",
 	        paymentId: "555",
 	        status: "Failed",
 	        paymentType: "Payout",
@@ -7797,7 +7797,7 @@
 	        }
 	      },
 	      {
-	        systemCode: "OUTBOUND",
+	        systemCode: "SPM_OUTBOUND",
 	        paymentId: "666",
 	        status: "Pending",
 	        paymentType: "Payout",
@@ -7808,7 +7808,7 @@
 	        }
 	      },
 	      {
-	        systemCode: "OUTBOUND",
+	        systemCode: "APM_OUTBOUND",
 	        paymentId: "777",
 	        status: "Cancelled",
 	        paymentType: "Payout",
@@ -7819,18 +7819,18 @@
 	        }
 	      },
 	      {
-	        systemCode: "OUTBOUND",
+	        systemCode: "APCC",
 	        paymentId: "888",
-	        status: "Success",
+	        status: "Processing",
 	        paymentType: "Payout",
 	        amount: "RM200.00",
 	        extraInfo: {
 	          accounting_dimensions: ["Shopee Mall MY"],
-	          voucher_extra_info: "{\"reference_match\":\"amount_and_reference\",\"journal_status\":\"received\"}"
+	          validation_message: "APCC is not SPM/APM OUTBOUND, so only Success is eligible"
 	        }
 	      },
 	      {
-	        systemCode: "OUTBOUND",
+	        systemCode: "SPM_OUTBOUND",
 	        paymentId: "SPMOUT990225753480620",
 	        status: "Success",
 	        paymentType: "Payout",
@@ -7842,21 +7842,21 @@
 	      }
 	    ];
 
+	    function isSpmOrApmOutbound(systemCode) {
+	      const code = String(systemCode || "").trim().toUpperCase();
+	      return code === "SPM_OUTBOUND" || code === "APM_OUTBOUND";
+	    }
+
 	    function normalizeSupplementSystemCode(value) {
-	      const code = String(value || "").trim().toUpperCase();
-	      if (code.includes("OUTBOUND")) return "OUTBOUND";
-	      if (code.includes("INBOUND")) return "INBOUND";
-	      return code;
+	      return String(value || "").trim().toUpperCase();
 	    }
 
  	    function isSourcePaymentStatusAllowed(payment) {
  	      if (!payment) return false;
  	      const status = String(payment.status || "").trim().toLowerCase();
- 	      if (status === "payment not found") return true;
- 	      const systemCode = normalizeSupplementSystemCode(payment.systemCode);
- 	      if (status === "pending" || status === "cancelled") return false;
- 	      if (systemCode === "INBOUND") return status === "success";
- 	      if (systemCode === "OUTBOUND") return status === "success" || status === "failed";
+ 	      if (isSpmOrApmOutbound(payment.systemCode)) {
+ 	        return status === "success" || status === "failed";
+ 	      }
  	      return status === "success";
  	    }
 
