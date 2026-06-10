@@ -4101,6 +4101,12 @@
 	      font-size: 12px;
 	    }
 
+	    .source-field select:disabled {
+	      color: #334155;
+	      cursor: not-allowed;
+	      background: #eef2f7;
+	    }
+
     .bank-detail-report-page .report-summary-row {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -6536,7 +6542,7 @@
 	              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
 	              <button class="btn primary" id="supplementTransactionSubmitBtn" disabled>Submit</button>
 	              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
-	              <span class="supplement-top-hint" id="supplementSubmitHint">Link source payment before submit</span>
+		              <span class="supplement-top-hint" id="supplementSubmitHint">Link source payment for every discrepancy order before submit</span>
 	            </div>
 
             <div class="info-card">
@@ -6563,7 +6569,7 @@
                     <tr>
                       <th>Discrepancy Order ID</th>
                       <th>Reference ID</th>
-	                      <th>Source Payment ID</th>
+		                      <th><span class="required-mark">*</span>Source Payment ID</th>
 	                      <th>Source Status</th>
 		                      <th>Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
 		                      <th><span class="required-mark">*</span>Biz Code <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
@@ -6605,9 +6611,9 @@
               </div>
             </div>
 
-            <div class="info-card">
-              <div class="info-card-head">Attachment</div>
-              <div class="info-card-body">
+	            <div class="info-card">
+	              <div class="info-card-head">Attachment</div>
+	              <div class="info-card-body">
                 <div class="upload-zone">
                   <div class="upload-zone-icon">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -6619,10 +6625,10 @@
                   <span class="upload-zone-text">Attach payment system evidence, bank file evidence, or MQ failure evidence</span>
                   <span class="upload-zone-hint">Supported formats: PDF, PNG, JPG (max 10MB)</span>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
+	              </div>
+	            </div>
+	          </div>
+	        </section>
 
       </main>
     </div>
@@ -6997,10 +7003,9 @@
       <div class="source-filter-row">
         <label class="source-field">
           <span><span class="required-mark">*</span> Action</span>
-	          <select id="sourceActionSelect">
-	            <option value="Link Source Payment" selected>Link Source Payment</option>
-	            <option value="Link Source Payment (Payment Not Found)">Link Source Payment (Payment Not Found)</option>
-          </select>
+		          <select id="sourceActionSelect" disabled>
+		            <option value="Link Source Payment" selected>Link Source Payment</option>
+	          </select>
         </label>
         <label class="source-field" id="sourceSystemCodeField">
           <span><span class="required-mark">*</span> System Code</span>
@@ -8773,8 +8778,8 @@ ${lines}
 		      const submitHint = document.getElementById("supplementSubmitHint");
 		      if (submitHint) {
 		        submitHint.textContent = allLinkedAllowed
-		          ? "All source payments are linked with eligible source status"
-		          : "Link source payment before submit";
+		          ? "All discrepancy orders are linked with eligible source payments"
+		          : "Link source payment for every discrepancy order before submit";
 		      }
 		    }
 
@@ -8791,24 +8796,19 @@ ${lines}
  	      }
  	    }
 
- 	    function openSourcePaymentModal(rowId) {
- 	      state.activeSourceRowId = rowId;
- 	      state.selectedSourcePaymentId = "";
- 	      const linked = state.supplementLinks[rowId];
- 	      const isNotFound = linked && linked.status === "Payment Not Found";
- 	      document.getElementById("sourceActionSelect").value = isNotFound ? "Link Source Payment (Payment Not Found)" : "Link Source Payment";
- 	      document.getElementById("sourceSystemCodeSelect").value = linked?.systemCode || "APCC";
- 	      document.getElementById("sourcePaymentInput").value = linked?.paymentId || "";
- 	      document.getElementById("sourcePaymentSelectBtn").disabled = true;
- 	      renderSourcePaymentResults([]);
- 	      toggleSourcePaymentMode(document.getElementById("sourceActionSelect").value);
- 	      if (isNotFound) {
- 	        document.getElementById("sourceNotFoundSystemCode").textContent = linked.systemCode;
- 	        document.getElementById("sourceNotFoundConfirmBtn").disabled = false;
- 	      }
-        openModal("#sourcePaymentModal");
-        setTimeout(() => document.getElementById("sourcePaymentInput").focus(), 100);
-      }
+	 	    function openSourcePaymentModal(rowId) {
+	 	      state.activeSourceRowId = rowId;
+	 	      state.selectedSourcePaymentId = "";
+	 	      const linked = state.supplementLinks[rowId];
+	 	      document.getElementById("sourceActionSelect").value = "Link Source Payment";
+	 	      document.getElementById("sourceSystemCodeSelect").value = linked?.systemCode || "APCC";
+	 	      document.getElementById("sourcePaymentInput").value = linked?.paymentId || "";
+	 	      document.getElementById("sourcePaymentSelectBtn").disabled = true;
+	 	      renderSourcePaymentResults([]);
+	 	      toggleSourcePaymentMode("Link Source Payment");
+	        openModal("#sourcePaymentModal");
+	        setTimeout(() => document.getElementById("sourcePaymentInput").focus(), 100);
+	      }
 
     function renderSourcePaymentResults(results) {
       const body = document.getElementById("sourcePaymentResultBody");
