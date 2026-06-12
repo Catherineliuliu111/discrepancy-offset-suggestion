@@ -1,1289 +1,491 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Offset Suggestions for Discrepancies</title>
-  <style>
-    :root {
-      --primary: #1890ff;
-      --text: rgba(0, 0, 0, 0.85);
-      --muted: rgba(0, 0, 0, 0.45);
-      --page: #d9d9d9;
-      --header: #f5f5f5;
-      --line: #f0f0f0;
-      --blue-bg: #e6f7ff;
-      --blue-line: #91d5ff;
-      --pink: #ff4fa3;
-      --pink-bg: #fff0f6;
-      --pink-line: #ffadd2;
-      --green: #52c41a;
-      --green-bg: #f6ffed;
-      --green-line: #b7eb8f;
-      --red: #cf1322;
-      --red-bg: #fff1f0;
-      --orange: #faad14;
-      --orange-bg: #fffbe6;
-      --orange-line: #ffd666;
-      --purple: #722ed1;
-      --purple-bg: #f9f0ff;
-      --purple-line: #d3adf7;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      overflow: hidden;
-      color: var(--text);
-      background: var(--page);
-      font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-      letter-spacing: 0;
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button,
-    select,
-    input[type="checkbox"] {
-      cursor: pointer;
-    }
-
-    .page {
-      width: 100vw;
-      height: 100vh;
-      padding: 10px;
-    }
-
-    .shell {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      height: calc(100vh - 24px);
-      border-radius: 4px;
-      background: #fff;
-    }
-
-    .tabs-nav {
-      display: flex;
-      align-items: flex-end;
-      flex: 0 0 38px;
-      min-height: 38px;
-      border-bottom: 1px solid #e8e8e8;
-      background: #f5f5f5;
-    }
-
-    .tab-link,
-    .tab-current {
-      display: inline-flex;
-      align-items: center;
-      height: 32px;
-      margin: 0 0 0 10px;
-      padding: 0 12px;
-      border: 1px solid #d9d9d9;
-      border-bottom: 0;
-      border-radius: 4px 4px 0 0;
-      background: #fff;
-      color: rgba(0, 0, 0, 0.65);
-      font-size: 12px;
-      line-height: 32px;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .tab-link:hover {
-      color: var(--primary);
-    }
-
-    .tab-current {
-      color: var(--primary);
-      font-weight: 700;
-    }
-
-    .tab-rest {
-      align-self: stretch;
-      flex: 1 1 auto;
-      border-bottom: 1px solid transparent;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      flex: 0 0 70px;
-      min-height: 70px;
-      padding: 10px 22px 11px;
-      border-bottom: 1px solid #edf0f5;
-      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-    }
-
-    .title-block {
-      display: flex;
-      align-items: center;
-      min-width: 0;
-    }
-
-    .title-copy {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      gap: 4px;
-    }
-
-    h1 {
-      margin: 0;
-      color: rgba(0, 0, 0, 0.86);
-      font-size: 26px;
-      font-weight: 700;
-      line-height: 32px;
-      white-space: nowrap;
-    }
-
-    .title-subtitle {
-      color: rgba(0, 0, 0, 0.56);
-      font-size: 12px;
-      line-height: 18px;
-      white-space: nowrap;
-    }
-
-    .title-count {
-      color: var(--primary);
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-
-    .btn {
-      height: 32px;
-      padding: 0 14px;
-      border: 1px solid #d9d9d9;
-      border-radius: 2px;
-      color: var(--text);
-      background: #fff;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-    }
-
-    .btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .btn.primary {
-      color: #fff;
-      border-color: var(--primary);
-      background: var(--primary);
-    }
-
-    .btn.confirm {
-      color: #fff;
-      border-color: var(--green);
-      background: var(--green);
-    }
-
-    .btn.warning {
-      color: #fff;
-      border-color: var(--orange);
-      background: var(--orange);
-    }
-
-    .filters {
-      display: flex;
-      align-items: center;
-      flex-wrap: nowrap;
-      flex: 0 0 auto;
-      gap: 8px;
-      padding: 14px 18px 10px;
-      background: #fff;
-      overflow-x: auto;
-    }
-
-    .field {
-      display: inline-flex;
-      align-items: center;
-      height: 32px;
-      min-width: 160px;
-      border-radius: 6px;
-      background: #f5f6f7;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    .field.field-date {
-      min-width: 300px;
-    }
-
-    .field.field-reference {
-      min-width: 220px;
-    }
-
-    .field.field-discrepancy {
-      min-width: 190px;
-    }
-
-    .filter-prefix {
-      display: inline-flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex: 0 0 auto;
-      height: 32px;
-      min-width: 130px;
-      padding: 0 12px;
-      color: rgba(0, 0, 0, 0.72);
-      background: #f2f3f5;
-    }
-
-    .filter-caret,
-    .filter-calendar,
-    .filter-plus {
-      color: rgba(0, 0, 0, 0.35);
-    }
-
-    .filter-input,
-    .field select {
-      min-width: 0;
-      height: 32px;
-      border: 0;
-      color: rgba(0, 0, 0, 0.72);
-      background: transparent;
-      outline: 0;
-    }
-
-    .field select {
-      width: 100%;
-      padding: 0 28px 0 12px;
-    }
-
-    .filter-input {
-      flex: 1 1 auto;
-      padding: 0 12px;
-    }
-
-    .date-value {
-      padding: 0 12px;
-      color: rgba(0, 0, 0, 0.78);
-    }
-
-    .date-arrow {
-      color: rgba(0, 0, 0, 0.35);
-    }
-
-    .filter-plus {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex: 0 0 38px;
-      height: 32px;
-      border-left: 1px solid #ececec;
-      font-size: 18px;
-    }
-
-    .filter-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex: 0 0 auto;
-      height: 32px;
-      min-width: 48px;
-      padding: 0 12px;
-      border: 1px solid #d9d9d9;
-      border-radius: 6px;
-      color: rgba(0, 0, 0, 0.78);
-      background: #fff;
-      white-space: nowrap;
-    }
-
-    .refresh-btn {
-      min-width: 72px;
-      border-color: var(--primary);
-      color: var(--primary);
-      background: #fff;
-    }
-
-    .refresh-btn:disabled {
-      cursor: not-allowed;
-      border-color: #d9d9d9;
-      color: rgba(0, 0, 0, 0.35);
-      background: #f5f5f5;
-    }
-
-    .filter-icon-btn {
-      min-width: 34px;
-      padding: 0;
-    }
-
-    .summary-bar {
-      display: flex;
-      align-items: center;
-      flex: 0 0 36px;
-      gap: 10px;
-      min-height: 36px;
-      padding: 0 28px 8px;
-      border-bottom: 1px solid #e8e8e8;
-      background: #fff;
-      color: rgba(0, 0, 0, 0.65);
-    }
-
-    .summary-spacer {
-      flex: 1 1 auto;
-    }
-
-    .latest-update {
-      color: rgba(0, 0, 0, 0.45);
-      font-size: 12px;
-      line-height: 18px;
-      white-space: nowrap;
-    }
-
-    .latest-update strong {
-      color: rgba(0, 0, 0, 0.62);
-      font-weight: 600;
-    }
-
-    .summary-title {
-      color: var(--primary);
-      font-weight: 700;
-    }
-
-    .count {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 26px;
-      height: 20px;
-      padding: 0 7px;
-      border-radius: 10px;
-      color: var(--primary);
-      background: var(--blue-bg);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .table-card {
-      flex: 1 1 auto;
-      min-height: 0;
-      padding: 10px 18px 12px;
-      border-radius: 20px;
-      background: #fff;
-    }
-
-    .table-scroll {
-      overflow: auto;
-      width: 100%;
-      height: 100%;
-      border-radius: 2px;
-    }
-
-    .results {
-      width: 2240px;
-      min-width: 2240px;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-
-    th,
-    td {
-      border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: middle;
-    }
-
-    th {
-      height: 36px;
-      padding: 5px 7px;
-      color: rgba(0, 0, 0, 0.72);
-      background: #fafafa;
-      font-size: 12px;
-      font-weight: 700;
-      line-height: 16px;
-      white-space: normal;
-    }
-
-    th.left-order,
-    td.left-order {
-      background: #f7fbff;
-    }
-
-    th.right-order,
-    td.right-order {
-      background: #fffaf2;
-    }
-
-    th.left-order.first-group,
-    td.left-order.first-group {
-      border-left: 3px solid #91d5ff;
-    }
-
-    th.right-order.first-group,
-    td.right-order.first-group {
-      border-left: 3px solid #ffd591;
-    }
-
-    th.left-order.last-group,
-    td.left-order.last-group {
-      border-right: 1px solid #c9e6ff;
-    }
-
-    th.right-order.last-group,
-    td.right-order.last-group {
-      border-right: 1px solid #ffe2b8;
-    }
-
-    th.operation-cell,
-    td.operation-cell {
-      background: #f9f0ff;
-      border-left: 2px solid #d3adf7;
-      border-right: 2px solid #d3adf7;
-      text-align: center;
-    }
-
-    th.matching-rule-cell,
-    td.matching-rule-cell {
-      background: #fbfffa;
-      border-left: 2px solid #d9f7be;
-    }
-
-    td {
-      height: 36px;
-      padding: 5px 7px;
-      color: rgba(0, 0, 0, 0.76);
-      background: #fff;
-      line-height: 18px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    td.matching-rule-cell {
-      overflow: visible;
-      white-space: normal;
-    }
-
-    tr.confirmed td {
-      background: #fcfffa;
-    }
-
-    .results tbody tr:hover td.left-order {
-      background: #eef8ff;
-    }
-
-    .results tbody tr:hover td.right-order {
-      background: #fff3df;
-    }
-
-    .results tbody tr:hover td.operation-cell {
-      background: #efdbff;
-    }
-
-    .check-cell,
-    .arrow-cell {
-      text-align: center;
-    }
-
-    .row-check {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--primary);
-    }
-
-    .match-bridge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      min-width: 0;
-    }
-
-    .offset-bridge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-    }
-
-    .offset-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 82px;
-      height: 26px;
-      padding: 0 12px;
-      border: 1px solid #722ed1;
-      border-radius: 999px;
-      color: #fff;
-      background: #722ed1;
-      box-shadow: 0 2px 6px rgba(114, 46, 209, 0.22);
-      font-size: 12px;
-      font-weight: 700;
-      line-height: 24px;
-      white-space: nowrap;
-    }
-
-    .offset-bridge::before,
-    .offset-bridge::after {
-      content: none;
-    }
-
-    .offset-icon,
-    .offset-head-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      max-width: 56px;
-      height: 26px;
-      color: #1677ff;
-    }
-
-    .offset-head-icon {
-      max-width: 44px;
-      height: 22px;
-      margin: 0 auto;
-    }
-
-    .offset-icon svg,
-    .offset-head-icon svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-      overflow: visible;
-      shape-rendering: geometricPrecision;
-    }
-
-    @media (max-width: 900px) {
-      th {
-        padding: 5px 4px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 10px;
-      }
-
-      td {
-        padding: 5px 4px;
-        font-size: 10px;
-      }
-
-      .tag {
-        max-width: 56px;
-        padding: 0 5px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-
-    .link,
-    .details-link {
-      color: var(--primary);
-      font-weight: 500;
-      text-decoration: none;
-    }
-
-    .link:hover,
-    .details-link:hover {
-      text-decoration: underline;
-    }
-
-    .ref {
-      color: #000000;
-      font-weight: 500;
-    }
-
-    .amount-value {
-      font-variant-numeric: tabular-nums;
-      font-weight: 500;
-    }
-
-    .system-code {
-      color: rgba(0, 0, 0, 0.72);
-      font-weight: 500;
-    }
-
-    .source-status {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 18px;
-      height: 18px;
-      color: var(--primary);
-      vertical-align: middle;
-    }
-
-    .source-status svg {
-      display: block;
-      width: 16px;
-      height: 16px;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 20px;
-      padding: 0 5px;
-      border: 1px solid transparent;
-      border-radius: 3px;
-      font-size: 10px;
-      font-weight: 600;
-      line-height: 18px;
-      white-space: nowrap;
-    }
-
-    .tag.over {
-      color: var(--pink);
-      border-color: var(--pink-line);
-      background: var(--pink-bg);
-    }
-
-    .tag.less {
-      color: var(--primary);
-      border-color: var(--blue-line);
-      background: var(--blue-bg);
-    }
-
-    .tag.success {
-      color: #237804;
-      border-color: var(--green-line);
-      background: var(--green-bg);
-    }
-
-    .tag.in {
-      color: #237804;
-      background: #d9f7be;
-    }
-
-    .tag.out {
-      color: var(--red);
-      background: var(--red-bg);
-    }
-
-    .tag.reason {
-      color: var(--green);
-      border-color: var(--green-line);
-      background: var(--green-bg);
-      font-size: 10px;
-    }
-
-    .tag.reason-pink {
-      color: var(--pink);
-      border-color: var(--pink-line);
-      background: var(--pink-bg);
-      font-size: 10px;
-    }
-
-    .tag.reason-alert {
-      color: var(--red);
-      border-color: #ffccc7;
-      background: var(--red-bg);
-      font-size: 10px;
-    }
-
-    .tag.action-offset {
-      color: var(--purple);
-      border-color: var(--purple-line);
-      background: var(--purple-bg);
-    }
-
-    .tag.action-success {
-      color: #237804;
-      border-color: var(--green-line);
-      background: var(--green-bg);
-    }
-
-    .reason-list {
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: center;
-      gap: 4px;
-      overflow: visible;
-      white-space: nowrap;
-    }
-
-    .biz-text {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .modal-mask {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(0, 0, 0, 0.35);
-      z-index: 50;
-    }
-
-    .modal-mask.show {
-      display: flex;
-    }
-
-    .modal {
-      width: 420px;
-      border-radius: 4px;
-      background: #fff;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-head {
-      padding: 18px 20px 10px;
-      color: var(--text);
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .modal-body {
-      padding: 0 20px 18px;
-      color: rgba(0, 0, 0, 0.65);
-      line-height: 22px;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      padding: 10px 20px 18px;
-    }
-
-    .toast {
-      position: fixed;
-      right: 24px;
-      top: 24px;
-      display: none;
-      min-width: 220px;
-      padding: 10px 14px;
-      border: 1px solid var(--green-line);
-      border-radius: 4px;
-      color: #237804;
-      background: var(--green-bg);
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-      z-index: 60;
-    }
-
-    .toast.show {
-      display: block;
-    }
-
-    .offset-banner {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0 18px;
-      padding: 12px 16px;
-      border: 1px solid var(--blue-line);
-      border-radius: 6px;
-      background: var(--blue-bg);
-      color: rgba(0, 0, 0, 0.72);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .offset-banner .banner-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex: 0 0 28px;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .offset-banner .banner-text {
-      flex: 1 1 auto;
-    }
-
-    .offset-banner .banner-text strong {
-      color: var(--primary);
-    }
-
-    .help-tip {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.35);
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      line-height: 15px;
-      cursor: help;
-      margin-left: 4px;
-      position: relative;
-    }
-
-    .help-tip:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      top: 22px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 6px 10px;
-      border-radius: 4px;
-      background: rgba(0, 0, 0, 0.82);
-      color: #fff;
-      font-size: 11px;
-      line-height: 1.4;
-      white-space: nowrap;
-      z-index: 20;
-      pointer-events: none;
-    }
-
-    .field-date.disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      background: #f0f0f0;
-    }
-
-    .field-date.disabled .date-value {
-      color: rgba(0, 0, 0, 0.45);
-    }
-
-    .field-date.disabled .filter-calendar {
-      color: rgba(0, 0, 0, 0.25);
-    }
-
-    .field-date.disabled:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 4px 10px;
-      border-radius: 4px;
-      background: rgba(0, 0, 0, 0.78);
-      color: #fff;
-      font-size: 11px;
-      white-space: nowrap;
-      z-index: 10;
-      pointer-events: none;
-    }
-
-    .field-date {
-      position: relative;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offset Suggestions — Pair Table</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #EEF0F4; color: #1A1D26; font-size: 14px; line-height: 1.5;
+    overflow: hidden; -webkit-font-smoothing: antialiased;
+  }
+  .app { width: 100vw; height: 100vh; display: flex; flex-direction: column; padding: 20px; background: #EEF0F4; }
+
+  .shell { flex: 1; display: flex; flex-direction: column; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+
+  .nav { display: flex; align-items: center; padding: 0 28px; background: #fff; border-bottom: 1px solid #E8EBF0; flex-shrink: 0; height: 56px; }
+  .nav-links { display: flex; gap: 4px; height: 100%; }
+  .nav-link { display: inline-flex; align-items: center; padding: 0 20px; font-size: 14px; font-weight: 500; color: #6B7280; border-bottom: 2px solid transparent; transition: .2s; cursor: pointer; }
+  .nav-link:hover { color: #1A1D26; background: #F5F7FA; }
+  .nav-link.active { color: #2469F0; border-bottom-color: #2469F0; font-weight: 600; }
+  .nav-title { display: none; }
+
+  .page-title {
+    display: flex; align-items: center; padding: 16px 28px 14px; background: #fff;
+    border-bottom: 1px solid #EEF2F7; font-size: 28px; font-weight: 700; letter-spacing: -.02em; color: #1A1D26;
+  }
+
+  .toolbar { display: flex; align-items: center; gap: 10px; padding: 14px 28px; background: #fff; border-bottom: 1px solid #E8EBF0; flex-shrink: 0; flex-wrap: wrap; }
+  .tb-group { display: flex; align-items: center; gap: 6px; }
+  .tb-label { font-size: 12px; font-weight: 500; color: #6B7280; white-space: nowrap; }
+  .tb-input, .tb-select { height: 34px; padding: 0 10px; border: 1px solid #D6D9E0; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; outline: none; transition: .2s; color: #1A1D26; }
+  .tb-input:focus, .tb-select:focus { border-color: #2469F0; box-shadow: 0 0 0 3px rgba(36,105,240,0.12); }
+  .tb-date { width: 120px; }
+  .tb-input { width: 110px; }
+  .tb-input-wide { width: 176px; }
+  .tb-sep { color: #9CA3AF; font-size: 13px; padding: 0 4px; }
+  .tb-divider { width: 1px; height: 24px; background: #E8EBF0; margin: 0 6px; flex-shrink: 0; }
+  .tb-add { color: #2469F0; cursor: pointer; font-size: 20px; font-weight: 600; transition: .15s; }
+  .tb-add:hover { transform: scale(1.2); }
+
+  .btn { height: 34px; padding: 0 18px; border-radius: 8px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; transition: .2s; border: 1px solid #D6D9E0; background: #fff; color: #1A1D26; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { border-color: #2469F0; color: #2469F0; background: #F5F8FF; }
+  .btn[disabled] { cursor: default; opacity: .72; }
+  .btn.is-loading { color: #2469F0; background: #F5F8FF; border-color: #B8D0FB; }
+  .btn-primary { background: #2469F0; border-color: #2469F0; color: #fff; }
+  .btn-primary:hover { background: #1A56DB; border-color: #1A56DB; color: #fff; }
+  .btn-outline-red { color: #E54545; border-color: #E54545; }
+  .btn-outline-red:hover { background: #FFF5F5; color: #E54545; }
+  .tb-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+  .stats { display: flex; align-items: center; gap: 10px; padding: 9px 28px; background: #F8FAFC; border-bottom: 1px solid #E8EBF0; flex-shrink: 0; font-size: 13px; }
+  .stats-label { font-weight: 600; }
+  .stats-count { font-size: 18px; font-weight: 700; color: #2469F0; line-height: 1; }
+  .stats-unit { color: #6B7280; }
+  .stats-right { margin-left: auto; color: #9CA3AF; font-size: 12px; display: flex; align-items: flex-start; gap: 12px; padding-top: 1px; }
+  .update-status { display: inline-flex; align-items: center; gap: 6px; }
+  .update-status.is-processing { color: #2469F0; }
+
+  /* ---- Table ---- */
+  .table-wrap { flex: 1; overflow: auto; background: #F6F8FC; padding: 8px 12px 12px; }
+  .table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+  .table-wrap::-webkit-scrollbar-track { background: transparent; }
+  .table-wrap::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 8px; }
+  .table-wrap::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+
+  table { width: 100%; border-collapse: separate; border-spacing: 0 6px; table-layout: fixed; }
+  thead th {
+    background: #F3F5F8; padding: 8px 8px; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .5px; color: #6B7280; border-bottom: 2px solid #E8EBF0;
+    text-align: left; white-space: nowrap;
+  }
+  tbody td { padding: 6px 9px; font-size: 12px; border-top: 1px solid #E7ECF4; border-bottom: 1px solid #E7ECF4; vertical-align: top; background: #fff; }
+  .pair-row { transition: .15s; }
+  .pair-row:hover td { background: #FBFCFE; }
+  .pair-row.row-on td { background: #F5F9FF; border-top-color: #C8DBFF; border-bottom-color: #C8DBFF; }
+  .pair-row td:first-child { border-left: 1px solid #E7ECF4; border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+  .pair-row td:last-child { border-right: 1px solid #E7ECF4; border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+  .pair-row.row-on td:first-child { border-left-color: #C8DBFF; }
+  .pair-row.row-on td:last-child { border-right-color: #C8DBFF; }
+
+  .cb-cell { width: 22px; text-align: center; vertical-align: top; padding: 8px 4px 0 8px; }
+  .cb-cell input { width: 15px; height: 15px; accent-color: #2469F0; cursor: pointer; }
+  .cb-head { width: 22px; text-align: center; }
+  .cb-head input { width: 15px; height: 15px; accent-color: #2469F0; cursor: pointer; }
+  .col-order { width: 11%; }
+  .col-date { width: 8.5%; }
+  .col-agree { width: 14%; }
+  .col-type { width: 8.5%; }
+  .col-dir { width: 8.5%; }
+  .col-ref { width: 11%; }
+  .col-amt { width: 7.5%; }
+  .col-reason { width: 15%; }
+
+  .pair-cell { min-width: 0; }
+  .pair-stack { display: flex; flex-direction: column; gap: 2px; }
+  .pair-line {
+    display: flex; align-items: center; min-width: 0; padding: 2px 0;
+  }
+  .pair-line + .pair-line { border-top: 1px dashed #EDF1F6; }
+  .pair-value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pair-value.multiline { white-space: normal; line-height: 1.24; }
+
+  .ref-text { font-weight: 600; color: #1F2937; }
+  .amt-text { font-weight: 700; font-size: 12px; color: #1F2937; }
+  .reason-box { display: flex; flex-wrap: wrap; gap: 4px; padding-top: 2px; }
+  .reason-box .reason-pill { font-size: 9px; line-height: 16px; padding: 1px 6px; }
+
+  .order-link { color: #2469F0; cursor: pointer; font-weight: 500; }
+  .order-link:hover { text-decoration: underline; }
+
+  .type-pill, .r-type-pill { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 9px; font-weight: 600; }
+  .type-over { background: #FFF8ED; color: #B8860B; border: 1px solid #FDE7B6; }
+  .type-less { background: #F3EEFF; color: #6D28D9; border: 1px solid #D4C4F7; }
+
+  .dir-dot, .r-dir-dot { display: inline-flex; align-items: center; justify-content: center; min-width: 40px; height: 22px; padding: 0 10px; border-radius: 999px; font-size: 9px; font-weight: 700; }
+  .dir-in { background: #E6F9F1; color: #00A86B; border: 1px solid #A8E6C0; }
+  .dir-out { background: #FFF0F0; color: #E54545; border: 1px solid #F5C6C6; }
+
+  .amt-val, .r-amt-val { font-weight: 600; font-size: 13px; }
+
+  .reason-pills { display: flex; flex-wrap: wrap; gap: 3px; }
+  .reason-pill { padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 500; white-space: nowrap; line-height: 16px; }
+  .rp-amount { background: #E8F0FE; color: #1A56DB; border: 1px solid #B8D0FB; }
+  .rp-agree { background: #E6F9F1; color: #007A4D; border: 1px solid #A8E6C0; }
+  .rp-dir { background: #FFF4E5; color: #B8860B; border: 1px solid #FDE7B6; }
+  .rp-ref { background: #F3EEFF; color: #6D28D9; border: 1px solid #D4C4F7; }
+  .rp-biz { background: #FDE8F0; color: #B91C6B; border: 1px solid #F8BCD4; }
+
+  .gap-pill { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .gap-3d { background: #FFF8ED; color: #B8860B; border: 1px solid #FDE7B6; }
+  .gap-7d { background: #E6F9F1; color: #007A4D; border: 1px solid #A8E6C0; }
+
+  .action-bar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 14px 28px; border-top: 1px solid #E8EBF0; background: #fff; flex-shrink: 0; }
+  .sel-count { font-size: 14px; color: #6B7280; margin-right: auto; }
+  .sel-count strong { color: #2469F0; font-weight: 600; }
+  .sel-count .st { color: #9CA3AF; }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.32);
+    display: none; align-items: center; justify-content: center; z-index: 20;
+    backdrop-filter: blur(4px);
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    width: min(520px, calc(100vw - 32px)); background: #fff; border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22); overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+  }
+  .modal-head {
+    padding: 20px 24px 12px; display: flex; align-items: center; gap: 12px;
+  }
+  .modal-icon {
+    width: 40px; height: 40px; border-radius: 12px; background: #EEF4FF; color: #2469F0;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .modal-title { font-size: 20px; font-weight: 700; color: #111827; }
+  .modal-body { padding: 0 24px 22px; color: #4B5563; line-height: 1.6; }
+  .modal-body strong { color: #111827; }
+  .modal-actions {
+    display: flex; justify-content: flex-end; gap: 10px; padding: 0 24px 24px;
+  }
+  .btn-subtle {
+    background: #fff; color: #374151; border-color: #D1D5DB;
+  }
+  .btn-subtle:hover { background: #F9FAFB; color: #111827; border-color: #9CA3AF; }
+
+  @media (max-width: 1320px) {
+    table { min-width: 1200px; }
+  }
+</style>
 </head>
 <body>
-  <div class="page">
-    <section class="shell">
-      <div class="tabs-nav">
-        <a class="tab-link" href="./sop-guideline-replica.html?from=discrepancy-offset-suggestion">Reconciliation To-Do List</a>
-        <a class="tab-link" href="./discrepancy-details-v2-manual-refund-update.html?from=discrepancy-offset-suggestion">Discrepancy Details</a>
-        <div class="tab-current">Offset Suggestions for Discrepancies</div>
-        <div class="tab-rest"></div>
-      </div>
-      <header class="topbar">
-        <div class="title-block">
-          <div class="title-copy">
-            <h1>Offset Suggestions for Discrepancies</h1>
-          </div>
-        </div>
-        <div class="actions">
-          <button class="btn warning" type="button">Decline Suggestion</button>
-          <button class="btn confirm" type="button" id="confirmSuggestBtn">Confirm Suggestion</button>
-        </div>
-      </header>
+<div class="app"><div class="shell">
 
-      <div class="filters">
-        <div class="field field-date disabled" data-tooltip="The suggestion pool only queries data with Clearing Date within two weeks of the system date.">
-          <span class="filter-prefix">Clearing Date <span class="filter-caret">⌄</span> <span class="help-tip" data-tooltip="the system filters Discrepancy Order data from the past 14 days to generate offset matching suggestions by default.">?</span></span>
-          <span class="date-value" id="clearingDateFrom"></span>
-          <span class="date-arrow">→</span>
-          <span class="date-value" id="clearingDateTo"></span>
-          <span class="filter-calendar">▣</span>
-        </div>
-        <div class="field">
-          <select class="select-agreement" id="agreementItem">
-            <option value="">Agreement Item</option>
-            <option>Alto-ShopeePay-0918-Payout-AS</option>
-            <option>SPM MY - Wallet</option>
-            <option>SPM MY - Bank</option>
-          </select>
-        </div>
-        <div class="field">
-          <select class="select-short" id="offsetType">
-            <option value="">Offset Type</option>
-            <option value="over-less">Over TXN VS Less TXN</option>
-            <option value="over-over">Over Payment &amp; Refund</option>
-            <option value="less-less">Less Payment &amp; Refund</option>
-          </select>
-        </div>
-        <div class="field field-reference">
-          <input class="filter-input" id="discrepancyOrderInput" placeholder="Discrepancy Order ID" />
-          <span class="filter-plus" id="addDiscrepancyOrder">+</span>
-        </div>
-        <div class="field field-reference">
-          <input class="filter-input" id="referenceInput" placeholder="Reference ID" />
-          <span class="filter-plus" id="addReference">+</span>
-        </div>
-        <button class="filter-btn" type="button" id="searchBtn">Search</button>
-        <button class="filter-btn refresh-btn" type="button" id="refreshBtn">Refresh</button>
-      </div>
-
-      <div class="summary-bar">
-        <span class="summary-title" id="summaryTitle">Offset Matching</span>
-        <span class="count" id="summaryCount">18</span>
-        <span class="summary-spacer"></span>
-        <span class="latest-update">Latest update time: <strong id="latestUpdateTime">-</strong></span>
-      </div>
-
-      <section class="table-card">
-        <div class="table-scroll">
-          <table class="results" id="resultsTable">
-            <colgroup id="colGroup"></colgroup>
-            <thead>
-              <tr id="headerRow"></tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-      </section>
-    </section>
+  <div class="nav">
+    <div class="nav-links">
+      <div class="nav-link">Reconciliation To-Do List</div>
+      <div class="nav-link">Discrepancy Details</div>
+      <div class="nav-link active">Offset Suggestions</div>
+    </div>
+    <div class="nav-title">Offset Matching · Pair Table</div>
   </div>
 
-  <div class="modal-mask" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="modal">
-      <div class="modal-head" id="confirmTitle">Confirm Suggestion</div>
-      <div class="modal-body" id="confirmMessage"></div>
-      <div class="modal-actions">
-        <button class="btn" type="button" id="cancelConfirm">Cancel</button>
-        <button class="btn confirm" type="button" id="applyConfirm">Confirm</button>
-      </div>
+  <div class="page-title">Offset Suggestion For Discrepancy</div>
+
+  <div class="toolbar">
+    <div class="tb-group">
+      <span class="tb-label">Clearing</span>
+      <input class="tb-input tb-date" type="date" value="2026-05-28">
+      <span class="tb-sep">→</span>
+      <input class="tb-input tb-date" type="date" value="2026-06-10">
+    </div>
+    <div class="tb-divider"></div>
+    <div class="tb-group">
+      <span class="tb-label">Agreement</span>
+      <select class="tb-select"><option>All</option><option>Alto-ShopeePay-0918-Payout-AS</option><option>SPM MY - Wallet</option><option>SPM MY - Bank</option></select>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="tb-group">
+      <span class="tb-label">Offset Type</span>
+      <select class="tb-select" id="offsetTypeFilter" onchange="render()">
+        <option value="All">All</option>
+        <option value="Over TXN VS Less TXN">Over TXN VS Less TXN</option>
+        <option value="Over TXN VS Over TXN">Over TXN VS Over TXN</option>
+        <option value="Less TXN VS Less TXN">Less TXN VS Less TXN</option>
+      </select>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="tb-group">
+      <input class="tb-input tb-input-wide" type="text" placeholder="Discrepancy Order ID"><span class="tb-add">+</span>
+    </div>
+    <div class="tb-group">
+      <input class="tb-input" type="text" placeholder="Reference ID"><span class="tb-add">+</span>
+    </div>
+    <div class="tb-actions">
+      <button class="btn">Search</button>
+      <button class="btn" id="refreshBtn" onclick="handleRefresh()">Refresh</button>
     </div>
   </div>
-  <div class="toast" id="toast">Suggest action confirmed.</div>
 
-  <script>
-    const columns = {
-      offset: [
-        ["", 42, "left-order first-group"], ["Discrepancy Order ID", 142, "left-order"], ["Clearing Date", 110, "left-order"],
-        ["Agreement Item", 180, "left-order"], ["Discrepancy Type", 110, "left-order"], ["Fund Direction", 108, "left-order"],
-        ["Reference ID", 138, "left-order"], ["Amount", 96, "left-order last-group"],
-        ["", 82, "operation-cell"],
-        ["Discrepancy Order ID", 142, "right-order first-group"], ["Clearing Date", 110, "right-order"],
-        ["Agreement Item", 180, "right-order"], ["Discrepancy Type", 110, "right-order"], ["Fund Direction", 108, "right-order"],
-        ["Reference ID", 138, "right-order"], ["Amount", 96, "right-order last-group"], ["Matching Reason", 400, "matching-rule-cell"]
-      ]
-    };
+  <div class="stats">
+    <span class="stats-label">Offset Matching</span>
+    <span class="stats-count">18</span><span class="stats-unit">pairs</span>
+    <div class="stats-right">
+      <span class="update-status" id="updateStatus">● Updated <span id="updatedTime">2026-06-10 12:21</span></span>
+    </div>
+  </div>
 
-    const configs = {
-      offset: {
-        action: "Offset",
-        title: "Offset Matching",
-        count: "12",
-        leftType: "Over TXN",
-        rightType: "Less TXN",
-        columnSet: "offset",
-        rows: 18
-      }
-    };
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="cb-head"><input type="checkbox" id="headSelectAll" onchange="toggleAll(this)"></th>
+          <th class="col-order">Order ID</th>
+          <th class="col-date">Clearing</th>
+          <th class="col-agree">Agreement Item</th>
+          <th class="col-type">Discrepancy Type</th>
+          <th class="col-dir">Fund Direction</th>
+          <th class="col-ref">Reference ID</th>
+          <th class="col-amt">Amount</th>
+          <th class="col-reason">Matching Reason</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
 
-    let currentAction = "offset";
-    const confirmedRows = new Set();
+  <div class="action-bar">
+    <span class="sel-count"><strong id="selCount">1</strong> <span class="st">/ 18 pairs</span></span>
+    <button class="btn btn-outline-red" onclick="deSelectAll()">Decline Suggestion</button>
+    <button class="btn btn-primary" onclick="confirmSelected()">Confirm Suggestion</button>
+  </div>
 
-    const typeTag = (value) => {
-      if (value === "Payment Success") return '<span class="tag success">Success</span>';
-      return `<span class="tag ${value === "Over TXN" ? "over" : "less"}">${value}</span>`;
-    };
-    const fundTag = (value) => `<span class="tag ${value === "IN" ? "in" : "out"}">${value}</span>`;
-    const matchingRuleTags = (row) => {
-      const fundRule = row.sameTypeOffset ? "Opposite Fund Direction" : "Fund Direction";
-      const matchReasonClass = row.matchReason === "Biz Info Fuzzy Matching" ? "reason-alert" : "reason";
-      return `
-        <div class="reason-list">
-          <span class="tag reason">Agreement Item</span>
-          <span class="tag reason">Amount</span>
-          <span class="tag reason">${fundRule}</span>
-          ${row.matchReason ? `<span class="tag ${matchReasonClass}">${row.matchReason}</span>` : ""}
-          <span class="tag reason">CD Gap: ${row.matchingClearingDateGap}d</span>
-        </div>
-      `;
-    };
-    const amountSamples = ["RM34.87", "RM30.24", "RM504.51", "RM43.02", "RM115.82", "RM5.72", "RM401.67", "RM36.90"];
-    const sourcePaymentIds = [
-      "1030339300203960975",
-      "1030865300202363466",
-      "1031238300017751691",
-      "1030469300203383788",
-      "1030932300201867088",
-      "1030116300206050006",
-      "1030435300203525725",
-      "1030765300201819856"
-    ];
-    const sourceStatusIcon = `
-      <span class="source-status" role="img" aria-label="Source status synced" title="Source status synced">
-        <svg viewBox="0 0 18 18" aria-hidden="true" focusable="false">
-          <path d="M14.2 6.3A5.7 5.7 0 0 0 4 4.2L2.8 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-          <path d="M3 2.1v3.6h3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-          <path d="M3.8 11.7A5.7 5.7 0 0 0 14 13.8l1.2-1.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-          <path d="M15 15.9v-3.6h-3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </span>
-    `;
+</div></div>
 
-    const offsetTypeLabels = {
-      "over-less": "Over TXN VS Less TXN",
-      "over-over": "Over Payment & Refund",
-      "less-less": "Less Payment & Refund"
-    };
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-head">
+      <div class="modal-icon">!</div>
+      <div class="modal-title" id="confirmTitle">Confirm Offset Execution</div>
+    </div>
+    <div class="modal-body">
+      <p>After you confirm, the system will directly perform <strong>Offset</strong> for the selected discrepancy order pair.</p>
+      <p>Please confirm whether you want to continue.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-subtle" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmModalProceed()">Confirm</button>
+    </div>
+  </div>
+</div>
 
-    const padDate = (value) => String(value).padStart(2, "0");
-    const formatDate = (date) => `${date.getFullYear()}-${padDate(date.getMonth() + 1)}-${padDate(date.getDate())}`;
+<script>
+const baseData = [
+  { left:{ o:'104...98406967', d:'2026-05-24', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'IN', r:'AX4U1M29K29DW', am:'RM34.87' }, right:{ o:'104...99791566', d:'2026-05-27', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'IN', r:'RFND20260600', am:'RM34.87' }, reasons:['Agreement Item','Amount','Fund Direction','Reference ID'] },
+  { left:{ o:'104...98406968', d:'2026-05-28', a:'SPM MY - Wallet', t:'Over TXN', di:'OUT', r:'AX4U1M30K29DW', am:'RM30.24' }, right:{ o:'104...99791567', d:'2026-06-04', a:'SPM MY - Wallet', t:'Over TXN', di:'IN', r:'AX4U1M30K29DW', am:'RM30.24' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406969', d:'2026-06-02', a:'SPM MY - Bank', t:'Less TXN', di:'IN', r:'AX4U1M31K29DW', am:'RM504.51' }, right:{ o:'104...99791568', d:'2026-06-09', a:'SPM MY - Bank', t:'Less TXN', di:'OUT', r:'AX4U1M31K29DW', am:'RM504.51' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406970', d:'2026-06-02', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'OUT', r:'AX4U1M32K29DW', am:'RM43.02' }, right:{ o:'104...99791569', d:'2026-06-05', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'OUT', r:'AX4U1M32K29DW', am:'RM43.02' }, reasons:['Agreement Item','Amount','Fund Direction','Biz Info Fuzzy Matching'] },
+  { left:{ o:'104...98406971', d:'2026-05-23', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'IN', r:'AX4UR58VY4C2', am:'RM115.82' }, right:{ o:'104...99791570', d:'2026-05-30', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'OUT', r:'AX4UR58VY4C2', am:'RM115.82' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406972', d:'2026-05-27', a:'SPM MY - Wallet', t:'Less TXN', di:'OUT', r:'AX4UEDUOVDAA', am:'RM5.72' }, right:{ o:'104...99791571', d:'2026-06-03', a:'SPM MY - Wallet', t:'Less TXN', di:'IN', r:'RFND20260605', am:'RM5.72' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406973', d:'2026-05-29', a:'SPM MY - Bank', t:'Over TXN', di:'IN', r:'AX4UR58WAW9W', am:'RM401.67' }, right:{ o:'104...99791572', d:'2026-06-01', a:'SPM MY - Bank', t:'Less TXN', di:'IN', r:'AX4UR58WAW9W', am:'RM401.67' }, reasons:['Agreement Item','Amount','Fund Direction','Reference ID'] },
+  { left:{ o:'104...98406974', d:'2026-05-28', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'OUT', r:'AX4UR58VY4C2', am:'RM36.90' }, right:{ o:'104...99791573', d:'2026-06-04', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'IN', r:'AX4UR58VY4C2', am:'RM36.90' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406975', d:'2026-05-23', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'IN', r:'AX4UEDUOVDAA', am:'RM34.87' }, right:{ o:'104...99791574', d:'2026-05-30', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'OUT', r:'AX4UEDUOVDAA', am:'RM34.87' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406976', d:'2026-05-29', a:'SPM MY - Wallet', t:'Over TXN', di:'OUT', r:'AX4UR58WAW9W', am:'RM30.24' }, right:{ o:'104...99791575', d:'2026-06-01', a:'SPM MY - Wallet', t:'Less TXN', di:'OUT', r:'AX4UR58WAW9W', am:'RM30.24' }, reasons:['Agreement Item','Amount','Fund Direction','Reference ID'] },
+  { left:{ o:'104...98406977', d:'2026-05-31', a:'SPM MY - Bank', t:'Over TXN', di:'IN', r:'AX4UR58VY4C2', am:'RM504.51' }, right:{ o:'104...99791576', d:'2026-06-07', a:'SPM MY - Bank', t:'Over TXN', di:'OUT', r:'RFND20260610', am:'RM504.51' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406977', d:'2026-05-30', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'OUT', r:'AX4UEDUOVDAA', am:'RM43.02' }, right:{ o:'104...99791577', d:'2026-06-06', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'IN', r:'AX4UEDUOVDAA', am:'RM43.02' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406979', d:'2026-05-24', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'IN', r:'AX4UR58WAW9W', am:'RM115.82' }, right:{ o:'104...99791578', d:'2026-05-27', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'IN', r:'AX4UR58WAW9W', am:'RM115.82' }, reasons:['Agreement Item','Amount','Fund Direction','Reference ID'] },
+  { left:{ o:'104...98406980', d:'2026-05-30', a:'SPM MY - Wallet', t:'Over TXN', di:'OUT', r:'AX4UR58VY4C2', am:'RM5.72' }, right:{ o:'104...99791579', d:'2026-06-06', a:'SPM MY - Wallet', t:'Over TXN', di:'IN', r:'AX4UR58VY4C2', am:'RM5.72' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406981', d:'2026-06-01', a:'SPM MY - Bank', t:'Less TXN', di:'IN', r:'AX4UEDUOVDAA', am:'RM401.67' }, right:{ o:'104...99791580', d:'2026-06-08', a:'SPM MY - Bank', t:'Less TXN', di:'OUT', r:'AX4UEDUOVDAA', am:'RM401.67' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406982', d:'2026-05-28', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'OUT', r:'AX4UR58WAW9W', am:'RM36.90' }, right:{ o:'104...99791581', d:'2026-05-31', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'OUT', r:'RFND20260615', am:'RM36.90' }, reasons:['Agreement Item','Amount','Fund Direction','Biz Info Fuzzy Matching'] },
+  { left:{ o:'104...98406983', d:'2026-05-23', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'IN', r:'AX4UR58VY4C2', am:'RM34.87' }, right:{ o:'104...99791582', d:'2026-05-30', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'OUT', r:'AX4UR58VY4C2', am:'RM34.87' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406984', d:'2026-05-29', a:'SPM MY - Wallet', t:'Less TXN', di:'OUT', r:'AX4UEDUOVDAA', am:'RM30.24' }, right:{ o:'104...99791583', d:'2026-06-05', a:'SPM MY - Wallet', t:'Less TXN', di:'IN', r:'AX4UEDUOVDAA', am:'RM30.24' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] }
+];
 
-    const setClearingDateRange = () => {
-      const now = new Date();
-      const to = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const from = new Date(to);
-      from.setDate(from.getDate() - 13);
-      document.getElementById("clearingDateFrom").textContent = formatDate(from);
-      document.getElementById("clearingDateTo").textContent = formatDate(to);
-    };
+const refreshQueueSeed = [
+  { left:{ o:'104...98406985', d:'2026-06-10', a:'SPM MY - Wallet', t:'Over TXN', di:'IN', r:'AX4UNEW001', am:'RM88.10' }, right:{ o:'104...99791584', d:'2026-06-11', a:'SPM MY - Wallet', t:'Less TXN', di:'IN', r:'AX4UNEW001', am:'RM88.10' }, reasons:['Agreement Item','Amount','Fund Direction','Reference ID'] },
+  { left:{ o:'104...98406986', d:'2026-06-10', a:'SPM MY - Bank', t:'Less TXN', di:'OUT', r:'AX4UNEW002', am:'RM12.44' }, right:{ o:'104...99791585', d:'2026-06-11', a:'SPM MY - Bank', t:'Less TXN', di:'IN', r:'RFND20260620', am:'RM12.44' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
+  { left:{ o:'104...98406987', d:'2026-06-11', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'OUT', r:'AX4UNEW003', am:'RM67.30' }, right:{ o:'104...99791586', d:'2026-06-11', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'OUT', r:'AX4UNEW003', am:'RM67.30' }, reasons:['Agreement Item','Amount','Fund Direction'] },
+  { left:{ o:'104...98406988', d:'2026-06-11', a:'SPM MY - Bank', t:'Over TXN', di:'IN', r:'AX4UNEW004', am:'RM240.19' }, right:{ o:'104...99791587', d:'2026-06-11', a:'SPM MY - Bank', t:'Over TXN', di:'OUT', r:'RFND20260621', am:'RM240.19' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] }
+];
 
-    let submittedFilters = {
-      agreement: "",
-      offsetType: "",
-      discrepancyOrderId: "",
-      referenceId: ""
-    };
-    let rematchVersion = 0;
-    let latestUpdateTime = new Date();
+let visibleData = baseData.map((item, idx) => ({ ...item, id: `pair-${idx + 1}` }));
+let refreshQueue = refreshQueueSeed.map((item, idx) => ({ ...item, id: `new-pair-${idx + 1}` }));
+let selectedIds = new Set(visibleData[0] ? [visibleData[0].id] : []);
 
-    const formatUpdateTime = (date) => {
-      const pad = (value) => String(value).padStart(2, "0");
-      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-    };
+function rc(x) {
+  if (x === 'Amount') return 'rp-amount';
+  if (x.includes('Agreement')) return 'rp-agree';
+  if (x.includes('Fund') || x.includes('Opposite')) return 'rp-dir';
+  if (x.includes('Reference')) return 'rp-ref';
+  if (x.includes('Biz')) return 'rp-biz';
+  return 'rp-amount';
+}
 
-    const generateClearingDates = (index, scenario) => {
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const twoWeeksAgo = new Date(today);
-      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-      const isWithinWindow = index % 4 !== 0;
-      const gap = scenario === "over-less" ? 3 : 7;
-      const baseDate = isWithinWindow
-        ? new Date(twoWeeksAgo.getTime() + Math.random() * (today.getTime() - twoWeeksAgo.getTime() - gap * 86400000))
-        : new Date(twoWeeksAgo.getTime() - (1 + Math.random() * 3) * 86400000);
-      const leftDate = new Date(baseDate);
-      const rightDate = new Date(baseDate);
-      rightDate.setDate(rightDate.getDate() + gap);
-      return {
-        leftClearingDate: formatDate(leftDate),
-        rightClearingDate: formatDate(rightDate),
-        matchingClearingDateGap: gap
-      };
-    };
+function esc(v) {
+  return String(v)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
 
-    const makeAllRows = (config) => Array.from({ length: config.rows }, (_, index) => {
-      const scenario = index % 3 === 1 ? "over-over" : index % 3 === 2 ? "less-less" : "over-less";
-      const sameTypeOffset = scenario !== "over-less";
-      const leftFund = index % 2 === 0 ? "IN" : "OUT";
-      const rightFund = sameTypeOffset ? (leftFund === "IN" ? "OUT" : "IN") : leftFund;
-      const variantIndex = index + rematchVersion;
-      const amount = amountSamples[variantIndex % amountSamples.length];
-      const leftRef = index >= 4 ? ["AX4UR58WAW9W", "AX4UR58VY4C2", "AX4UEDUOVDAA"][variantIndex % 3] : `AX4U1M${29 + variantIndex}K29DW`;
-      const rightRef = variantIndex % 5 === 0 ? `RFND${20260600 + variantIndex}` : leftRef;
-      const matchReason = sameTypeOffset ? "" : (variantIndex % 4 === 3 ? "Biz Info Fuzzy Matching" : "Reference ID");
-      const leftType = scenario === "less-less" ? "Less TXN" : "Over TXN";
-      const rightType = scenario === "over-over" ? "Over TXN" : "Less TXN";
-      const agreement = index % 4 === 1 ? "SPM MY - Wallet" : index % 4 === 2 ? "SPM MY - Bank" : "Alto-ShopeePay-0918-Payout-AS";
-      const { leftClearingDate, rightClearingDate, matchingClearingDateGap } = generateClearingDates(index, scenario);
-      return {
-        checked: index === 0,
-        key: `${currentAction}-${index}`,
-        leftId: `104...${98406967 + index}`,
-        rightId: `104...${99791566 + index}`,
-        agreement,
-        offsetType: scenario,
-        leftType,
-        rightType,
-        leftFund,
-        rightFund,
-        leftRef,
-        rightRef,
-        amount,
-        matchReason,
-        sameTypeOffset,
-        systemCode: "SPM_INBOUND",
-        sourcePaymentId: sourcePaymentIds[index % sourcePaymentIds.length],
-        leftClearingDate,
-        rightClearingDate,
-        matchingClearingDateGap
-      };
-    });
+function typeHTML(v) {
+  return `<span class="type-pill ${v === 'Over TXN' ? 'type-over' : 'type-less'}">${esc(v)}</span>`;
+}
 
-    const filterRows = (rows) => rows.filter(row => {
-      const agreementMatch = !submittedFilters.agreement || row.agreement === submittedFilters.agreement;
-      const offsetTypeMatch = !submittedFilters.offsetType || row.offsetType === submittedFilters.offsetType;
-      const referenceKeyword = submittedFilters.referenceId.toLowerCase();
-      const referenceMatch = !referenceKeyword
-        || row.leftRef.toLowerCase().includes(referenceKeyword)
-        || row.rightRef.toLowerCase().includes(referenceKeyword);
-      const orderKeyword = submittedFilters.discrepancyOrderId.toLowerCase();
-      const orderMatch = !orderKeyword
-        || row.leftId.toLowerCase().includes(orderKeyword)
-        || row.rightId.toLowerCase().includes(orderKeyword);
-      return agreementMatch && offsetTypeMatch && orderMatch && referenceMatch;
-    });
+function dirHTML(v) {
+  return `<span class="dir-dot dir-${String(v).toLowerCase()}">${esc(v)}</span>`;
+}
 
-    const submitFilters = () => {
-      submittedFilters = {
-        agreement: document.getElementById("agreementItem").value,
-        offsetType: document.getElementById("offsetType").value,
-        discrepancyOrderId: document.getElementById("discrepancyOrderInput").value.trim(),
-        referenceId: document.getElementById("referenceInput").value.trim()
-      };
-      render();
-      const typeLabel = submittedFilters.offsetType ? offsetTypeLabels[submittedFilters.offsetType] : "All Offset Types";
-      toast.textContent = `Filter submitted: ${typeLabel}`;
-      toast.classList.add("show");
-      window.setTimeout(() => toast.classList.remove("show"), 1600);
-    };
+function amountHTML(v, dir, extraCls = '') {
+  return `<span class="amt-text ${extraCls}">${esc(v)}</span>`;
+}
 
-    const bridgeCell = () => `<td class="arrow-cell operation-cell"><div class="match-bridge"><span class="offset-bridge"><span class="offset-badge">Offset</span></span></div></td>`;
+function pairLines(leftHTML, rightHTML, multiline = false) {
+  return `<div class="pair-stack">
+    <div class="pair-line">
+      <span class="pair-value ${multiline ? 'multiline' : ''}">${leftHTML}</span>
+    </div>
+    <div class="pair-line">
+      <span class="pair-value ${multiline ? 'multiline' : ''}">${rightHTML}</span>
+    </div>
+  </div>`;
+}
 
-    const commonLeftCells = (row, config) => `
-      <td class="check-cell left-order first-group"><input class="row-check" type="checkbox" data-row-key="${row.key}" ${row.checked ? "checked" : ""} /></td>
-      <td class="left-order"><a class="link" href="#">${row.leftId}</a></td>
-      <td class="left-order">${row.leftClearingDate}</td>
-      <td class="left-order">${row.agreement}</td>
-      <td class="left-order">${typeTag(row.leftType)}</td>
-      <td class="left-order">${fundTag(row.leftFund)}</td>
-      <td class="left-order"><span class="ref">${row.leftRef}</span></td>
-      <td class="left-order last-group">${row.amount}</td>
-      ${bridgeCell()}
-    `;
+function getOffsetType(pair) {
+  const types = [pair.left.t, pair.right.t].sort();
+  return `${types[1]} VS ${types[0]}`;
+}
 
-    const renderOffsetRow = (row, config) => `
-      <tr data-row-key="${row.key}" class="${confirmedRows.has(row.key) ? "confirmed" : ""}">
-        ${commonLeftCells(row, config)}
-        <td class="right-order first-group"><a class="link" href="#">${row.rightId}</a></td>
-        <td class="right-order">${row.rightClearingDate}</td>
-        <td class="right-order">${row.agreement}</td>
-        <td class="right-order">${typeTag(row.rightType)}</td>
-        <td class="right-order">${fundTag(row.rightFund)}</td>
-        <td class="right-order"><span class="ref">${row.rightRef}</span></td>
-        <td class="right-order last-group"><span class="amount-value">${row.amount}</span></td>
-        <td class="matching-rule-cell" title="Agreement Item / Amount / ${row.sameTypeOffset ? "Opposite Fund Direction" : `Fund Direction / ${row.matchReason}`} / CD Gap: ${row.matchingClearingDateGap}d">${matchingRuleTags(row)}</td>
-      </tr>
-    `;
+function formatNow() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mi = String(now.getMinutes()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+}
 
-    const render = () => {
-      const config = configs[currentAction];
-      const activeColumns = columns[config.columnSet];
-      document.getElementById("resultsTable").style.minWidth = "2422px";
-      document.getElementById("colGroup").innerHTML = activeColumns.map(([, width]) => `<col style="width:${width}px" />`).join("");
-      document.getElementById("headerRow").innerHTML = activeColumns.map(([label, , className]) => `<th class="${className || ""}">${label}</th>`).join("");
-      document.getElementById("summaryTitle").textContent = config.title;
-      const rows = filterRows(makeAllRows(config));
-      document.getElementById("summaryCount").textContent = rows.length;
-      document.getElementById("latestUpdateTime").textContent = formatUpdateTime(latestUpdateTime);
+function openConfirmModal() {
+  document.getElementById('confirmModal')?.classList.add('show');
+}
 
-      document.getElementById("tableBody").innerHTML = rows
-        .map((row) => {
-          if (config.columnSet === "offset") return renderOffsetRow(row, config);
-          return "";
-        })
-        .join("");
-    };
+function closeConfirmModal() {
+  document.getElementById('confirmModal')?.classList.remove('show');
+}
 
-    const selectedRows = () => Array.from(document.querySelectorAll(".row-check:checked")).map((input) => input.dataset.rowKey);
+function confirmModalProceed() {
+  const visibleSelectedIds = new Set(
+    [...document.querySelectorAll('.pair-row input:checked')]
+      .map(cb => cb.closest('.pair-row')?.getAttribute('data-pair-id'))
+      .filter(Boolean)
+  );
+  visibleData = visibleData.filter(pair => !visibleSelectedIds.has(pair.id));
+  visibleSelectedIds.forEach(id => selectedIds.delete(id));
+  closeConfirmModal();
+  render();
+}
 
-    ["agreementItem", "offsetType"].forEach((id) => {
-      document.getElementById(id).addEventListener("change", submitFilters);
-    });
-    document.getElementById("searchBtn").addEventListener("click", submitFilters);
-    document.getElementById("refreshBtn").addEventListener("click", () => {
-      const refreshBtn = document.getElementById("refreshBtn");
-      refreshBtn.disabled = true;
-      refreshBtn.textContent = "Refreshing...";
-      toast.textContent = "Rematching offset suggestions...";
-      toast.classList.add("show");
-      window.setTimeout(() => {
-        rematchVersion += 1;
-        latestUpdateTime = new Date();
-    setClearingDateRange();
-    render();
-        refreshBtn.disabled = false;
-        refreshBtn.textContent = "Refresh";
-        toast.textContent = "Offset suggestions refreshed.";
-        window.setTimeout(() => toast.classList.remove("show"), 1600);
-      }, 650);
-    });
-    document.getElementById("discrepancyOrderInput").addEventListener("keydown", (event) => {
-      if (event.key === "Enter") submitFilters();
-    });
-    document.getElementById("addDiscrepancyOrder").addEventListener("click", () => {
-      const input = document.getElementById("discrepancyOrderInput");
-      if (input.value.trim()) {
-        submitFilters();
-      }
-    });
-    document.getElementById("referenceInput").addEventListener("keydown", (event) => {
-      if (event.key === "Enter") submitFilters();
-    });
-    document.getElementById("addReference").addEventListener("click", () => {
-      const input = document.getElementById("referenceInput");
-      if (input.value.trim()) {
-        submitFilters();
-      }
-    });
-    const modal = document.getElementById("confirmModal");
-    const toast = document.getElementById("toast");
-    document.getElementById("confirmSuggestBtn").addEventListener("click", () => {
-      const keys = selectedRows();
-      const config = configs[currentAction];
-      document.getElementById("confirmMessage").textContent = keys.length
-        ? `Confirm ${config.action} suggestion for ${keys.length} selected transaction(s)?`
-        : "Please select at least one transaction before confirming.";
-      document.getElementById("applyConfirm").style.display = keys.length ? "inline-block" : "none";
-      modal.classList.add("show");
-    });
+async function handleRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  const status = document.getElementById('updateStatus');
+  if (!btn || btn.disabled) return;
 
-    document.getElementById("cancelConfirm").addEventListener("click", () => {
-      modal.classList.remove("show");
-    });
+  const prevLabel = btn.textContent;
+  btn.disabled = true;
+  btn.classList.add('is-loading');
+  btn.textContent = 'Processing...';
+  status.classList.add('is-processing');
+  status.innerHTML = '● System processing...';
 
-    document.getElementById("applyConfirm").addEventListener("click", () => {
-      selectedRows().forEach((key) => confirmedRows.add(key));
-      modal.classList.remove("show");
-      render();
-      toast.classList.add("show");
-      window.setTimeout(() => toast.classList.remove("show"), 1800);
-    });
+  await new Promise(resolve => setTimeout(resolve, 1200));
 
-    const params = new URLSearchParams(window.location.search);
-    const requestedAction = params.get("action");
-    if (configs[requestedAction]) {
-      currentAction = requestedAction;
-    } else if (requestedAction) {
-      const url = new URL(window.location.href);
-      url.searchParams.set("action", currentAction);
-      window.history.replaceState(null, "", url);
-    }
-    setClearingDateRange();
-    render();
-  </script>
+  const incoming = refreshQueue.splice(0, 2);
+  if (incoming.length) {
+    visibleData = visibleData.concat(incoming);
+  }
+  render();
+  status.classList.remove('is-processing');
+  status.innerHTML = `● Updated <span id="updatedTime">${formatNow()}</span>`;
+  btn.disabled = false;
+  btn.classList.remove('is-loading');
+  btn.textContent = prevLabel;
+}
+
+function render() {
+  const tbody = document.getElementById('tbody');
+  const typeFilter = document.getElementById('offsetTypeFilter')?.value || 'All';
+  let rows = '';
+  let visibleIndex = 0;
+  visibleData.forEach((p) => {
+    const offsetType = getOffsetType(p);
+    if (typeFilter !== 'All' && offsetType !== typeFilter) return;
+    const l = p.left, r = p.right;
+    visibleIndex += 1;
+    const sel = selectedIds.has(p.id);
+    const reasons = p.reasons.filter(x => x !== 'Biz Info Fuzzy Matching');
+    const reasonHTML = reasons.map(x => `<span class="reason-pill ${rc(x)}">${x}</span>`).join('');
+
+    rows += `<tr class="pair-row ${sel ? 'row-on' : ''}" data-pair-id="${p.id}">
+      <td class="cb-cell"><input type="checkbox" ${sel ? 'checked' : ''} onchange="toggle('${p.id}')"></td>
+      <td class="col-order pair-cell">${pairLines(`<span class="order-link">${esc(l.o)}</span>`, `<span class="order-link">${esc(r.o)}</span>`)}</td>
+      <td class="col-date pair-cell">${pairLines(esc(l.d), esc(r.d))}</td>
+      <td class="col-agree pair-cell">${pairLines(esc(l.a), esc(r.a), true)}</td>
+      <td class="col-type pair-cell">${pairLines(typeHTML(l.t), typeHTML(r.t))}</td>
+      <td class="col-dir pair-cell">${pairLines(dirHTML(l.di), dirHTML(r.di))}</td>
+      <td class="col-ref pair-cell">${pairLines(`<span class="ref-text">${esc(l.r)}</span>`, `<span class="ref-text">${esc(r.r)}</span>`)}</td>
+      <td class="col-amt pair-cell">${pairLines(amountHTML(l.am, l.di), amountHTML(r.am, r.di))}</td>
+      <td class="col-reason"><div class="reason-box">${reasonHTML}</div></td>
+    </tr>`;
+  });
+  tbody.innerHTML = rows;
+  document.querySelector('.stats-count').textContent = String(visibleIndex);
+  document.querySelector('.sel-count .st').textContent = `/ ${visibleIndex} pairs`;
+  updateCount();
+}
+
+function toggle(id) {
+  const row = document.querySelector(`.pair-row[data-pair-id="${id}"]`);
+  const cb = row.querySelector('input');
+  if (cb.checked) selectedIds.add(id);
+  else selectedIds.delete(id);
+  row.classList.toggle('row-on', cb.checked);
+  updateCount();
+}
+
+function toggleAll(m) {
+  const visibleRows = [...document.querySelectorAll('.pair-row')];
+  visibleRows.forEach(row => {
+    const pairId = row.getAttribute('data-pair-id');
+    const cb = row.querySelector('input');
+    cb.checked = m.checked;
+    row.classList.toggle('row-on', m.checked);
+    if (m.checked) selectedIds.add(pairId);
+    else selectedIds.delete(pairId);
+  });
+  updateCount();
+}
+
+function updateCount() {
+  const checked = document.querySelectorAll('.pair-row input:checked').length;
+  const total = document.querySelectorAll('.pair-row input').length;
+  document.getElementById('selCount').textContent = checked;
+  const head = document.getElementById('headSelectAll');
+  if (head) head.checked = total > 0 && checked === total;
+}
+
+function deSelectAll() {
+  if (!confirm('Decline all selected offset suggestions?')) return;
+  document.querySelectorAll('.pair-row input').forEach(cb => cb.checked = false);
+  document.querySelectorAll('.pair-row').forEach(row => row.classList.remove('row-on'));
+  selectedIds.clear();
+  updateCount();
+}
+
+function confirmSelected() {
+  const n = document.querySelectorAll('.pair-row input:checked').length;
+  if (!n) return alert('Please select at least one pair.');
+  openConfirmModal();
+}
+
+render();
+</script>
 </body>
 </html>
