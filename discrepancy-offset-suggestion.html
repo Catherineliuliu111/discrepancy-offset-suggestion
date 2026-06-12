@@ -34,12 +34,24 @@
   .tb-input, .tb-select { height: 34px; padding: 0 10px; border: 1px solid #D6D9E0; border-radius: 8px; font-size: 13px; font-family: inherit; background: #fff; outline: none; transition: .2s; color: #1A1D26; }
   .tb-input:focus, .tb-select:focus { border-color: #2469F0; box-shadow: 0 0 0 3px rgba(36,105,240,0.12); }
   .tb-date { width: 120px; }
+  .tb-input:disabled, .tb-select:disabled {
+    color: #6B7280; background: #F7F8FB; border-color: #DDE3EC; cursor: not-allowed;
+    box-shadow: none;
+  }
   .tb-input { width: 110px; }
   .tb-input-wide { width: 176px; }
   .tb-sep { color: #9CA3AF; font-size: 13px; padding: 0 4px; }
   .tb-divider { width: 1px; height: 24px; background: #E8EBF0; margin: 0 6px; flex-shrink: 0; }
   .tb-add { color: #2469F0; cursor: pointer; font-size: 20px; font-weight: 600; transition: .15s; }
   .tb-add:hover { transform: scale(1.2); }
+  .tb-hint {
+    flex-basis: 100%;
+    margin-top: -2px;
+    padding-left: 0;
+    font-size: 12px;
+    color: #6B7280;
+  }
+  .tb-hint strong { color: #2469F0; font-weight: 600; }
 
   .btn { height: 34px; padding: 0 18px; border-radius: 8px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; transition: .2s; border: 1px solid #D6D9E0; background: #fff; color: #1A1D26; display: inline-flex; align-items: center; gap: 6px; }
   .btn:hover { border-color: #2469F0; color: #2469F0; background: #F5F8FF; }
@@ -190,9 +202,9 @@
   <div class="toolbar">
     <div class="tb-group">
       <span class="tb-label">Clearing</span>
-      <input class="tb-input tb-date" type="date" value="2026-05-28">
+      <input class="tb-input tb-date" type="date" value="2026-05-28" disabled>
       <span class="tb-sep">→</span>
-      <input class="tb-input tb-date" type="date" value="2026-06-10">
+      <input class="tb-input tb-date" type="date" value="2026-06-10" disabled>
     </div>
     <div class="tb-divider"></div>
     <div class="tb-group">
@@ -220,6 +232,7 @@
       <button class="btn">Search</button>
       <button class="btn" id="refreshBtn" onclick="handleRefresh()">Refresh</button>
     </div>
+    <div class="tb-hint">The system filters <strong>Discrepancy Order</strong> data from the past <strong>14 days</strong> to generate offset matching suggestions by default.</div>
   </div>
 
   <div class="stats">
