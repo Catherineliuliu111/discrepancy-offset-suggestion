@@ -18,7 +18,7 @@
 
   .nav { display: flex; align-items: center; padding: 0 28px; background: #fff; border-bottom: 1px solid #E8EBF0; flex-shrink: 0; height: 56px; }
   .nav-links { display: flex; gap: 4px; height: 100%; }
-  .nav-link { display: inline-flex; align-items: center; padding: 0 20px; font-size: 14px; font-weight: 500; color: #6B7280; border-bottom: 2px solid transparent; transition: .2s; cursor: pointer; }
+  .nav-link { display: inline-flex; align-items: center; padding: 0 20px; font-size: 14px; font-weight: 500; color: #6B7280; border-bottom: 2px solid transparent; transition: .2s; cursor: pointer; text-decoration: none; }
   .nav-link:hover { color: #1A1D26; background: #F5F7FA; }
   .nav-link.active { color: #2469F0; border-bottom-color: #2469F0; font-weight: 600; }
   .nav-title { display: none; }
@@ -190,8 +190,8 @@
 
   <div class="nav">
     <div class="nav-links">
-      <div class="nav-link">Reconciliation To-Do List</div>
-      <div class="nav-link">Discrepancy Details</div>
+      <a class="nav-link" href="./sop-guideline-replica.html?from=discrepancy-offset-suggestion">Reconciliation To-Do List</a>
+      <a class="nav-link" href="./discrepancy-details-v2-manual-refund-update.html?from=discrepancy-offset-suggestion">Discrepancy Details</a>
       <div class="nav-link active">Offset Suggestions</div>
     </div>
     <div class="nav-title">Offset Matching · Pair Table</div>
