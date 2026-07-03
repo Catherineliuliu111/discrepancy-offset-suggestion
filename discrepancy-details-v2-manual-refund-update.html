@@ -6542,8 +6542,7 @@
 	              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
 	              <button class="btn primary" id="supplementTransactionSubmitBtn" disabled>Submit</button>
 	              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
-		              <span class="supplement-top-hint" id="supplementSubmitHint">Link source payment for every discrepancy order before submit</span>
-	            </div>
+		            </div>
 
             <div class="info-card">
               <div class="info-card-head">Select <span class="operation-title-tag" style="margin-left:10px;">Less TXN</span></div>
@@ -8775,13 +8774,7 @@ ${lines}
 		      const allLinkedAllowed = rows.length > 0 && rows.every(row => isSourcePaymentStatusAllowed(state.supplementLinks[row.id]));
 		      const submitBtn = document.getElementById("supplementTransactionSubmitBtn");
 		      if (submitBtn) submitBtn.disabled = !allLinkedAllowed;
-		      const submitHint = document.getElementById("supplementSubmitHint");
-		      if (submitHint) {
-		        submitHint.textContent = allLinkedAllowed
-		          ? "All discrepancy orders are linked with eligible source payments"
-		          : "Link source payment for every discrepancy order before submit";
-		      }
-		    }
+			    }
 
  	    function toggleSourcePaymentMode(action) {
  	      const isNotFound = action === "Link Source Payment (Payment Not Found)";
