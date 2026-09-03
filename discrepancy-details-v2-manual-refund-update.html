@@ -8612,6 +8612,9 @@ ${lines}
     }
 
     function getFundDispositionAvailability(row) {
+      if (state.operationEntryPoint === "upload") {
+        return { loss: true, revenue: true };
+      }
       const type = String(row?.type || "").trim().toLowerCase();
       const direction = String(row?.direction || "").trim().toLowerCase();
       const isFundLoss = (type === "less txn" && direction === "out")
@@ -9050,6 +9053,7 @@ ${lines}
     }
 
     function isOperationNodeVisible(node) {
+      if (state.operationEntryPoint === "upload") return true;
       const { row } = getSelectedRefundRows();
       // External refunds are only applicable to a bank-side Less OUT.
       if (node.id === "external-refund" || node.id === "external-refund-confirm") {
@@ -9060,6 +9064,7 @@ ${lines}
     }
 
     function isOperationNodeEligible(node) {
+      if (state.operationEntryPoint === "upload") return true;
       const { row } = getSelectedRefundRows();
       const type = String(row?.type || "").trim().toLowerCase();
       const direction = String(row?.direction || "").trim().toLowerCase();
