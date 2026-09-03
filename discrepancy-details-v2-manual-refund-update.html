@@ -6110,7 +6110,8 @@
   .portal-detail-page .portal-history table { width: 1900px; min-width: 1900px; border-collapse: collapse; table-layout: fixed; font-size: 13px; }
   .portal-detail-page .portal-history th:first-child, .portal-detail-page .portal-history td:first-child { width: 320px; }
   .portal-detail-page .portal-history th { text-align: left; background: #fafafa; border-bottom: 1px solid #f0f0f0; padding: 12px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .portal-detail-page .portal-history td { padding: 18px 10px; border-bottom: 1px solid #f0f0f0; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .portal-detail-page .portal-history td { padding: 18px 10px; border-bottom: 1px solid #f0f0f0; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .portal-detail-page > .portal-card:not(.portal-history) { display: none; }
   .portal-detail-page .portal-audit { margin-top: 20px; padding: 0 40px 22px; }
   .portal-detail-page .portal-audit summary { cursor: pointer; color: #26313d; }
   @media (max-width: 1100px) { .portal-detail-page .portal-detail-card, .portal-detail-page .portal-two-col { grid-template-columns: 1fr; } .portal-detail-page .portal-tabs { display: flex; overflow: auto; padding-bottom: 0; } .portal-detail-page .portal-tab { white-space: nowrap; border-left: 0; border-bottom: 3px solid transparent; } .portal-detail-page .portal-tab.active { border-left: 0; border-bottom-color: #1683ff; } }
@@ -8711,9 +8712,9 @@ ${lines}
       } else if (title === "Manual Supplement") {
         openSupplementTransactionPage();
       } else if (title === "Confirm Fund Loss/Revenue") {
-        showToast(`Confirm Fund ${disposition === "revenue" ? "Revenue" : "Loss"} confirmed.`, "success");
+        completeActiveOperation(`Confirm Fund ${disposition === "revenue" ? "Revenue" : "Loss"}`);
       } else {
-        showToast(`${directHandlingOperationInfo[title].title} confirmed.`, "success");
+        completeActiveOperation(directHandlingOperationInfo[title].title);
       }
     }
 
