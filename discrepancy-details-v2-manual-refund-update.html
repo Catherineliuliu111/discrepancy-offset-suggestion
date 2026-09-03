@@ -8105,6 +8105,7 @@
       selectedBatchPaymentIds: new Set(),
       pendingHandlingAction: "",
       pendingFundDisposition: "",
+      operationEntryPoint: "handling",
       lastMixedProcessingStatusWarning: false,
       activeOperationRowId: null,
       processingHistory: {}
@@ -8631,8 +8632,9 @@ ${lines}
       const description = document.getElementById("operationInfoDescription");
       const confirmButton = document.getElementById("operationInfoConfirmBtn");
       const isDisposition = title === "Confirm Fund Loss/Revenue";
+      const hideImpact = state.operationEntryPoint === "upload";
       dispositionSelector.classList.toggle("hidden", !isDisposition);
-      genericInfo.classList.toggle("hidden", isDisposition);
+      genericInfo.classList.toggle("hidden", isDisposition || hideImpact);
       document.querySelector("#operationInfoModal .flow-info").classList.toggle("hidden", isDisposition);
       document.querySelectorAll("[data-fund-disposition-impact]").forEach(panel => {
         panel.classList.add("hidden");
@@ -8693,7 +8695,7 @@ ${lines}
             </div>
           `).join("");
           document.querySelectorAll("[data-fund-disposition-impact]").forEach(panel => panel.classList.add("hidden"));
-          impactPanel.classList.remove("hidden");
+          if (!hideImpact) impactPanel.classList.remove("hidden");
           confirmButton.disabled = false;
         };
       });
@@ -9071,6 +9073,7 @@ ${lines}
     }
 
     function operationFlowImpactHtml(groups) {
+      if (state.operationEntryPoint === "upload") return "";
       const isUnchangedImpact = (result) => /^(?:unchanged\b|total amount unchange\b|total amount unchanged\b)/i.test(String(result || "").trim());
       const changedGroups = Object.entries(groups || {})
         .map(([report, rows]) => [report, rows.filter(([, result]) => !isUnchangedImpact(result))])
@@ -9085,7 +9088,8 @@ ${lines}
       const eligible = isOperationNodeEligible(node);
       const isSelected = isLeaf && flowState.selectedLeaf === node.id;
       const visibleChildren = (node.children || []).filter(isOperationNodeVisible);
-      return `<article class="flow-node ${isLeaf ? "leaf" : ""} ${isOpen ? "open" : ""} ${isSelected ? "selected" : ""} ${eligible ? "" : "ineligible"}" data-flow-node-id="${escapeHtml(node.id)}"><div class="flow-summary"><div class="flow-title-row"><div class="flow-icon flow-icon-${escapeHtml(node.icon)}">${operationFlowIcons[node.icon] || operationFlowIcons.confirm}</div><div class="flow-title">${escapeHtml(node.title)}</div><div class="flow-indicator">✓</div></div><div class="flow-description">${escapeHtml(node.desc)}</div></div>${isLeaf && isSelected ? `<div class="flow-leaf-content">${operationFlowImpactHtml(node.groups)}</div>` : ""}${visibleChildren.length && isOpen ? `<div class="flow-children-wrap"><div class="flow-children">${visibleChildren.map(child => renderOperationFlowNode(child, flowState)).join("")}</div></div>` : ""}</article>`;
+      const impactHtml = isLeaf && isSelected ? operationFlowImpactHtml(node.groups) : "";
+      return `<article class="flow-node ${isLeaf ? "leaf" : ""} ${isOpen ? "open" : ""} ${isSelected ? "selected" : ""} ${eligible ? "" : "ineligible"}" data-flow-node-id="${escapeHtml(node.id)}"><div class="flow-summary"><div class="flow-title-row"><div class="flow-icon flow-icon-${escapeHtml(node.icon)}">${operationFlowIcons[node.icon] || operationFlowIcons.confirm}</div><div class="flow-title">${escapeHtml(node.title)}</div><div class="flow-indicator">✓</div></div><div class="flow-description">${escapeHtml(node.desc)}</div></div>${impactHtml ? `<div class="flow-leaf-content">${impactHtml}</div>` : ""}${visibleChildren.length && isOpen ? `<div class="flow-children-wrap"><div class="flow-children">${visibleChildren.map(child => renderOperationFlowNode(child, flowState)).join("")}</div></div>` : ""}</article>`;
     }
 
     function renderOperationFlow(kind) {
@@ -10546,7 +10550,7 @@ ${lines}
       const item = event.target.closest(".dropdown-item");
       const title = item?.dataset.operationTitle;
       if (!title) return;
-      // Upload uses the same operation-confirmation content as Handling Type.
+      state.operationEntryPoint = "upload";
       openOperationPopup(title, false);
       event.currentTarget.classList.remove("open");
     });
@@ -10554,6 +10558,7 @@ ${lines}
     document.getElementById("handlingDropdown").addEventListener("click", (event) => {
       const item = event.target.closest(".dropdown-item");
       if (!item) return;
+      state.operationEntryPoint = "handling";
       openOperationPopup(item.dataset.handleTitle);
       event.currentTarget.classList.remove("open");
     });
