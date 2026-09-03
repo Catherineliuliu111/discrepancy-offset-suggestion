@@ -4113,6 +4113,19 @@
       font-weight: 650;
     }
 
+    .upload-claim-fund-result-page .upload-claim-discrepancy-row {
+      display: grid;
+      grid-template-columns: 220px 360px;
+      align-items: center;
+      gap: 12px;
+      color: #2b3340;
+      font-size: 13px;
+    }
+
+    .upload-claim-fund-result-page .operation-note-select {
+      width: 420px;
+    }
+
     .upload-template-link {
       display: inline-flex;
       align-items: center;
@@ -6111,7 +6124,6 @@
   .portal-detail-page .portal-history th:first-child, .portal-detail-page .portal-history td:first-child { width: 320px; }
   .portal-detail-page .portal-history th { text-align: left; background: #fafafa; border-bottom: 1px solid #f0f0f0; padding: 12px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .portal-detail-page .portal-history td { padding: 18px 10px; border-bottom: 1px solid #f0f0f0; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .portal-detail-page > .portal-card:not(.portal-history) { display: none; }
   .portal-detail-page .portal-audit { margin-top: 20px; padding: 0 40px 22px; }
   .portal-detail-page .portal-audit summary { cursor: pointer; color: #26313d; }
   @media (max-width: 1100px) { .portal-detail-page .portal-detail-card, .portal-detail-page .portal-two-col { grid-template-columns: 1fr; } .portal-detail-page .portal-tabs { display: flex; overflow: auto; padding-bottom: 0; } .portal-detail-page .portal-tab { white-space: nowrap; border-left: 0; border-bottom: 3px solid transparent; } .portal-detail-page .portal-tab.active { border-left: 0; border-bottom-color: #1683ff; } }
@@ -6958,33 +6970,50 @@
         </section>
 
         <section class="hidden" id="uploadClaimFundResultPage">
-          <div class="manual-refund-shell operation-page-shell upload-refund-result-page">
+          <div class="manual-refund-shell operation-page-shell upload-refund-result-page upload-claim-fund-result-page">
             <div class="manual-refund-top">
               <div class="manual-refund-title">
                 <span class="operation-title-line">
                   <span id="uploadClaimFundResultTitle">Upload Claim Fund Result</span>
+                  <span class="operation-title-tag with-bank-detail hidden" id="uploadClaimFundResultTag"></span>
                 </span>
               </div>
               <button class="btn primary" id="uploadClaimFundResultSubmitBtn" disabled>Submit</button>
               <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
             </div>
 
-            <div class="info-card">
+            <div class="info-card" id="uploadClaimFundResultUploadCard">
               <div class="info-card-head">Upload</div>
               <div class="info-card-body">
-                <div class="upload-result-actions">
+                <div class="upload-result-actions" id="uploadClaimFundResultActions">
                   <button class="btn">↥ Upload</button>
                   <span class="upload-template-link">⇩ Template</span>
+                </div>
+                <div class="upload-claim-discrepancy-row" id="uploadClaimFundDiscrepancyRow">
+                  <span><span class="required-mark">*</span> Discrepancy Type :</span>
+                  <select class="operation-select-control compact">
+                    <option value="">Select</option>
+                    <option>Less TXN</option>
+                    <option>Over TXN</option>
+                  </select>
                 </div>
               </div>
             </div>
 
-            <div class="info-card">
-              <div class="info-card-head">Attachments</div>
-              <div class="info-card-body">
-                <div class="attachment-zone">
-                  <span class="attachment-zone-icon">⌁</span>
-                  <span>Drag and drop files, paste screenshots, or browse</span>
+            <div class="info-card" id="uploadClaimFundResultNotesCard">
+              <div class="info-card-head">Notes</div>
+              <div class="info-card-body confirm-notes-grid">
+                <div class="notes-row">
+                  <span><span class="required-mark">*</span> Claim Reason :</span>
+                  <select class="operation-select-control operation-note-select">
+                    <option value="">Select claim reason</option>
+                    <option>Bank did not provide new detail report</option>
+                    <option>Bank recovery confirmed</option>
+                  </select>
+                </div>
+                <div class="notes-row">
+                  <span>Remark :</span>
+                  <input class="remark-input operation-wide-input" id="uploadClaimFundResultRemark" />
                 </div>
               </div>
             </div>
@@ -8712,9 +8741,9 @@ ${lines}
       } else if (title === "Manual Supplement") {
         openSupplementTransactionPage();
       } else if (title === "Confirm Fund Loss/Revenue") {
-        completeActiveOperation(`Confirm Fund ${disposition === "revenue" ? "Revenue" : "Loss"}`);
+        showToast(`Confirm Fund ${disposition === "revenue" ? "Revenue" : "Loss"} confirmed.`, "success");
       } else {
-        completeActiveOperation(directHandlingOperationInfo[title].title);
+        showToast(`${directHandlingOperationInfo[title].title} confirmed.`, "success");
       }
     }
 
@@ -9881,11 +9910,21 @@ ${lines}
 
     function openUploadClaimFundResultPage(kind = "user") {
       const title = kind === "bank"
-        ? "Upload Claim Fund From Bank Result"
+        ? "Claim Fund From Bank"
         : "Upload Confirm External Refund Result";
 
       showOperationPage("uploadClaimFundResultPage", title);
       document.getElementById("uploadClaimFundResultTitle").textContent = title;
+      const tag = document.getElementById("uploadClaimFundResultTag");
+      if (tag) {
+        tag.textContent = kind === "bank" ? "Bank Not Provide New Detail Report" : "";
+        tag.classList.toggle("hidden", kind !== "bank");
+      }
+      document.getElementById("uploadClaimFundDiscrepancyRow")?.classList.toggle("hidden", kind !== "bank");
+      document.getElementById("uploadClaimFundResultNotesCard")?.classList.toggle("hidden", kind !== "bank");
+      document.getElementById("uploadClaimFundResultActions")?.classList.toggle("hidden", kind === "bank");
+      const remark = document.getElementById("uploadClaimFundResultRemark");
+      if (remark) remark.value = kind === "bank" ? "Claim Fund From Bank-Bank Not Provide New Bank detail" : "";
       document.getElementById("uploadClaimFundResultSubmitBtn").disabled = true;
     }
 
