@@ -3410,6 +3410,28 @@
       white-space: normal;
     }
 
+    .refund-date-info {
+      border: 1px solid #7a8797;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 650;
+      cursor: help;
+    }
+
+    .refund-date-floating-tip {
+      position: fixed;
+      z-index: 1000;
+      width: min(320px, calc(100vw - 32px));
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #1f2937;
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.24);
+      font-size: 12px;
+      line-height: 1.45;
+      pointer-events: none;
+    }
+
     .muted-input-cell,
     .inline-field {
       display: inline-flex;
@@ -5135,6 +5157,75 @@
       align-items: center;
     }
 
+    /* Upload File to Handle > Claim Fund follows the compact production
+       selection layout: two plain options, one row per operation. */
+    #uploadClaimFundModal .claim-options {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    #uploadClaimFundModal .claim-option {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 28px;
+      gap: 18px;
+      align-items: center;
+      min-height: 92px;
+      padding: 18px 0;
+      border: 0;
+      border-bottom: 1px solid #e5e7eb;
+      border-radius: 0;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    #uploadClaimFundModal .claim-option:hover,
+    #uploadClaimFundModal .claim-option.selected {
+      border-color: transparent;
+      background: #f7f8fa;
+      box-shadow: none;
+    }
+
+    #uploadClaimFundModal .claim-icon {
+      display: none;
+    }
+
+    #uploadClaimFundModal .claim-copy {
+      display: block;
+    }
+
+    #uploadClaimFundModal .claim-title {
+      display: inline;
+      margin-right: 8px;
+      color: #1f2937;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    #uploadClaimFundModal .claim-info,
+    #uploadClaimFundModal .claim-info-line {
+      display: inline;
+    }
+
+    #uploadClaimFundModal .claim-info-line {
+      color: #1f2937;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    #uploadClaimFundModal .claim-check {
+      color: #1f2937;
+      font-size: 24px;
+      font-weight: 700;
+      opacity: 0;
+      text-align: center;
+    }
+
+    #uploadClaimFundModal .claim-option.selected .claim-check {
+      opacity: 1;
+    }
+
     #claimFundModal .claim-icon {
       width: 64px;
       height: 64px;
@@ -6287,35 +6378,30 @@
                 <div class="dropdown" id="uploadDropdown">
                   <div class="dropdown-item" data-operation-title="Update To Success">
                     <span>Update to Success</span>
-                    <span class="info-dot tip" data-tip="Use when the discrepant record should be corrected into a success transaction.">i</span>
+                  </div>
+                  <div class="dropdown-item" data-operation-title="Manual Writeoff">
+                    <span>Manual Writeoff</span>
                   </div>
                   <div class="dropdown-item" data-operation-title="Refund Fund">
                     <span>Refund Fund</span>
-                    <span class="info-dot tip" data-tip="Choose a refund handling path for the selected discrepancy records.">i</span>
                   </div>
                   <div class="dropdown-item" data-operation-title="Claim Fund">
                     <span>Claim Fund</span>
-                    <span class="info-dot tip" data-tip="Claim funds from the bank or user for selected discrepancy items.">i</span>
                   </div>
                   <div class="dropdown-item" data-operation-title="Confirm Offline Transaction">
                     <span>Confirm Offline Transaction</span>
-                    <span class="info-dot tip" data-tip="Confirm a completed offline refund or a completed manual merchant payout.">i</span>
-                  </div>
-                  <div class="dropdown-item" data-operation-title="Switch To Statement Recon">
-                    <span>Switch to statement recon</span>
-                    <span class="info-dot tip" data-tip="Move an offline Less TXN from Channel Recon to Statement Recon.">i</span>
-                  </div>
-                  <div class="dropdown-item" data-operation-title="Manual Supplement">
-                    <span>Manual Supplement</span>
-                    <span class="info-dot tip" data-tip="Available only when Discrepancy Type is Less TXN, Source Status is empty, and Source Payment ID is empty.">i</span>
                   </div>
                   <div class="dropdown-item" data-operation-title="Confirm Fund Loss/Revenue">
                     <span>Confirm Fund Loss/Revenue</span>
-                    <span class="info-dot tip" data-tip="Confirm whether the discrepancy should be recognized as fund loss or revenue.">i</span>
                   </div>
                   <div class="dropdown-item" data-operation-title="Invalidate">
                     <span>Invalidate</span>
-                    <span class="info-dot tip" data-tip="Invalidate the selected discrepancy when it should no longer be handled.">i</span>
+                  </div>
+                  <div class="dropdown-item" data-operation-title="Offset">
+                    <span>Offset</span>
+                  </div>
+                  <div class="dropdown-item" data-operation-title="Hold Handling">
+                    <span>Hold Handling</span>
                   </div>
                 </div>
               </div>
@@ -7337,22 +7423,20 @@
       <div class="modal-body">
         <div class="claim-options">
           <div class="claim-option" data-upload-claim-path="bank">
-            <span class="claim-icon claim-bank-icon"></span>
             <span class="claim-copy">
               <span class="claim-title">Claim Fund From Bank</span>
               <span class="claim-info">
-                <span class="claim-info-line"><span><strong>Description:</strong> Select this operation after you confirm with bank that you can <strong>clawback money from bank</strong> to recover funds.</span></span>
+                <span class="claim-info-line"><strong>Description:</strong> Select this operation after you confirm with bank that you can <strong>clawback money from bank</strong> to recover funds.</span>
               </span>
             </span>
             <span class="claim-check">✓</span>
           </div>
 
           <div class="claim-option" data-upload-claim-path="user">
-            <span class="claim-icon claim-user-icon"></span>
             <span class="claim-copy">
               <span class="claim-title">Claim Fund From User</span>
               <span class="claim-info">
-                <span class="claim-info-line"><span><strong>Description:</strong> Select when <strong>wallet deduction is required</strong> to recover funds from the user.</span></span>
+                <span class="claim-info-line"><strong>Description:</strong> Select when <strong>wallet deduction is required</strong> to recover funds from the user.</span>
               </span>
             </span>
             <span class="claim-check">✓</span>
@@ -9501,7 +9585,7 @@ ${lines}
     function openSwitchStatementReconPage() {
       const { selectedRows, row, totalAmount } = getSelectedRefundRows();
       const rows = selectedRows.length ? selectedRows : [row];
-      if (!rows.length || !rows.every(isSwitchStatementReconEligible)) {
+      if (state.operationEntryPoint !== "upload" && (!rows.length || !rows.every(isSwitchStatementReconEligible))) {
         showToast("Switch to Statement Recon is only available for Less TXN records.", "warn");
         return;
       }
@@ -9724,12 +9808,16 @@ ${lines}
           : "";
       const displayTitle = detailStatus ? title.slice(0, -(detailStatus.length + 3)) : title;
       const isConfirmCompletedPayout = normalizedTitle.includes("confirm completed payout");
-      const useRefundDate = normalizedType === "less txn" && (normalizedTitle.includes("refund to wallet") || normalizedTitle.includes("bank detail unavailable"));
+      const isOverTxn = normalizedType.includes("over");
+      const isLessTxn = normalizedType.includes("less");
+      const useRefundDate = isLessTxn
+        && (normalizedTitle.includes("refund to wallet") || normalizedTitle.includes("bank detail unavailable"));
+      const useClearingDate = isOverTxn;
       const confirmRefundPromptText = isConfirmCompletedPayout
         ? "Confirm the completed manual merchant payout with the actual Payout Bank Account and supporting evidence. No Channel Detail will be created."
         : useRefundDate
         ? "Confirm the offline refund result. Please ensure Refund Date and Biz Code are correct."
-        : normalizedType === "over txn"
+        : isOverTxn
         ? "Confirm the final bank refund result and clearing date."
         : title.toLowerCase().includes("external refund")
           ? "Confirm an external refund already completed outside PPS/SPR. SPR will create the missing Offline Refund Transaction and will not initiate another refund."
@@ -9760,7 +9848,9 @@ ${lines}
       document.getElementById("confirmRefundDateHeader").innerHTML = isConfirmCompletedPayout
         ? 'Payout Date <span class="table-info-icon tip" data-tip="Date when the manual offline payout was processed.">i</span><span class="table-edit-icon">✎</span>'
         : useRefundDate
-        ? 'Refund Date <span class="table-info-icon" title="Enter the date on which the refund transaction actually occurred.">?</span><span class="table-edit-icon">✎</span>'
+        ? 'Refund Date <span class="table-info-icon refund-date-info" title="Refund date is the date when offline refund happened. When this discrepancy is resolved, the system will generate an account statement. The refund date will be used for comparison, with whichever is later set as the clearing/accounting date." aria-label="Refund date information">i</span><span class="table-edit-icon">✎</span>'
+        : useClearingDate
+        ? 'Clearing Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span>'
         : 'Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span>';
       const confirmRows = selectedRows.length ? selectedRows : [row];
       const confirmRefundTableBody = document.getElementById("confirmRefundTableBody");
@@ -9902,6 +9992,24 @@ ${lines}
       document.getElementById("uploadRefundResultDiscrepancyRow").classList.toggle("hidden", !config.showDiscrepancyType);
       document.getElementById("uploadRefundResultReasonRow").classList.toggle("hidden", !config.showReason);
       document.getElementById("uploadRefundResultAttachmentCard").classList.toggle("hidden", !config.showAttachment);
+    }
+
+    // Upload File to Handle is a separate entry path. It should never reuse
+    // the Handling Type hierarchy or its scenario eligibility checks. The
+    // upload entry opens the common upload-result surface for operations that
+    // do not have a dedicated upload sub-flow.
+    function openUploadOperationResultPage(title) {
+      showOperationPage("uploadRefundResultPage", title);
+      document.getElementById("uploadRefundResultTitle").textContent = title;
+      document.getElementById("uploadRefundResultTag").classList.add("hidden");
+      document.getElementById("uploadRefundResultNote").classList.add("hidden");
+      document.getElementById("uploadRefundResultNotesCard").classList.add("hidden");
+      document.getElementById("uploadRefundResultDiscrepancyRow").classList.add("hidden");
+      document.getElementById("uploadRefundResultReasonRow").classList.add("hidden");
+      document.getElementById("uploadRefundResultActions").classList.remove("hidden");
+      document.getElementById("uploadRefundResultAttachmentCard").classList.remove("hidden");
+      document.getElementById("uploadRefundResultAttachmentTitle").textContent = "Attachment";
+      document.getElementById("uploadRefundResultSubmitBtn").disabled = false;
     }
 
     function openUploadClaimFundPopup() {
@@ -10125,7 +10233,7 @@ ${lines}
 
 	    function openSupplementTransactionPage() {
 	      const { rows, row, totalAmount } = getSupplementTransactionRows();
-	      if (!rows.every(isSupplementTransactionEligible)) {
+	      if (state.operationEntryPoint !== "upload" && !rows.every(isSupplementTransactionEligible)) {
 	        showToast("Manual Supplement is only available for Less TXN with empty Source Status and empty Source Payment ID.", "warn");
 	        return;
 	      }
@@ -10552,6 +10660,29 @@ ${lines}
       btn.addEventListener("click", () => closeModal(btn.dataset.close));
     });
 
+    document.addEventListener("mouseover", (event) => {
+      const icon = event.target.closest(".refund-date-info");
+      if (!icon || event.relatedTarget?.closest?.(".refund-date-info") === icon) return;
+      document.getElementById("refundDateFloatingTip")?.remove();
+      const tip = document.createElement("div");
+      tip.id = "refundDateFloatingTip";
+      tip.className = "refund-date-floating-tip";
+      tip.textContent = icon.getAttribute("title") || "";
+      document.body.appendChild(tip);
+      const rect = icon.getBoundingClientRect();
+      const tipRect = tip.getBoundingClientRect();
+      const left = Math.min(Math.max(16, rect.left + rect.width / 2 - tipRect.width / 2), window.innerWidth - tipRect.width - 16);
+      const top = rect.top - tipRect.height - 10;
+      tip.style.left = `${left}px`;
+      tip.style.top = `${Math.max(16, top)}px`;
+    });
+    document.addEventListener("mouseout", (event) => {
+      const icon = event.target.closest(".refund-date-info");
+      if (icon && !event.relatedTarget?.closest?.(".refund-date-info")) {
+        document.getElementById("refundDateFloatingTip")?.remove();
+      }
+    });
+
     document.getElementById("sourcePaymentSearchBtn").addEventListener("click", searchSourcePayments);
     document.getElementById("sourcePaymentInput").addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -10573,6 +10704,25 @@ ${lines}
     toggleDropdown("handlingBtn", "handlingDropdown");
 
     function openOperationPopup(title, requireEligibleSelection = true) {
+      if (state.operationEntryPoint === "upload") {
+        if (title === "Refund Fund") {
+          openModal("#uploadManualRefundModal");
+          return;
+        }
+        if (title === "Claim Fund") {
+          openUploadClaimFundPopup();
+          return;
+        }
+        if (title === "Confirm Offline Transaction") {
+          openUploadOperationResultPage("Confirm Offline Transaction");
+          return;
+        }
+        // Upload File to Handle is intentionally unrestricted and uses the
+        // upload surface for every remaining operation instead of the normal
+        // Handling Type modal/page flow.
+        openUploadOperationResultPage(title);
+        return;
+      }
       if (title === "Refund Fund") {
         openModal("#refundFundModal");
       } else if (title === "Invalidate") {
