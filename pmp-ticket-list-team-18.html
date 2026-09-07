@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PMP Ticket List | Team 18</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ee4d2d'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='34' fill='white'%3ES%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #fff;
+      --line: #e3e8f0;
+      --text: #17212f;
+      --muted: #69788d;
+      --brand: #ee4d2d;
+      --sidebar: #0c1b2c;
+      --sidebar-soft: #17304b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font: 14px/1.5 "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    button, a { font: inherit; }
+    .app { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 18px 14px;
+      color: #c9d4e3;
+      background: linear-gradient(180deg, #10253c 0%, var(--sidebar) 100%);
+      overflow: hidden auto;
+    }
+    .brand, .region, .nav-item, .sidebar-footer { display: flex; align-items: center; }
+    .brand { gap: 10px; padding: 0 8px; color: #fff; font-size: 16px; font-weight: 700; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff825d, var(--brand));
+      font-size: 19px;
+    }
+    .region {
+      gap: 8px;
+      padding: 11px 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      color: #f8fbff;
+      background: rgba(255,255,255,.07);
+      font-size: 12px;
+    }
+    .region-dot, .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #37d58a;
+      box-shadow: 0 0 0 4px rgba(55,213,138,.12);
+    }
+    .region-dot { width: 7px; height: 7px; }
+    .chevron { margin-left: auto; color: #91a4bb; font-size: 16px; }
+    .nav { display: flex; flex-direction: column; gap: 5px; }
+    .nav-item {
+      gap: 10px;
+      min-height: 42px;
+      padding: 10px 12px;
+      border-radius: 9px;
+      color: #b9c7d8;
+      font-size: 13px;
+    }
+    .nav-item.active {
+      color: #fff;
+      background: var(--sidebar-soft);
+      box-shadow: inset 3px 0 var(--brand);
+    }
+    .nav-icon { width: 18px; color: #8fa6c1; text-align: center; }
+    .nav-item.active .nav-icon { color: #ff9378; }
+    .nav-caret { margin-left: auto; color: #7289a3; }
+    .sidebar-footer { gap: 10px; margin-top: auto; padding: 12px; color: #8ea2ba; font-size: 12px; }
+    .help-icon {
+      display: grid;
+      place-items: center;
+      width: 21px;
+      height: 21px;
+      border: 1px solid #647990;
+      border-radius: 50%;
+      font-size: 12px;
+    }
+    .main { min-width: 0; }
+    .topbar {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .topbar-left, .topbar-right, .breadcrumb, .action-row, .heading-meta { display: flex; align-items: center; }
+    .topbar-left, .topbar-right { gap: 13px; }
+    .icon-button {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #617187;
+      background: #fff;
+    }
+    .breadcrumb { gap: 9px; color: var(--muted); font-size: 13px; }
+    .breadcrumb strong { color: var(--text); }
+    .separator { color: #b4bfce; }
+    .access-badge {
+      padding: 5px 9px;
+      border: 1px solid #fed7aa;
+      border-radius: 999px;
+      color: #b54708;
+      background: #fff7ed;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .avatar {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: #fff;
+      background: #4271af;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .content { max-width: 1260px; margin: 0 auto; padding: 0 28px 42px; }
+    .tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 49px;
+      border-bottom: 1px solid var(--line);
+    }
+    .tab { padding: 10px 14px; border: 1px solid transparent; border-bottom: 0; color: #7a899d; font-size: 12px; }
+    .tab.active { border-color: var(--line); border-radius: 9px 9px 0 0; color: var(--text); background: #fff; font-weight: 700; }
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 34px 0 22px;
+    }
+    .eyebrow, .kicker { color: var(--brand); font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+    h1 { margin: 5px 0; font-size: 28px; letter-spacing: -.03em; }
+    .page-heading p { margin: 0; color: var(--muted); font-size: 14px; }
+    .heading-meta { gap: 8px; margin-top: 8px; color: #15803d; font-size: 12px; font-weight: 700; }
+    .hero {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) 160px;
+      gap: 20px;
+      align-items: start;
+      padding: 26px;
+      border: 1px solid #f0d5cc;
+      border-radius: 14px;
+      background: linear-gradient(105deg, #fff 0%, #fff8f5 100%);
+      box-shadow: 0 12px 30px rgba(25,37,54,.05);
+    }
+    .hero-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 15px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff8a66, var(--brand));
+      font-size: 23px;
+      box-shadow: 0 8px 18px rgba(238,77,45,.2);
+    }
+    h2 { margin: 5px 0 6px; font-size: 20px; letter-spacing: -.02em; }
+    .hero p { max-width: 680px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .action-row { gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+    .primary, .secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .primary { color: #fff; background: var(--brand); box-shadow: 0 5px 12px rgba(238,77,45,.2); }
+    .primary:hover { background: #d93f21; }
+    .secondary { border: 1px solid #e2c8bf; color: #a03b26; background: #fff; }
+    .secondary:hover { border-color: #ee9b84; background: #fffaf8; }
+    .hero-stat { align-self: stretch; padding-left: 20px; border-left: 1px solid #efdcd6; }
+    .stat-label, .filter-card span { display: block; color: #8c99aa; font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+    .hero-stat strong { display: block; margin: 7px 0 1px; color: var(--brand); font-size: 38px; line-height: 1; }
+    .stat-note { color: var(--muted); font-size: 11px; }
+    .section { margin-top: 24px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+    .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .filter-count { padding: 5px 9px; border-radius: 999px; color: #52657c; background: #f1f4f8; font-size: 11px; font-weight: 700; }
+    .filter-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+    .filter-card { min-height: 72px; padding: 13px; border: 1px solid var(--line); border-radius: 9px; background: #fbfcfe; }
+    .filter-card strong { display: block; margin-top: 7px; font-size: 14px; }
+    .notice { display: flex; gap: 12px; margin-top: 18px; padding: 15px 17px; border: 1px solid #bfdbfe; border-radius: 10px; background: #eff6ff; }
+    .notice-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 20px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      color: #1d4ed8;
+      background: #dbeafe;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .notice strong { color: #1e40af; font-size: 12px; }
+    .notice p { margin: 3px 0 0; color: #47627f; font-size: 12px; line-height: 1.55; }
+    footer { display: flex; justify-content: space-between; gap: 16px; margin-top: 26px; color: #8996a8; font-size: 11px; }
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 76px minmax(0, 1fr); }
+      .sidebar { padding: 18px 10px; }
+      .brand-name, .region-label, .nav-item span:not(.nav-icon):not(.nav-caret), .sidebar-footer span:not(.help-icon) { display: none; }
+      .brand, .region, .nav-item, .sidebar-footer { justify-content: center; }
+      .chevron, .nav-caret { display: none; }
+      .content { padding: 0 18px 34px; }
+      .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 600px) {
+      .topbar { padding: 0 14px; }
+      .breadcrumb span, .access-badge { display: none; }
+      .page-heading { display: block; padding: 26px 0 18px; }
+      .heading-meta { margin-top: 15px; }
+      .hero { grid-template-columns: 42px minmax(0, 1fr); padding: 20px; }
+      .hero-icon { width: 42px; height: 42px; border-radius: 12px; font-size: 18px; }
+      .hero-stat { grid-column: 2; padding: 14px 0 0; border-top: 1px solid #efdcd6; border-left: 0; }
+      .filter-grid { grid-template-columns: 1fr; }
+      footer { display: block; }
+      footer span { display: block; }
+      footer span + span { margin-top: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">S</span><span class="brand-name">ShopeePay</span></div>
+      <div class="region"><span class="region-dot"></span><span class="region-label">Accounting Portal</span><span class="chevron">⌄</span></div>
+      <nav class="nav" aria-label="Portal navigation">
+        <div class="nav-item"><span class="nav-icon">⌂</span><span>Home</span></div>
+        <div class="nav-item"><span class="nav-icon">▤</span><span>Discrepancy</span><span class="nav-caret">›</span></div>
+        <div class="nav-item active"><span class="nav-icon">▣</span><span>Ticket Center</span></div>
+        <div class="nav-item"><span class="nav-icon">⚙</span><span>Settings</span></div>
+      </nav>
+      <div class="sidebar-footer"><span class="help-icon">?</span><span>Help &amp; Support</span></div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-button" type="button" aria-label="Navigation menu">☰</button>
+          <div class="breadcrumb"><span>Ticket Center</span><span class="separator">/</span><strong>PMP Ticket List</strong></div>
+        </div>
+        <div class="topbar-right"><span class="access-badge">Internal access required</span><span class="avatar">FL</span></div>
+      </header>
+
+      <main class="content">
+        <div class="tabs"><span class="tab">Ticket Center</span><span class="tab active">PMP Ticket List</span></div>
+
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow">PROJECT MANAGEMENT PLATFORM</div>
+            <h1>PMP Ticket List</h1>
+            <p>Open the internal ticket list with the saved Team 18 view.</p>
+          </div>
+          <div class="heading-meta"><span class="status-dot"></span><span>Ready to open</span></div>
+        </section>
+
+        <section class="hero">
+          <div class="hero-icon">▣</div>
+          <div>
+            <div class="kicker">TEAM WORKSPACE</div>
+            <h2>Team 18 ticket queue</h2>
+            <p>This public page is an entry point only. The ticket data stays in PMP and will be shown after your internal Shopee login is verified.</p>
+            <div class="action-row">
+              <a class="primary" href="https://pmp.shopee.io/project/ticket_list?advance_filter=eyJncm91cF9ieSI6eyJvcmRlciI6IkFTQyJ9LCJvcmRlcl9ieSI6eyJvcmRlciI6IkFTQyJ9fQ%3D%3D&amp;key_quick=&amp;match_by=all&amp;page=1&amp;team_id=18" target="_blank" rel="noreferrer">Open PMP ticket list <span aria-hidden="true">↗</span></a>
+              <button class="secondary" type="button" id="copy-link">Copy PMP link</button>
+            </div>
+          </div>
+          <div class="hero-stat"><span class="stat-label">TEAM</span><strong>18</strong><span class="stat-note">PMP project view</span></div>
+        </section>
+
+        <section class="section">
+          <div class="section-heading"><div><div class="kicker">SAVED VIEW</div><h2>Applied filters</h2></div><span class="filter-count">5 parameters</span></div>
+          <div class="filter-grid">
+            <div class="filter-card"><span>Team</span><strong>18</strong></div>
+            <div class="filter-card"><span>Match by</span><strong>All</strong></div>
+            <div class="filter-card"><span>Page</span><strong>1</strong></div>
+            <div class="filter-card"><span>Group by</span><strong>Order · ASC</strong></div>
+            <div class="filter-card"><span>Order by</span><strong>Order · ASC</strong></div>
+          </div>
+        </section>
+
+        <section class="notice">
+          <span class="notice-icon">i</span>
+          <div><strong>About this public entry</strong><p>No ticket rows, identifiers, or PMP credentials are stored here. Use the button above to open the live internal page.</p></div>
+        </section>
+
+        <footer><span>Discrepancy Operations Workspace</span><span>Team 18 · PMP entry</span></footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const pmpUrl = "https://pmp.shopee.io/project/ticket_list?advance_filter=eyJncm91cF9ieSI6eyJvcmRlciI6IkFTQyJ9LCJvcmRlcl9ieSI6eyJvcmRlciI6IkFTQyJ9fQ%3D%3D&key_quick=&match_by=all&page=1&team_id=18";
+    const copyButton = document.getElementById("copy-link");
+    copyButton.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(pmpUrl);
+        copyButton.textContent = "Link copied";
+        window.setTimeout(() => { copyButton.textContent = "Copy PMP link"; }, 1800);
+      } catch {
+        copyButton.textContent = "Copy unavailable";
+      }
+    });
+  </script>
+</body>
+</html>
