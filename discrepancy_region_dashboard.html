@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Discrepancy Handling Region Dashboard</title>
+  <style>
+    :root{--bg:#f5f7fa;--surface:#fff;--ink:#182230;--muted:#667085;--line:#e4e7ec;--blue:#2563eb;--green:#16875d;--red:#d14343;--amber:#b54708}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}button{font:inherit}
+    .shell{max-width:1440px;margin:0 auto;padding:28px 24px 48px}.header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+    .eyebrow{color:var(--blue);font-size:12px;font-weight:700}h1{margin:3px 0 5px;font-size:28px;line-height:1.25}.subtitle,.source{color:var(--muted)}
+    .status{padding:6px 10px;border:1px solid #abefc6;border-radius:6px;background:#ecfdf3;color:#067647;font-size:12px;font-weight:700;white-space:nowrap}
+    .toolbar{display:flex;align-items:center;gap:12px;margin:22px 0 16px}.toolbar-label{color:var(--muted);font-weight:600}.filters{display:flex;flex-wrap:wrap;gap:6px}
+    .filter{min-width:46px;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:#344054;cursor:pointer;font-weight:650}.filter:hover{border-color:#98a2b3}.filter.active{border-color:var(--blue);background:var(--blue);color:#fff}
+    .scope{display:flex;gap:28px;margin-bottom:16px;padding:12px 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.scope-item{display:flex;gap:8px}.scope-label{color:var(--muted);font-weight:600}.scope-value{font-weight:700}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow:hidden}.metric{padding:18px 20px;border-right:1px solid var(--line)}.metric:last-child{border-right:0}
+    .metric-name{color:var(--muted);font-size:12px;font-weight:600}.metric-value{margin-top:3px;font-size:25px;font-weight:750}.metric-note{margin-top:2px;color:var(--muted);font-size:12px}
+    .overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.region{padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer}.region:hover,.region.selected{border-color:#84adff;box-shadow:0 0 0 2px #eff4ff}
+    .region-head{display:flex;align-items:center;justify-content:space-between}.region-name{font-size:17px;font-weight:750}.region-total{color:var(--muted);font-size:12px}
+    .bar{display:flex;height:10px;margin:13px 0 9px;overflow:hidden;border-radius:3px;background:#f2f4f7}.bar-resolved{background:var(--green)}.bar-unresolved{background:var(--red)}
+    .region-values{display:flex;justify-content:space-between;gap:12px;font-size:12px}.resolved-text{color:var(--green)}.unresolved-text{color:var(--red)}
+    .pie-grid{display:grid;grid-template-columns:1fr;gap:14px}.pie-panel{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:32px;align-items:center;min-height:310px;padding:24px 28px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.pie-title{margin-bottom:3px;font-size:20px;font-weight:750}.pie-subtitle{color:var(--muted);font-size:13px}.pie-wrap{position:relative;width:250px;height:250px;justify-self:center}.pie{width:100%;height:100%;border-radius:50%}.pie-hole{position:absolute;inset:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;background:var(--surface);box-shadow:0 0 0 1px var(--line)}.pie-total{font-size:24px;font-weight:750}.pie-total-label{color:var(--muted);font-size:12px}.legend-list{display:grid;grid-template-columns:repeat(2,minmax(260px,1fr));column-gap:28px;row-gap:12px;margin-top:20px}.legend-item{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:9px;align-items:start;font-size:13px}.swatch{width:12px;height:12px;margin-top:4px;border-radius:2px}.legend-label{min-width:0;overflow-wrap:normal;word-break:normal}.legend-value{padding-left:8px;font-variant-numeric:tabular-nums;font-weight:650;white-space:nowrap}
+    .section-title{margin:26px 0 10px;font-size:18px}.table-box{overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+    table{width:100%;min-width:820px;border-collapse:collapse}th,td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#f9fafb;color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase}tbody tr:last-child td{border-bottom:0}tbody tr:hover{background:#f9fafb}
+    .number{text-align:right;font-variant-numeric:tabular-nums}.rate-high{color:var(--red);font-weight:700}.rate-medium{color:var(--amber);font-weight:700}.rate-low{color:var(--green);font-weight:700}.empty{padding:30px;text-align:center;color:var(--muted)}
+    .footnote{margin-top:16px;padding:12px 14px;border-left:3px solid var(--amber);background:#fffaeb;color:#7a2e0e}.source{margin-top:16px;font-size:12px}
+    @media(max-width:1100px){.pie-panel{grid-template-columns:minmax(0,1fr) 230px;gap:22px}.pie-wrap{width:210px;height:210px}.pie-hole{inset:44px}.legend-list{grid-template-columns:1fr}}
+    @media(max-width:900px){.metrics{grid-template-columns:repeat(2,1fr)}.metric:nth-child(2){border-right:0}.metric:nth-child(-n+2){border-bottom:1px solid var(--line)}.overview{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:620px){.shell{padding:20px 14px 36px}.header{display:block}.status{display:inline-block;margin-top:12px}.toolbar{display:block}.filters{margin-top:8px}.scope{display:block}.scope-item+.scope-item{margin-top:6px}.metrics,.overview{grid-template-columns:1fr}.metric{border-right:0;border-bottom:1px solid var(--line)}.metric:last-child{border-bottom:0}.pie-panel{grid-template-columns:1fr}.pie-wrap{margin:auto}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="header">
+      <div><div class="eyebrow">DataSuite · Temp_Query_8</div><h1>Discrepancy Handling Region Dashboard</h1><div class="subtitle">按 Region、Discrepancy Type 和 Handling Type 查看处理量与未解决占比</div></div>
+      <div class="status">7 / 7 Regions Success</div>
+    </header>
+
+    <div class="toolbar"><span class="toolbar-label">Region</span><div class="filters" id="filters"></div></div>
+    <div class="scope">
+      <div class="scope-item"><span class="scope-label">数据时间范围</span><span class="scope-value">2026-08-01 至 2026-08-31</span></div>
+      <div class="scope-item"><span class="scope-label">时间字段</span><span class="scope-value">clearing_date</span></div>
+      <div class="scope-item"><span class="scope-label">查询逻辑</span><span class="scope-value">最近一个完整自然月</span></div>
+    </div>
+
+    <section class="metrics">
+      <div class="metric"><div class="metric-name">Selected Region</div><div class="metric-value" id="selectedRegion">ALL</div><div class="metric-note" id="combinationCount"></div></div>
+      <div class="metric"><div class="metric-name">Total</div><div class="metric-value" id="totalCount">0</div><div class="metric-note">Resolved + Unresolved</div></div>
+      <div class="metric"><div class="metric-name">Resolved</div><div class="metric-value resolved-text" id="resolvedCount">0</div><div class="metric-note" id="resolvedRate">0%</div></div>
+      <div class="metric"><div class="metric-name">Unresolved</div><div class="metric-value unresolved-text" id="unresolvedCount">0</div><div class="metric-note" id="unresolvedRate">0%</div></div>
+    </section>
+
+    <section class="overview" id="regionOverview"></section>
+
+    <h2 class="section-title">Resolved Discrepancy Operation Share</h2>
+    <div class="pie-grid" id="pieCharts"></div>
+
+    <h2 class="section-title" id="detailTitle">Handling Type Details</h2>
+    <div class="table-box">
+      <table>
+        <thead><tr><th>Region</th><th>Discrepancy Type</th><th>Handling Type</th><th class="number">Resolved</th><th class="number">Unresolved</th><th class="number">Total</th><th class="number">Unresolved %</th></tr></thead>
+        <tbody id="detailRows"></tbody>
+      </table>
+      <div class="empty" id="emptyState" hidden>No data</div>
+    </div>
+
+    <div class="footnote"><strong>口径说明：</strong>Handling Type 来自差异工单的 <code>last_handling_type</code>，表示最后一次处理类型，不代表完整操作历史。<code>None</code> 表示尚未记录 handling operation。</div>
+    <div class="source">数据口径：date(clearing_date) >= DATE '2026-08-01' 且 date(clearing_date) &lt; DATE '2026-09-01'，即最近一个完整自然月 2026-08-01 至 2026-08-31；查询 Region：SG、MY、ID、PH、TH、VN、BR；包含完整 migration 过滤；排除 Credit/CPL 及系统自动核销。重新查询时间：2026-09-01 12:07 SGT（BR 补查完成）。</div>
+  </main>
+
+  <script>
+    const rows=[
+      ["BR","Diff TXN","None",0,727501,100],["BR","Less TXN","ManualWriteoff",2462,326,11.7],["BR","Less TXN","None",0,419351,100],["BR","Less TXN","Offset",80,0,0],["BR","Less TXN","UpdateToSuccess",0,2,100],["BR","Over TXN","ManualWriteoff",4383,34,0.8],["BR","Over TXN","None",0,4129645,100],["BR","Over TXN","Offset",82,0,0],
+      ["SG","Less TXN","ManualWriteoff",81,0,0],["SG","Less TXN","None",0,1891,100],["SG","Over TXN","None",0,60779,100],
+      ["MY","Less TXN","ManualRefund",199,0,0],["MY","Less TXN","ManualWriteoff",57,5,8.1],["MY","Less TXN","None",0,45169,100],["MY","Less TXN","Offset",13,0,0],["MY","Less TXN","UpdateToSuccess",10381,153,1.5],["MY","Over TXN","None",0,539341,100],["MY","Over TXN","Reversed",103,0,0],
+      ["ID","Less TXN","ClaimFundFromBank_NotProvideDetailReport",1,0,0],["ID","Less TXN","Hold",253,12336,98],["ID","Less TXN","Invalidate",1,0,0],["ID","Less TXN","ManualRefund",1089,9,0.8],["ID","Less TXN","Switch to Statement Recon",3,0,0],["ID","Less TXN","None",0,5318,100],["ID","Less TXN","Offset",29,0,0],["ID","Less TXN","Refund to Wallet",435,17,3.8],["ID","Less TXN","UpdateToSuccess",3006,1,0],["ID","Over TXN","Hold",7,2027,99.7],["ID","Over TXN","ManualRefund",1,0,0],["ID","Over TXN","None",0,54883,100],["ID","Over TXN","Offset",70,0,0],["ID","Over TXN","Reversed",11,0,0],
+      ["PH","Less TXN","Hold",1,11,91.7],["PH","Less TXN","Invalidate",12312,1,0],["PH","Less TXN","None",0,18446,100],["PH","Less TXN","UpdateToSuccess",115,0,0],["PH","Over TXN","None",0,38012,100],["PH","Over TXN","Reversed",1,0,0],
+      ["TH","Less TXN","Hold",0,2,100],["TH","Less TXN","Invalidate",10,0,0],["TH","Less TXN","ManualWriteoff",9915,3,0],["TH","Less TXN","None",0,3148,100],["TH","Less TXN","Offset",37,0,0],["TH","Less TXN","Refund to Wallet",5,2,28.6],["TH","Less TXN","UpdateToSuccess",674,0,0],["TH","Over TXN","ClaimFundFromBank_NotProvideDetailReport",3,0,0],["TH","Over TXN","ManualRefund",2054,1,0],["TH","Over TXN","ManualWriteoff",27785,0,0],["TH","Over TXN","None",0,221125,100],["TH","Over TXN","Offset",47,0,0],["TH","Over TXN","Reversed",1,0,0],
+      ["VN","Diff TXN","ManualWriteoff",2,0,0],["VN","Less TXN","Hold",1043,495,32.2],["VN","Less TXN","Invalidate",4,0,0],["VN","Less TXN","ManualWriteoff",979,0,0],["VN","Less TXN","None",0,3773,100],["VN","Less TXN","Offset",39096,0,0],["VN","Less TXN","UpdateToSuccess",6086,1,0],["VN","Over TXN","Hold",2708,146,5.1],["VN","Over TXN","None",0,3459058,100],["VN","Over TXN","Offset",36849,0,0],["VN","Over TXN","Reversed",491,0,0]
+    ].map(([region,discrepancyType,handlingType,resolved,unresolved,unresolvedPct])=>({region,discrepancyType,handlingType,resolved,unresolved,unresolvedPct}));
+
+    const regions=["BR","SG","MY","ID","PH","TH","VN"],format=new Intl.NumberFormat("en-US");let selected="ALL";
+    const pieColors=["#2563eb","#16875d","#d14343","#d97706","#7c3aed","#0891b2","#c026d3","#4d7c0f","#db2777","#475467","#0f766e","#9333ea"];
+    const summarize=data=>data.reduce((s,r)=>(s.resolved+=r.resolved,s.unresolved+=r.unresolved,s),{resolved:0,unresolved:0});
+    const percent=(value,total)=>total?`${(value*100/total).toFixed(2)}%`:"0.00%";
+    const rateClass=rate=>rate>=80?"rate-high":rate>=20?"rate-medium":"rate-low";
+    const setSelected=region=>{selected=region;render()};
+
+    function renderFilters(){
+      filters.innerHTML=["ALL",...regions].map(region=>`<button class="filter ${selected===region?"active":""}" data-region="${region}">${region}</button>`).join("");
+      document.querySelectorAll(".filter").forEach(button=>button.addEventListener("click",()=>setSelected(button.dataset.region)));
+    }
+    function renderMetrics(data){
+      const summary=summarize(data),total=summary.resolved+summary.unresolved;
+      selectedRegion.textContent=selected;combinationCount.textContent=`${data.length} handling combinations`;totalCount.textContent=format.format(total);
+      resolvedCount.textContent=format.format(summary.resolved);unresolvedCount.textContent=format.format(summary.unresolved);
+      resolvedRate.textContent=`${percent(summary.resolved,total)} of total`;unresolvedRate.textContent=`${percent(summary.unresolved,total)} of total`;
+    }
+    function renderOverview(){
+      const visible=selected==="ALL"?regions:[selected];
+      regionOverview.innerHTML=visible.map(region=>{
+        const summary=summarize(rows.filter(row=>row.region===region)),total=summary.resolved+summary.unresolved,resolvedPct=total?summary.resolved*100/total:0,unresolvedPct=100-resolvedPct;
+        return `<article class="region ${selected===region?"selected":""}" data-region="${region}"><div class="region-head"><span class="region-name">${region}</span><span class="region-total">${format.format(total)} total</span></div><div class="bar"><div class="bar-resolved" style="width:${resolvedPct}%"></div><div class="bar-unresolved" style="width:${unresolvedPct}%"></div></div><div class="region-values"><span class="resolved-text">Resolved ${resolvedPct.toFixed(2)}%</span><span class="unresolved-text">Unresolved ${unresolvedPct.toFixed(2)}%</span></div></article>`;
+      }).join("");
+      document.querySelectorAll(".region").forEach(card=>card.addEventListener("click",()=>setSelected(card.dataset.region)));
+    }
+    function renderPies(){
+      const visible=selected==="ALL"?regions:[selected];
+      pieCharts.innerHTML=visible.map(region=>{
+        const resolvedRows=rows.filter(row=>row.region===region&&row.resolved>0);
+        const total=resolvedRows.reduce((sum,row)=>sum+row.resolved,0);
+        let cursor=0;
+        const segments=resolvedRows.map((row,index)=>{
+          const start=cursor;
+          cursor+=row.resolved*100/total;
+          return {row,color:pieColors[index%pieColors.length],start,end:cursor,share:row.resolved*100/total};
+        });
+        const gradient=segments.length===1
+          ? segments[0].color
+          : `conic-gradient(${segments.map(segment=>`${segment.color} ${segment.start}% ${segment.end}%`).join(",")})`;
+        const legend=segments.map(segment=>`<div class="legend-item"><span class="swatch" style="background:${segment.color}"></span><span class="legend-label">${segment.row.discrepancyType} · ${segment.row.handlingType}</span><span class="legend-value">${segment.share.toFixed(1)}% · ${format.format(segment.row.resolved)}</span></div>`).join("");
+        return `<section class="pie-panel"><div><div class="pie-title">${region}</div><div class="pie-subtitle">仅统计 Resolved 工单，按 Discrepancy Type · Operation 划分</div><div class="legend-list">${legend}</div></div><div class="pie-wrap"><div class="pie" style="background:${gradient}" role="img" aria-label="${region} resolved operation share"></div><div class="pie-hole"><span class="pie-total">${format.format(total)}</span><span class="pie-total-label">Resolved</span></div></div></section>`;
+      }).join("");
+    }
+    function renderTable(data){
+      detailTitle.textContent=selected==="ALL"?"All Region Handling Details":`${selected} Handling Details`;
+      detailRows.innerHTML=data.map(row=>`<tr><td><strong>${row.region}</strong></td><td>${row.discrepancyType}</td><td>${row.handlingType}</td><td class="number">${format.format(row.resolved)}</td><td class="number">${format.format(row.unresolved)}</td><td class="number">${format.format(row.resolved+row.unresolved)}</td><td class="number ${rateClass(row.unresolvedPct)}">${row.unresolvedPct.toFixed(1)}%</td></tr>`).join("");
+      emptyState.hidden=data.length>0;
+    }
+    function render(){const data=selected==="ALL"?rows:rows.filter(row=>row.region===selected);renderFilters();renderMetrics(data);renderOverview();renderPies();renderTable(data)}
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Discrepancy Operation Agreement Split - All Regions</title>
+  <style>
+    :root { color-scheme: light; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb; --blue:#2563eb; --surface:#ffffff; --bg:#f3f4f6; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.5 ui-sans-serif, system-ui, sans-serif; }
+    main { max-width:1200px; margin:0 auto; padding:32px 20px 48px; }
+    header { display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:24px; }
+    h1 { margin:0; font-size:26px; letter-spacing:0; }
+    .subtitle { color:var(--muted); margin-top:6px; }
+    .region-panel { background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:20px; margin-bottom:20px; }
+    .region-title { font-size:20px; font-weight:700; margin-bottom:16px; }
+    .op-panel { border-top:1px solid var(--line); padding-top:16px; }
+    .op-panel + .op-panel { margin-top:18px; }
+    .metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:14px; }
+    .metric { border:1px solid var(--line); border-radius:8px; padding:12px 14px; }
+    .metric-label { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:760px; }
+    th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:middle; }
+    th { color:var(--muted); font-size:12px; font-weight:600; }
+    td small { display:block; color:var(--muted); font-size:12px; }
+    .num { text-align:right; font-variant-numeric:tabular-nums; }
+    .bar { height:10px; width:180px; background:#eef2ff; border-radius:5px; overflow:hidden; }
+    .bar div { height:100%; background:var(--blue); }
+    .summary-frame { margin:0 0 34px; }
+    .summary-frame h2 { margin:0 0 10px; font-size:22px; letter-spacing:0; }
+    .summary-frame iframe { display:block; width:100%; height:2600px; border:1px solid var(--line); border-radius:8px; background:var(--surface); }
+    @media (max-width:700px) { header { display:block; } .metrics { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Discrepancy Operation Agreement Split</h1>
+        <div class="subtitle">All Regions - August 2026</div>
+      </div>
+    </header>
+    <section class="summary-frame">
+      <h2>Regional Summary &amp; Resolved Operation Pies</h2>
+      <iframe src="discrepancy_region_dashboard.html" title="Discrepancy Handling Region Dashboard"></iframe>
+    </section>
+    
+            <section class="blocked-panel">
+              <div class="region-title">Blocked</div>
+              <p>The following regions could not be queried with the current DataSuite permissions: BR. No data was invented for them.</p>
+            </section>
+            
+            <section class="region-panel">
+              <div class="region-title">SG</div>
+              
+                <div class="op-panel">
+                  <div class="metrics">
+            <div class="metric"><span class="metric-label">Operation</span><strong>ManualWriteoff</strong></div>
+            <div class="metric"><span class="metric-label">Orders</span><strong>81</strong></div>
+            <div class="metric"><span class="metric-label">Amount</span><strong>5,970.31</strong></div>
+            </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>Agreement Item</th><th>Currency</th><th>Count</th><th>Amount</th><th>Count Share</th><th>Amount Share</th><th>Share Bar</th></tr></thead>
+                      <tbody>
+                <tr>
+                  <td><strong>UOB-ApplePay-5218</strong><small>UOB-ApplePay-5218</small></td>
+                  <td>SGD</td>
+                  <td class="num">62</td>
+                  <td class="num">5,410.53</td>
+                  <td class="num">76.54%</td>
+                  <td class="num">90.62%</td>
+                  <td><div class="bar"><div style="width:76.54%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>UOB-Shopee-GPay-5353</strong><small>UOB-Shopee-GPay-5353</small></td>
+                  <td>SGD</td>
+                  <td class="num">18</td>
+                  <td class="num">371.12</td>
+                  <td class="num">22.22%</td>
+                  <td class="num">6.22%</td>
+                  <td><div class="bar"><div style="width:22.22%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>SP-UOB-SG-01-01</strong><small>UOB-APCC-6M-2178</small></td>
+                  <td>SGD</td>
+                  <td class="num">1</td>
+                  <td class="num">188.66</td>
+                  <td class="num">1.23%</td>
+                  <td class="num">3.16%</td>
+                  <td><div class="bar"><div style="width:1.23%"></div></div></td>
+                </tr>
+                </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+            </section>
+            
+            <section class="region-panel">
+              <div class="region-title">MY</div>
+              
+                <div class="op-panel">
+                  <div class="metrics">
+            <div class="metric"><span class="metric-label">Operation</span><strong>ManualWriteoff</strong></div>
+            <div class="metric"><span class="metric-label">Orders</span><strong>69</strong></div>
+            <div class="metric"><span class="metric-label">Amount</span><strong>138,287.56</strong></div>
+            </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>Agreement Item</th><th>Currency</th><th>Count</th><th>Amount</th><th>Count Share</th><th>Amount Share</th><th>Share Bar</th></tr></thead>
+                      <tbody>
+                <tr>
+                  <td><strong>TESTMBB-Cybersource-SHOPEEPAY-PAYMENT-1856</strong><small>MBB-Cybersource-SHOPEEPAY-1856</small></td>
+                  <td>MYR</td>
+                  <td class="num">52</td>
+                  <td class="num">126,959.14</td>
+                  <td class="num">75.36%</td>
+                  <td class="num">91.81%</td>
+                  <td><div class="bar"><div style="width:75.36%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TESTMBB-Cybersource-SHOPEE-PAYMENT-7135</strong><small>MBB-Cybersource-SHOPEE-7135</small></td>
+                  <td>MYR</td>
+                  <td class="num">8</td>
+                  <td class="num">3,927.89</td>
+                  <td class="num">11.59%</td>
+                  <td class="num">2.84%</td>
+                  <td><div class="bar"><div style="width:11.59%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TESTPBB-Cybersource-SHOPEEPAY-PAYMENT-4048</strong><small>PBB-Cybersource-SHOPEEPAY-4048</small></td>
+                  <td>MYR</td>
+                  <td class="num">5</td>
+                  <td class="num">4,907.75</td>
+                  <td class="num">7.25%</td>
+                  <td class="num">3.55%</td>
+                  <td><div class="bar"><div style="width:7.25%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TESTPBB-Cybersource-SHOPEE-PAYMENT-9915</strong><small>PBB-Cybersource-SHOPEE-9915</small></td>
+                  <td>MYR</td>
+                  <td class="num">2</td>
+                  <td class="num">1,354.46</td>
+                  <td class="num">2.90%</td>
+                  <td class="num">0.98%</td>
+                  <td><div class="bar"><div style="width:2.90%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TESTPBB-Cybersource-SHOPEEPAY-PAYMENT-3853</strong><small>PBB-Cybersource-SHOPEEPAY-3853</small></td>
+                  <td>MYR</td>
+                  <td class="num">2</td>
+                  <td class="num">1,138.32</td>
+                  <td class="num">2.90%</td>
+                  <td class="num">0.82%</td>
+                  <td><div class="bar"><div style="width:2.90%"></div></div></td>
+                </tr>
+                </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <div class="op-panel">
+                  <div class="metrics">
+            <div class="metric"><span class="metric-label">Operation</span><strong>Reversed</strong></div>
+            <div class="metric"><span class="metric-label">Orders</span><strong>103</strong></div>
+            <div class="metric"><span class="metric-label">Amount</span><strong>11,338.67</strong></div>
+            </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>Agreement Item</th><th>Currency</th><th>Count</th><th>Amount</th><th>Count Share</th><th>Amount Share</th><th>Share Bar</th></tr></thead>
+                      <tbody>
+                <tr>
+                  <td><strong>TESTMBB-Cybersource-SHOPEE-PAYMENT-6997</strong><small>MBB-Cybersource-SHOPEE-6997</small></td>
+                  <td>MYR</td>
+                  <td class="num">69</td>
+                  <td class="num">6,001.43</td>
+                  <td class="num">66.99%</td>
+                  <td class="num">52.93%</td>
+                  <td><div class="bar"><div style="width:66.99%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TESTCIMB-CYBS-SHOPEE-PAYMENT-0124</strong><small>CIMB-CYBS-SHOPEE-0124</small></td>
+                  <td>MYR</td>
+                  <td class="num">9</td>
+                  <td class="num">2,049.75</td>
+                  <td class="num">8.74%</td>
+                  <td class="num">18.08%</td>
+                  <td><div class="bar"><div style="width:8.74%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TESTPBB-Cybersource-SHOPEE-PAYMENT-9915</strong><small>PBB-Cybersource-SHOPEE-9915</small></td>
+                  <td>MYR</td>
+                  <td class="num">8</td>
+                  <td class="num">826.34</td>
+                  <td class="num">7.77%</td>
+                  <td class="num">7.29%</td>
+                  <td><div class="bar"><div style="width:7.77%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TESTMBB-Cybersource-SHOPEE-PAYMENT-2188</strong><small>MBB-Cybersource-SHOPEE-2188</small></td>
+                  <td>MYR</td>
+                  <td class="num">7</td>
+                  <td class="num">983.12</td>
+                  <td class="num">6.80%</td>
+                  <td class="num">8.67%</td>
+                  <td><div class="bar"><div style="width:6.80%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TESTPBB-Cybersource-SHOPEE-PAYMENT-9732</strong><small>PBB-Cybersource-SHOPEE-9732</small></td>
+                  <td>MYR</td>
+                  <td class="num">6</td>
+                  <td class="num">1,395.13</td>
+                  <td class="num">5.83%</td>
+                  <td class="num">12.30%</td>
+                  <td><div class="bar"><div style="width:5.83%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TESTMBB-Cybersource-SFOOD-PAYMENT-1277</strong><small>MBB-Cybersource-SFOOD-1277</small></td>
+                  <td>MYR</td>
+                  <td class="num">4</td>
+                  <td class="num">82.90</td>
+                  <td class="num">3.88%</td>
+                  <td class="num">0.73%</td>
+                  <td><div class="bar"><div style="width:3.88%"></div></div></td>
+                </tr>
+                </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+            </section>
+            
+            <section class="region-panel">
+              <div class="region-title">ID</div>
+              
+                <div class="op-panel">
+                  <div class="metrics">
+            <div class="metric"><span class="metric-label">Operation</span><strong>Reversed</strong></div>
+            <div class="metric"><span class="metric-label">Orders</span><strong>14</strong></div>
+            <div class="metric"><span class="metric-label">Amount</span><strong>1,611,305.00</strong></div>
+            </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>Agreement Item</th><th>Currency</th><th>Count</th><th>Amount</th><th>Count Share</th><th>Amount Share</th><th>Share Bar</th></tr></thead>
+                      <tbody>
+                <tr>
+                  <td><strong>Alto-SHOPEEPAY-QRISPAYOUT-0918</strong><small>Alto-SHOPEEPAY-QRISPAYOUT-0918</small></td>
+                  <td>IDR</td>
+                  <td class="num">14</td>
+                  <td class="num">1,611,305.00</td>
+                  <td class="num">100.00%</td>
+                  <td class="num">100.00%</td>
+                  <td><div class="bar"><div style="width:100.00%"></div></div></td>
+                </tr>
+                </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+            </section>
+            
+            <section class="region-panel">
+              <div class="region-title">PH</div>
+              
+                <div class="op-panel">
+                  <div class="metrics">
+            <div class="metric"><span class="metric-label">Operation</span><strong>Reversed</strong></div>
+            <div class="metric"><span class="metric-label">Orders</span><strong>1</strong></div>
+            <div class="metric"><span class="metric-label">Amount</span><strong>2,334.14</strong></div>
+            </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>Agreement Item</th><th>Currency</th><th>Count</th><th>Amount</th><th>Count Share</th><th>Amount Share</th><th>Share Bar</th></tr></thead>
+                      <tbody>
+                <tr>
+                  <td><strong>SeaBank-SPP-1524-SeaBankDD-IB</strong><small>SeaBank-SPP-1524-SeaBankDD-IB</small></td>
+                  <td>PHP</td>
+                  <td class="num">1</td>
+                  <td class="num">2,334.14</td>
+                  <td class="num">100.00%</td>
+                  <td class="num">100.00%</td>
+                  <td><div class="bar"><div style="width:100.00%"></div></div></td>
+                </tr>
+                </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+            </section>
+            
+            <section class="region-panel">
+              <div class="region-title">TH</div>
+              
+                <div class="op-panel">
+                  <div class="metrics">
+            <div class="metric"><span class="metric-label">Operation</span><strong>ManualWriteoff</strong></div>
+            <div class="metric"><span class="metric-label">Orders</span><strong>31,074</strong></div>
+            <div class="metric"><span class="metric-label">Amount</span><strong>28,430,089.66</strong></div>
+            </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>Agreement Item</th><th>Currency</th><th>Count</th><th>Amount</th><th>Count Share</th><th>Amount Share</th><th>Share Bar</th></tr></thead>
+                      <tbody>
+                <tr>
+                  <td><strong>KTC-SP/SPP APCC FullPayment-9823</strong><small>KTC-SP/SPP APCC FullPayment-9823</small></td>
+                  <td>THB</td>
+                  <td class="num">21,158</td>
+                  <td class="num">13,618,158.88</td>
+                  <td class="num">68.09%</td>
+                  <td class="num">47.90%</td>
+                  <td><div class="bar"><div style="width:68.09%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>SCB-BatchTransfer-1265-Pending Return</strong><small>SCB-BatchTransfer-1265-Pending Return</small></td>
+                  <td>THB</td>
+                  <td class="num">5,403</td>
+                  <td class="num">3,873,458.95</td>
+                  <td class="num">17.39%</td>
+                  <td class="num">13.62%</td>
+                  <td><div class="bar"><div style="width:17.39%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BBL-BatchTransfer-0063-Pending Return</strong><small>BBL-BatchTransfer-0063-Pending Return</small></td>
+                  <td>THB</td>
+                  <td class="num">1,685</td>
+                  <td class="num">3,774,991.40</td>
+                  <td class="num">5.42%</td>
+                  <td class="num">13.28%</td>
+                  <td><div class="bar"><div style="width:5.42%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>KTB-BatchTransfer-0752-Pending Return</strong><small>KTB-BatchTransfer-0752-Pending Return</small></td>
+                  <td>THB</td>
+                  <td class="num">1,172</td>
+                  <td class="num">2,005,203.82</td>
+                  <td class="num">3.77%</td>
+                  <td class="num">7.05%</td>
+                  <td><div class="bar"><div style="width:3.77%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TTB-BatchTransfer-4309-Pending Return</strong><small>TTB-BatchTransfer-4309-Pending Return</small></td>
+                  <td>THB</td>
+                  <td class="num">989</td>
+                  <td class="num">3,988,702.43</td>
+                  <td class="num">3.18%</td>
+                  <td class="num">14.03%</td>
+                  <td><div class="bar"><div style="width:3.18%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>Kbank-BatchTransfer-2131-Pending Return Intra</strong><small>Kbank-BatchTransfer-2131-Pending Return Intra</small></td>
+                  <td>THB</td>
+                  <td class="num">438</td>
+                  <td class="num">357,385.41</td>
+                  <td class="num">1.41%</td>
+                  <td class="num">1.26%</td>
+                  <td><div class="bar"><div style="width:1.41%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>Kbank-BatchTransfer-2131-Pending Return Inter</strong><small>Kbank-BatchTransfer-2131-Pending Return Inter</small></td>
+                  <td>THB</td>
+                  <td class="num">65</td>
+                  <td class="num">338,911.02</td>
+                  <td class="num">0.21%</td>
+                  <td class="num">1.19%</td>
+                  <td><div class="bar"><div style="width:0.21%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>KBANK-SP APCC FullPayment-4010-Refund</strong><small>KBANK-SP APCC FullPayment-4010-Refund</small></td>
+                  <td>THB</td>
+                  <td class="num">64</td>
+                  <td class="num">112,523.22</td>
+                  <td class="num">0.21%</td>
+                  <td class="num">0.40%</td>
+                  <td><div class="bar"><div style="width:0.21%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BBL-AS PromptPay-SPSCANQR-OffUsUser</strong><small>BBL-AS PromptPay-SPSCANQR-OffUsUser</small></td>
+                  <td>THB</td>
+                  <td class="num">45</td>
+                  <td class="num">286,787.00</td>
+                  <td class="num">0.14%</td>
+                  <td class="num">1.01%</td>
+                  <td><div class="bar"><div style="width:0.14%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>MWS-Payout-214541-ShopeeFood</strong><small>MWS-Payout-214541-ShopeeFood</small></td>
+                  <td>THB</td>
+                  <td class="num">19</td>
+                  <td class="num">747.00</td>
+                  <td class="num">0.06%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.06%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>KTC-SPSPP APCC FullPayment-9823-Refund</strong><small>KTC-SP/SPP APCC FullPayment-9823-Refund</small></td>
+                  <td>THB</td>
+                  <td class="num">8</td>
+                  <td class="num">1,456.17</td>
+                  <td class="num">0.03%</td>
+                  <td class="num">0.01%</td>
+                  <td><div class="bar"><div style="width:0.03%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>CYBS-SP/SPP APCC FullPayment-0079-Refund</strong><small>CYBS-SP/SPP APCC FullPayment-0079-Refund</small></td>
+                  <td>THB</td>
+                  <td class="num">4</td>
+                  <td class="num">1,252.00</td>
+                  <td class="num">0.01%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.01%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>2C2P-SPP APCC FullPayment-3519-Refund</strong><small>2C2P-SPP APCC FullPayment-3519-Refund</small></td>
+                  <td>THB</td>
+                  <td class="num">3</td>
+                  <td class="num">4,419.00</td>
+                  <td class="num">0.01%</td>
+                  <td class="num">0.02%</td>
+                  <td><div class="bar"><div style="width:0.01%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>SCB-SP APCC FullPayment-3481-Refund</strong><small>SCB-SP APCC FullPayment-3481-Refund</small></td>
+                  <td>THB</td>
+                  <td class="num">3</td>
+                  <td class="num">699.00</td>
+                  <td class="num">0.01%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.01%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>2C2P-SP APCC Installment-3961-Refund</strong><small>2C2P-SP APCC Installment-3961-Refund</small></td>
+                  <td>THB</td>
+                  <td class="num">2</td>
+                  <td class="num">12,411.00</td>
+                  <td class="num">0.01%</td>
+                  <td class="num">0.04%</td>
+                  <td><div class="bar"><div style="width:0.01%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BAY-SPP-Topup-topup_from_KMA</strong><small>BAY-SPP Topup-topup_from_KMA</small></td>
+                  <td>THB</td>
+                  <td class="num">2</td>
+                  <td class="num">3,000.00</td>
+                  <td class="num">0.01%</td>
+                  <td class="num">0.01%</td>
+                  <td><div class="bar"><div style="width:0.01%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BBL-SPSPP APCC FullPayment-SPPFPMTH-Refund</strong><small>BBL-SP/SPP APCC FullPayment-SPPFPMTH-Refund</small></td>
+                  <td>THB</td>
+                  <td class="num">2</td>
+                  <td class="num">706.00</td>
+                  <td class="num">0.01%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.01%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>KTB-SP/SPP APCC FullPayment-9000</strong><small>KTB-SP/SPP APCC FullPayment-9000</small></td>
+                  <td>THB</td>
+                  <td class="num">2</td>
+                  <td class="num">425.36</td>
+                  <td class="num">0.01%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.01%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>SPP-SP ShopeePay-0000-MP</strong><small>SPP-SP ShopeePay-0000-MP</small></td>
+                  <td>THB</td>
+                  <td class="num">2</td>
+                  <td class="num">212.00</td>
+                  <td class="num">0.01%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.01%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>2C2P-SP APCC Installment-3961</strong><small>2C2P-SP APCC Installment-3961</small></td>
+                  <td>THB</td>
+                  <td class="num">1</td>
+                  <td class="num">4,984.00</td>
+                  <td class="num">0.00%</td>
+                  <td class="num">0.02%</td>
+                  <td><div class="bar"><div style="width:0.00%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>2C2P-SPP APCC FullPayment-3519</strong><small>2C2P-SPP APCC FullPayment-3519</small></td>
+                  <td>THB</td>
+                  <td class="num">1</td>
+                  <td class="num">1,545.00</td>
+                  <td class="num">0.00%</td>
+                  <td class="num">0.01%</td>
+                  <td><div class="bar"><div style="width:0.00%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BAY-SP mbanking-0287</strong><small>BAY-SP mbanking-0287</small></td>
+                  <td>THB</td>
+                  <td class="num">1</td>
+                  <td class="num">292.00</td>
+                  <td class="num">0.00%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.00%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BBL-SPSPP APCC FullPayment-SPPFPMTH</strong><small>BBL-SP/SPP APCC FullPayment-SPPFPMTH</small></td>
+                  <td>THB</td>
+                  <td class="num">1</td>
+                  <td class="num">496.00</td>
+                  <td class="num">0.00%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.00%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BZBS-SP Pay with Points-bzbs</strong><small>BZBS-SP Pay with Points-bzbs</small></td>
+                  <td>THB</td>
+                  <td class="num">1</td>
+                  <td class="num">235.00</td>
+                  <td class="num">0.00%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.00%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>Bay-SPSPP APCC FullPayment-0902-Refund</strong><small>Bay-SP/SPP APCC FullPayment-0902-Refund</small></td>
+                  <td>THB</td>
+                  <td class="num">1</td>
+                  <td class="num">310.00</td>
+                  <td class="num">0.00%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.00%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>KBANK-SPP APCC FullPayment-4010-Refund</strong><small>KBANK-SPP APCC FullPayment-4010-Refund</small></td>
+                  <td>THB</td>
+                  <td class="num">1</td>
+                  <td class="num">2,800.00</td>
+                  <td class="num">0.00%</td>
+                  <td class="num">0.01%</td>
+                  <td><div class="bar"><div style="width:0.00%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>SCB-SP APCC Installment-3527</strong><small>SCB-SP APCC Installment-3527</small></td>
+                  <td>THB</td>
+                  <td class="num">1</td>
+                  <td class="num">37,978.00</td>
+                  <td class="num">0.00%</td>
+                  <td class="num">0.13%</td>
+                  <td><div class="bar"><div style="width:0.00%"></div></div></td>
+                </tr>
+                </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <div class="op-panel">
+                  <div class="metrics">
+            <div class="metric"><span class="metric-label">Operation</span><strong>Reversed</strong></div>
+            <div class="metric"><span class="metric-label">Orders</span><strong>1</strong></div>
+            <div class="metric"><span class="metric-label">Amount</span><strong>300.00</strong></div>
+            </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>Agreement Item</th><th>Currency</th><th>Count</th><th>Amount</th><th>Count Share</th><th>Amount Share</th><th>Share Bar</th></tr></thead>
+                      <tbody>
+                <tr>
+                  <td><strong>KBANK-SP APCC FullPayment-4010</strong><small>KBANK-SP APCC FullPayment-4010</small></td>
+                  <td>THB</td>
+                  <td class="num">1</td>
+                  <td class="num">300.00</td>
+                  <td class="num">100.00%</td>
+                  <td class="num">100.00%</td>
+                  <td><div class="bar"><div style="width:100.00%"></div></div></td>
+                </tr>
+                </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+            </section>
+            
+            <section class="region-panel">
+              <div class="region-title">VN</div>
+              
+                <div class="op-panel">
+                  <div class="metrics">
+            <div class="metric"><span class="metric-label">Operation</span><strong>ManualWriteoff</strong></div>
+            <div class="metric"><span class="metric-label">Orders</span><strong>1,688</strong></div>
+            <div class="metric"><span class="metric-label">Amount</span><strong>2,843,569,919.00</strong></div>
+            </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>Agreement Item</th><th>Currency</th><th>Count</th><th>Amount</th><th>Count Share</th><th>Amount Share</th><th>Share Bar</th></tr></thead>
+                      <tbody>
+                <tr>
+                  <td><strong>STB-SP CC-8613</strong><small>STB-SP CC-8613</small></td>
+                  <td>VND</td>
+                  <td class="num">1,041</td>
+                  <td class="num">2,016,812,552.00</td>
+                  <td class="num">61.67%</td>
+                  <td class="num">70.93%</td>
+                  <td><div class="bar"><div style="width:61.67%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BIDV-SP VA-2362-Fixed</strong><small>BIDV-SP VA-2362-Fixed</small></td>
+                  <td>VND</td>
+                  <td class="num">179</td>
+                  <td class="num">64,062,899.00</td>
+                  <td class="num">10.60%</td>
+                  <td class="num">2.25%</td>
+                  <td><div class="bar"><div style="width:10.60%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>VCB-SP CC-1331</strong><small>VCB-SP CC-1331</small></td>
+                  <td>VND</td>
+                  <td class="num">177</td>
+                  <td class="num">52,058,212.00</td>
+                  <td class="num">10.49%</td>
+                  <td class="num">1.83%</td>
+                  <td><div class="bar"><div style="width:10.49%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>VPB-SP CC-9120</strong><small>VPB-SP CC-9120</small></td>
+                  <td>VND</td>
+                  <td class="num">128</td>
+                  <td class="num">125,632,945.00</td>
+                  <td class="num">7.58%</td>
+                  <td class="num">4.42%</td>
+                  <td><div class="bar"><div style="width:7.58%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TCB-SP CC-0011</strong><small>TCB-SP CC-0011</small></td>
+                  <td>VND</td>
+                  <td class="num">60</td>
+                  <td class="num">210,970,172.00</td>
+                  <td class="num">3.55%</td>
+                  <td class="num">7.42%</td>
+                  <td><div class="bar"><div style="width:3.55%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BIDV-2362-Offline</strong><small>BIDV-2362-Offline</small></td>
+                  <td>VND</td>
+                  <td class="num">58</td>
+                  <td class="num">15,398,876.00</td>
+                  <td class="num">3.44%</td>
+                  <td class="num">0.54%</td>
+                  <td><div class="bar"><div style="width:3.44%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>MBB-Payout Return-3007</strong><small>MBB-Payout Return-3007</small></td>
+                  <td>VND</td>
+                  <td class="num">13</td>
+                  <td class="num">1,394,140.00</td>
+                  <td class="num">0.77%</td>
+                  <td class="num">0.05%</td>
+                  <td><div class="bar"><div style="width:0.77%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>MBB-Payout Return-4072</strong><small>MBB-Payout Return-4072</small></td>
+                  <td>VND</td>
+                  <td class="num">8</td>
+                  <td class="num">6,522,672.00</td>
+                  <td class="num">0.47%</td>
+                  <td class="num">0.23%</td>
+                  <td><div class="bar"><div style="width:0.47%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>VCB-SP VA-2345-Dynamic</strong><small>VCB-SP VA-2345-Dynamic</small></td>
+                  <td>VND</td>
+                  <td class="num">8</td>
+                  <td class="num">112,509,423.00</td>
+                  <td class="num">0.47%</td>
+                  <td class="num">3.96%</td>
+                  <td><div class="bar"><div style="width:0.47%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>STB-SPP-6170-Offline</strong><small>STB-SPP-6170-Offline</small></td>
+                  <td>VND</td>
+                  <td class="num">6</td>
+                  <td class="num">215,341,202.00</td>
+                  <td class="num">0.36%</td>
+                  <td class="num">7.57%</td>
+                  <td><div class="bar"><div style="width:0.36%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>BIDV-SP VA-2362-Dynamic</strong><small>BIDV-SP VA-2362-Dynamic</small></td>
+                  <td>VND</td>
+                  <td class="num">3</td>
+                  <td class="num">20,448,047.00</td>
+                  <td class="num">0.18%</td>
+                  <td class="num">0.72%</td>
+                  <td><div class="bar"><div style="width:0.18%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>VTB-Payout Return-9095</strong><small>VTB-Payout Return-9095</small></td>
+                  <td>VND</td>
+                  <td class="num">3</td>
+                  <td class="num">167,737.00</td>
+                  <td class="num">0.18%</td>
+                  <td class="num">0.01%</td>
+                  <td><div class="bar"><div style="width:0.18%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>MBB-SPP Payout-4072</strong><small>MBB-SPP Payout-4072</small></td>
+                  <td>VND</td>
+                  <td class="num">1</td>
+                  <td class="num">178,000.00</td>
+                  <td class="num">0.06%</td>
+                  <td class="num">0.01%</td>
+                  <td><div class="bar"><div style="width:0.06%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TCB-Offline-7018</strong><small>TCB-Offline-7018</small></td>
+                  <td>VND</td>
+                  <td class="num">1</td>
+                  <td class="num">7,000.00</td>
+                  <td class="num">0.06%</td>
+                  <td class="num">0.00%</td>
+                  <td><div class="bar"><div style="width:0.06%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>TCB-Payout-7998</strong><small>TCB-Payout-7998</small></td>
+                  <td>VND</td>
+                  <td class="num">1</td>
+                  <td class="num">339,956.00</td>
+                  <td class="num">0.06%</td>
+                  <td class="num">0.01%</td>
+                  <td><div class="bar"><div style="width:0.06%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>VTB-Payout-9095</strong><small>VTB-Payout-9095</small></td>
+                  <td>VND</td>
+                  <td class="num">1</td>
+                  <td class="num">1,726,086.00</td>
+                  <td class="num">0.06%</td>
+                  <td class="num">0.06%</td>
+                  <td><div class="bar"><div style="width:0.06%"></div></div></td>
+                </tr>
+                </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <div class="op-panel">
+                  <div class="metrics">
+            <div class="metric"><span class="metric-label">Operation</span><strong>Reversed</strong></div>
+            <div class="metric"><span class="metric-label">Orders</span><strong>1,198</strong></div>
+            <div class="metric"><span class="metric-label">Amount</span><strong>2,098,096,246.00</strong></div>
+            </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>Agreement Item</th><th>Currency</th><th>Count</th><th>Amount</th><th>Count Share</th><th>Amount Share</th><th>Share Bar</th></tr></thead>
+                      <tbody>
+                <tr>
+                  <td><strong>VPB-SP CC-9120</strong><small>VPB-SP CC-9120</small></td>
+                  <td>VND</td>
+                  <td class="num">1,170</td>
+                  <td class="num">2,078,123,251.00</td>
+                  <td class="num">97.66%</td>
+                  <td class="num">99.05%</td>
+                  <td><div class="bar"><div style="width:97.66%"></div></div></td>
+                </tr>
+                
+                <tr>
+                  <td><strong>STB-SP CC-8613</strong><small>STB-SP CC-8613</small></td>
+                  <td>VND</td>
+                  <td class="num">28</td>
+                  <td class="num">19,972,995.00</td>
+                  <td class="num">2.34%</td>
+                  <td class="num">0.95%</td>
+                  <td><div class="bar"><div style="width:2.34%"></div></div></td>
+                </tr>
+                </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+            </section>
+            
+  </main>
+</body>
+</html>
