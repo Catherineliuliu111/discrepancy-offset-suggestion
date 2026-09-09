@@ -3101,6 +3101,7 @@
     #uploadRefundResultPage,
     #claimFundPage,
     #manualClearDiffPage,
+    #generalOperationPage,
     #supplementTransactionPage {
       position: static;
       box-sizing: border-box;
@@ -3120,6 +3121,7 @@
     #uploadRefundResultPage::after,
     #claimFundPage::after,
     #manualClearDiffPage::after,
+    #generalOperationPage::after,
     #supplementTransactionPage::after {
       content: none;
     }
@@ -3136,6 +3138,7 @@
     #uploadRefundResultPage .manual-refund-title::before,
     #claimFundPage .manual-refund-title::before,
     #manualClearDiffPage .manual-refund-title::before,
+    #generalOperationPage .manual-refund-title::before,
     #supplementTransactionPage .manual-refund-title::before {
       content: none;
     }
@@ -3313,6 +3316,40 @@
       min-width: 1040px;
     }
 
+    #generalOperationPage .manual-table {
+      width: 100%;
+      min-width: 1260px;
+    }
+
+    #generalOperationPage [data-required-field="Biz Code"] {
+      width: 156px;
+    }
+
+    #generalOperationPage [data-required-field="Business Entity"] {
+      width: 190px;
+    }
+
+    #generalOperationPage [data-required-field="Writeoff Reason"] {
+      width: 210px;
+    }
+
+    #generalOperationPage .manual-table th:first-child,
+    #generalOperationPage .manual-table td:first-child,
+    #generalOperationPage .manual-table th:nth-child(2),
+    #generalOperationPage .manual-table td:nth-child(2),
+    #supplementTransactionPage .manual-table th:first-child,
+    #supplementTransactionPage .manual-table td:first-child,
+    #supplementTransactionPage .manual-table th:nth-child(2),
+    #supplementTransactionPage .manual-table td:nth-child(2) {
+      position: static;
+      left: auto;
+      z-index: auto;
+      width: auto;
+      min-width: 0;
+      text-align: left;
+      box-shadow: none;
+    }
+
     .operation-page-shell .manual-table th {
       height: 42px;
       padding: 0 10px;
@@ -3386,6 +3423,109 @@
 
     .required-mark {
       color: #ef4444;
+    }
+
+    .operation-validation-banner {
+      position: fixed;
+      z-index: 1200;
+      top: 118px;
+      left: calc(248px + (100vw - 248px) / 2);
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      width: min(760px, calc(100vw - 320px));
+      padding: 13px 15px;
+      border: 1px solid #ffaaa5;
+      border-radius: 8px;
+      color: #b4232b;
+      background: #fff1f0;
+      box-shadow: 0 12px 30px rgba(108, 30, 36, 0.14);
+      transform: translateX(-50%);
+    }
+
+    .operation-validation-banner.hidden {
+      display: none;
+    }
+
+    .operation-validation-banner-icon {
+      display: grid;
+      flex: 0 0 22px;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: #fff;
+      background: #d9363e;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .operation-validation-banner strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 14px;
+    }
+
+    .operation-validation-banner-message {
+      color: #824149;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .operation-page-shell.validation-banner-visible {
+      padding-top: 76px;
+    }
+
+    .validation-field {
+      min-width: 126px;
+    }
+
+    .validation-field input,
+    .validation-field select {
+      width: 100%;
+    }
+
+    .validation-field.invalid input,
+    .validation-field.invalid select,
+    .validation-field.invalid .inline-field,
+    .validation-field.invalid .operation-select-input {
+      border-color: #d9363e !important;
+      color: #77272c;
+      background-color: #fff7f6 !important;
+      box-shadow: 0 0 0 2px rgba(217, 54, 62, 0.1);
+    }
+
+    .validation-field.invalid {
+      position: relative;
+    }
+
+    .validation-field.invalid::after {
+      position: absolute;
+      z-index: 2;
+      top: 8px;
+      right: 8px;
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      color: #fff;
+      background: #d9363e;
+      content: "!";
+      font-size: 11px;
+      font-weight: 800;
+      pointer-events: none;
+    }
+
+    .operation-wide-validation-field {
+      width: min(760px, 100%);
+    }
+
+    @media (max-width: 900px) {
+      .operation-validation-banner {
+        left: 50%;
+        width: calc(100vw - 32px);
+      }
     }
 
     .table-info-icon,
@@ -4168,6 +4308,8 @@
       #bankDetailReportPage,
       #uploadRefundResultPage,
       #claimFundPage,
+      #manualClearDiffPage,
+      #generalOperationPage,
       #supplementTransactionPage,
       #manualRefundPage::after,
       #walletRefundPage::after,
@@ -4175,6 +4317,8 @@
       #bankDetailReportPage::after,
       #uploadRefundResultPage::after,
       #claimFundPage::after,
+      #manualClearDiffPage::after,
+      #generalOperationPage::after,
       #supplementTransactionPage::after {
         width: calc(100vw - 16px);
       }
@@ -6418,6 +6562,10 @@
                     <span>Update to Success</span>
                     <span class="info-dot tip" data-tip="Use when the discrepant record should be corrected into a success transaction.">i</span>
                   </div>
+                  <div class="dropdown-item" data-handle-title="Manual Writeoff">
+                    <span>Manual Writeoff</span>
+                    <span class="info-dot tip" data-tip="Manually write off the selected discrepancy using the required accounting fields.">i</span>
+                  </div>
                   <div class="dropdown-item" data-handle-title="Refund Fund">
                     <span>Refund Fund</span>
                     <span class="info-dot tip" data-tip="Choose a refund handling path for the selected discrepancy records.">i</span>
@@ -7254,10 +7402,72 @@
           </div>
         </section>
 
+        <section class="hidden" id="generalOperationPage">
+          <div class="manual-refund-shell operation-page-shell">
+            <div class="manual-refund-top">
+              <div class="manual-refund-title" id="generalOperationTitle">Manual Writeoff</div>
+              <button class="btn primary" id="generalOperationSubmitBtn">Submit</button>
+              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-head">Select</div>
+              <div class="info-card-body">
+                <div class="summary-grid wide-summary-grid">
+                  <div><strong>Discrepancy Type :</strong> <span id="generalOperationType">Less TXN</span></div>
+                  <div><strong>Fund Direction :</strong> <span class="green" id="generalOperationDirection">IN</span></div>
+                  <div><strong>Counts :</strong> <span id="generalOperationCount">1</span></div>
+                  <div><strong>Amount :</strong> <span id="generalOperationAmount">RM0.00</span></div>
+                </div>
+                <div class="operation-note">
+                  <span class="operation-note-icon">i</span>
+                  <span id="generalOperationPrompt">Complete all required fields before submitting.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-head">Select List</div>
+              <div class="manual-table-wrap">
+                <table class="manual-table">
+                  <thead>
+                    <tr id="generalOperationTableHead"></tr>
+                  </thead>
+                  <tbody id="generalOperationTableBody"></tbody>
+                </table>
+              </div>
+              <div class="manual-table-footer">
+                <span>‹</span>
+                <div class="pager-chip">1</div>
+                <span>›</span>
+                <select class="btn" name="generalOperationPageSize">
+                  <option>20 / page</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="info-card" id="generalOperationNotesCard">
+              <div class="info-card-head">Notes</div>
+              <div class="info-card-body confirm-notes-grid" id="generalOperationNotes"></div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-head">Attachment</div>
+              <div class="info-card-body">
+                <div class="attachment-zone">
+                  <span class="attachment-zone-icon">⌁</span>
+                  <span>Drag and drop files, paste screenshots, or browse</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="hidden" id="supplementTransactionPage">
 	          <div class="manual-refund-shell operation-page-shell">
 	            <div class="manual-refund-top">
 	              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
+	              <button class="btn primary" id="supplementTransactionSubmitBtn" disabled>Submit</button>
 	              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
 		            </div>
 
@@ -7289,6 +7499,7 @@
 	                      <th>Source Status</th>
 		                      <th>Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
 		                      <th><span class="required-mark">*</span>Biz Code <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span></th>
+		                      <th><span class="required-mark">*</span>Business Entity <span class="table-edit-icon">✎</span></th>
 		                      <th>Agreement Item</th>
 	                      <th>Amount</th>
 	                      <th>Transaction Time</th>
@@ -7339,6 +7550,13 @@
 
   <button class="floating-btn switch" title="user-switch">👤</button>
   <button class="floating-btn help" title="question-circle">?</button>
+  <div class="operation-validation-banner hidden" id="operationValidationBanner" role="alert" aria-live="assertive">
+    <span class="operation-validation-banner-icon">!</span>
+    <div>
+      <strong>Unable to submit</strong>
+      <div class="operation-validation-banner-message" id="operationValidationMessage"></div>
+    </div>
+  </div>
 
   <div class="modal-backdrop" id="listSettingsModal">
     <div class="modal">
@@ -8927,12 +9145,16 @@ ${lines}
     }
 
     function continueDirectHandlingOperation(title, disposition = "") {
-      if (title === "Switch To Statement Recon") {
+      if (title === "Update To Success") {
+        openGeneralOperationPage("Update to Success");
+      } else if (title === "Manual Writeoff") {
+        openGeneralOperationPage("Manual Writeoff");
+      } else if (title === "Switch To Statement Recon") {
         openSwitchStatementReconPage();
       } else if (title === "Manual Supplement") {
         openSupplementTransactionPage();
       } else if (title === "Confirm Fund Loss/Revenue") {
-        showToast(`Confirm Fund ${disposition === "revenue" ? "Revenue" : "Loss"} confirmed.`, "success");
+        openGeneralOperationPage("Confirm Fund Loss/Revenue", disposition);
       } else {
         showToast(`${directHandlingOperationInfo[title].title} confirmed.`, "success");
       }
@@ -9594,10 +9816,73 @@ ${lines}
     }
 
     function getOperationPageIds() {
-      return ["discrepancyInfoPage", "manualRefundPage", "walletRefundPage", "confirmRefundResultPage", "confirmedOfflineRefundPage", "bankDetailReportPage", "uploadRefundResultPage", "uploadClaimFundResultPage", "claimFundPage", "switchStatementReconPage", "manualClearDiffPage", "supplementTransactionPage"];
+      return ["discrepancyInfoPage", "manualRefundPage", "walletRefundPage", "confirmRefundResultPage", "confirmedOfflineRefundPage", "bankDetailReportPage", "uploadRefundResultPage", "uploadClaimFundResultPage", "claimFundPage", "switchStatementReconPage", "manualClearDiffPage", "generalOperationPage", "supplementTransactionPage"];
+    }
+
+    function clearOperationValidation() {
+      const banner = document.getElementById("operationValidationBanner");
+      const message = document.getElementById("operationValidationMessage");
+      banner?.classList.add("hidden");
+      if (message) message.textContent = "";
+      document.querySelectorAll(".operation-page-shell.validation-banner-visible").forEach(shell => {
+        shell.classList.remove("validation-banner-visible");
+        delete shell.dataset.validationSubmitted;
+      });
+      document.querySelectorAll(".validation-field.invalid").forEach(field => field.classList.remove("invalid"));
+    }
+
+    function operationFieldError(field) {
+      const label = field.dataset.requiredField || "This field";
+      const value = String(field.value || "").trim();
+      if (!value) return `${label} is required.`;
+      if (field.hasAttribute("data-reject-others") && value.toLowerCase() === "others") {
+        return `${label} cannot be Others.`;
+      }
+      return "";
+    }
+
+    function validateOperationPage(pageId, focusFirst = false) {
+      const page = document.getElementById(pageId);
+      if (!page) return false;
+      const shell = page.querySelector(".operation-page-shell");
+      const fields = [...page.querySelectorAll("[data-required-field]")].filter(field => {
+        return field.offsetWidth || field.offsetHeight || field.getClientRects().length;
+      });
+      const errors = [];
+
+      fields.forEach(field => {
+        const error = operationFieldError(field);
+        const wrapper = field.closest(".validation-field") || field.parentElement;
+        wrapper?.classList.toggle("invalid", Boolean(error));
+        field.setAttribute("aria-invalid", error ? "true" : "false");
+        if (error) errors.push({ field, message: error });
+      });
+
+      const uniqueMessages = [...new Set(errors.map(error => error.message))];
+      const banner = document.getElementById("operationValidationBanner");
+      const message = document.getElementById("operationValidationMessage");
+      const hasErrors = uniqueMessages.length > 0;
+      banner?.classList.toggle("hidden", !hasErrors);
+      shell?.classList.toggle("validation-banner-visible", hasErrors);
+      if (message) message.textContent = uniqueMessages.join(" ");
+
+      if (focusFirst && errors[0]?.field?.focus) {
+        errors[0].field.focus({ preventScroll: true });
+      }
+      return !hasErrors;
+    }
+
+    function submitValidatedOperation(pageId, operationTitle) {
+      const page = document.getElementById(pageId);
+      const shell = page?.querySelector(".operation-page-shell");
+      if (shell) shell.dataset.validationSubmitted = "true";
+      if (!validateOperationPage(pageId, true)) return;
+      clearOperationValidation();
+      completeActiveOperation(operationTitle);
     }
 
     function showOperationPage(pageId, title) {
+      clearOperationValidation();
       getOperationPageIds().forEach(id => {
         document.getElementById(id)?.classList.add("hidden");
       });
@@ -9614,6 +9899,7 @@ ${lines}
     }
 
     function closeOperationPage() {
+      clearOperationValidation();
       getOperationPageIds().forEach(id => {
         document.getElementById(id)?.classList.add("hidden");
       });
@@ -10349,6 +10635,152 @@ ${lines}
       `;
     }
 
+    function openGeneralOperationPage(operationTitle, disposition = "") {
+      const { selectedRows, row, totalAmount } = getSelectedRefundRows();
+      const rows = selectedRows.length ? selectedRows : [row];
+      const normalizedTitle = String(operationTitle || "").trim().toLowerCase();
+      const isUpdateToSuccess = normalizedTitle.includes("update to success");
+      const hasLessTxn = rows.some(item => String(item?.type || "").trim().toLowerCase() === "less txn");
+      const hasOverTxn = rows.some(item => String(item?.type || "").trim().toLowerCase() === "over txn");
+      const isMixedTxn = hasLessTxn && hasOverTxn;
+      const displayTitle = normalizedTitle.includes("confirm fund loss/revenue")
+        ? `Confirm Fund ${disposition === "revenue" ? "Revenue" : "Loss"}`
+        : operationTitle;
+      const prompt = isUpdateToSuccess
+        ? "Confirm the payment status update and provide a remark before submitting."
+        : isMixedTxn
+          ? "Less TXN requires Transaction Date, Biz Code, Business Entity, and Writeoff Reason. Over TXN requires Clearing Date and Writeoff Reason."
+          : hasOverTxn
+            ? `Complete Clearing Date and Writeoff Reason before submitting ${displayTitle}.`
+            : `Complete Transaction Date, Biz Code, Business Entity, and Writeoff Reason before submitting ${displayTitle}.`;
+
+      showOperationPage("generalOperationPage", displayTitle);
+      state.activeGeneralOperationTitle = displayTitle;
+      document.getElementById("generalOperationTitle").textContent = displayTitle;
+      document.getElementById("generalOperationType").textContent = isMixedTxn ? "Less TXN / Over TXN" : row?.type || "Less TXN";
+      const directions = [...new Set(rows.map(item => item?.direction).filter(Boolean))];
+      document.getElementById("generalOperationDirection").textContent = directions.length > 1 ? "Mixed" : directions[0] || "IN";
+      document.getElementById("generalOperationCount").textContent = rows.length || 1;
+      document.getElementById("generalOperationAmount").textContent = selectedAmountText(selectedRows, row, totalAmount);
+      document.getElementById("generalOperationPrompt").textContent = prompt;
+
+      const commonHeaders = [
+        "Discrepancy Type",
+        "Discrepancy Order ID",
+        "Reference ID",
+        "System Code",
+        "Amount"
+      ];
+      const operationHeaders = isUpdateToSuccess
+        ? ["Source Status"]
+        : isMixedTxn
+          ? ["*Transaction Date", "*Clearing Date", "*Biz Code", "*Business Entity", "*Writeoff Reason"]
+          : hasOverTxn
+            ? ["*Clearing Date", "*Writeoff Reason"]
+            : ["*Transaction Date", "*Biz Code", "*Business Entity", "*Writeoff Reason"];
+      document.getElementById("generalOperationTableHead").innerHTML = [...commonHeaders, ...operationHeaders]
+        .map(header => `<th>${header.startsWith("*") ? `<span class="required-mark">*</span>${escapeHtml(header.slice(1))}` : escapeHtml(header)}</th>`)
+        .join("");
+
+      const reasonOptions = displayTitle.includes("Revenue")
+        ? ["Rightful owner cannot be identified", "Approved revenue recognition"]
+        : displayTitle.includes("Loss")
+          ? ["Fund cannot be recovered", "Approved fund loss"]
+          : ["Approved manual writeoff", "Operational adjustment"];
+      document.getElementById("generalOperationTableBody").innerHTML = rows.map(item => {
+        const itemIsOverTxn = String(item?.type || "").trim().toLowerCase() === "over txn";
+        const commonCells = `
+          <td>${escapeHtml(item.type || "-")}</td>
+          <td>${escapeHtml(item.id || "-")}</td>
+          <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
+          <td>${escapeHtml(item.source || "-")}</td>
+          <td>${escapeHtml(item.amount || "-")}</td>
+        `;
+        if (isUpdateToSuccess) {
+          return `<tr>${commonCells}<td>${escapeHtml(item.sourceStatus || "-")}</td></tr>`;
+        }
+        const writeoffReason = `
+          <div class="validation-field">
+            <select class="operation-select-control compact" data-required-field="Writeoff Reason">
+              <option value="">Select writeoff reason</option>
+              ${reasonOptions.map(reason => `<option>${escapeHtml(reason)}</option>`).join("")}
+            </select>
+          </div>
+        `;
+        const transactionDate = `
+          <div class="validation-field">
+            <input class="inline-field-input compact" type="date" value="${escapeHtml(currentIsoDate())}" data-required-field="Transaction Date" />
+          </div>
+        `;
+        const clearingDate = `
+          <div class="validation-field">
+            <input class="inline-field-input compact" type="date" value="${escapeHtml(item.clearingDate || "")}" data-required-field="Clearing Date" />
+          </div>
+        `;
+        const bizCode = `
+          <div class="validation-field">
+            <select class="operation-select-control compact" data-required-field="Biz Code" data-reject-others>
+              <option value="">Select Biz Code</option>
+              <option selected>Others</option>
+              <option>Manual Writeoff</option>
+              <option>Fund Loss</option>
+              <option>Fund Revenue</option>
+            </select>
+          </div>
+        `;
+        const businessEntity = `
+          <div class="validation-field">
+            <select class="operation-select-control compact" data-required-field="Business Entity">
+              <option value="">Select Business Entity</option>
+              <option>SHOPEE-MY</option>
+              <option>SPP-MY</option>
+            </select>
+          </div>
+        `;
+        if (isMixedTxn) {
+          return `
+            <tr>
+              ${commonCells}
+              <td>${itemIsOverTxn ? "-" : transactionDate}</td>
+              <td>${itemIsOverTxn ? clearingDate : "-"}</td>
+              <td>${itemIsOverTxn ? "-" : bizCode}</td>
+              <td>${itemIsOverTxn ? "-" : businessEntity}</td>
+              <td>${writeoffReason}</td>
+            </tr>
+          `;
+        }
+        if (itemIsOverTxn) {
+          return `<tr>${commonCells}<td>${clearingDate}</td><td>${writeoffReason}</td></tr>`;
+        }
+        return `
+          <tr>
+            ${commonCells}
+            <td>${transactionDate}</td>
+            <td>${bizCode}</td>
+            <td>${businessEntity}</td>
+            <td>${writeoffReason}</td>
+          </tr>
+        `;
+      }).join("");
+      document.querySelector("#generalOperationPage .manual-table-wrap").scrollLeft = 0;
+
+      document.getElementById("generalOperationNotes").innerHTML = isUpdateToSuccess
+        ? `
+          <div class="notes-row">
+            <span><span class="required-mark">*</span> Remark :</span>
+            <div class="validation-field operation-wide-validation-field">
+              <input class="remark-input operation-wide-input" name="updateToSuccessRemark" placeholder="Enter remark" data-required-field="Remark" />
+            </div>
+          </div>
+        `
+        : `
+          <div class="notes-row">
+            <span>Remark :</span>
+            <input class="remark-input operation-wide-input" name="generalOperationRemark" placeholder="Enter remark" />
+          </div>
+        `;
+    }
+
 	    function openSupplementTransactionPage() {
 	      const { rows, row, totalAmount } = getSupplementTransactionRows();
 	      if (state.operationEntryPoint !== "upload" && !rows.every(isSupplementTransactionEligible)) {
@@ -10373,12 +10805,31 @@ ${lines}
 	          <td>${renderSourcePaymentCell(item)}</td>
 	          <td>${renderLinkedSourceStatus(item)}</td>
 		          <td><span class="inline-field compact">${escapeHtml(currentIsoDate())}<span class="field-caret">□</span></span></td>
-		          <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
+		          <td>
+                <div class="validation-field">
+                  <select class="operation-select-control compact" data-required-field="Biz Code" data-reject-others>
+                    <option value="">Select Biz Code</option>
+                    <option selected>Others</option>
+                    <option>Manual Supplement</option>
+                    <option>Offline Payment</option>
+                  </select>
+                </div>
+              </td>
+              <td>
+                <div class="validation-field">
+                  <select class="operation-select-control compact" data-required-field="Business Entity">
+                    <option value="">Select Business Entity</option>
+                    <option>SHOPEE-MY</option>
+                    <option>SPP-MY</option>
+                  </select>
+                </div>
+              </td>
 		          <td>${escapeHtml(item.agreement || "-")}</td>
 	          <td>${escapeHtml(item.amount || "-")}</td>
 	          <td>${escapeHtml(item.txnTime || "-")}</td>
         </tr>
       `).join("");
+      document.querySelector("#supplementTransactionPage .manual-table-wrap").scrollLeft = 0;
 
       document.querySelectorAll("[data-source-payment-row]").forEach(node => {
         node.addEventListener("click", () => openSourcePaymentModal(node.dataset.sourcePaymentRow));
@@ -10823,6 +11274,14 @@ ${lines}
 
     function openOperationPopup(title, requireEligibleSelection = true) {
       if (state.operationEntryPoint === "upload") {
+        if (title === "Update To Success" || title === "Manual Writeoff") {
+          openGeneralOperationPage(title === "Update To Success" ? "Update to Success" : "Manual Writeoff");
+          return;
+        }
+        if (title === "Confirm Fund Loss/Revenue") {
+          openDirectHandlingOperationInfo(title);
+          return;
+        }
         if (title === "Refund Fund") {
           openModal("#uploadManualRefundModal");
           return;
@@ -10843,6 +11302,8 @@ ${lines}
       }
       if (title === "Refund Fund") {
         openModal("#refundFundModal");
+      } else if (title === "Manual Writeoff") {
+        openGeneralOperationPage("Manual Writeoff");
       } else if (title === "Invalidate") {
         openModal("#invalidateModal");
       } else if (title === "Confirm Offline Transaction") {
@@ -10942,7 +11403,8 @@ ${lines}
 
     document.getElementById("exportBtn").addEventListener("click", () => showToast("Export task created. File will be generated shortly.", "success"));
     document.getElementById("holdBtn").addEventListener("click", () => showToast(`Moved ${state.selectedRowIds.size} rows to hold queue`, "warn"));
-    document.getElementById("supplementTransactionSubmitBtn")?.addEventListener("click", () => completeActiveOperation("Manual Supplement"));
+    document.getElementById("supplementTransactionSubmitBtn")?.addEventListener("click", () => submitValidatedOperation("supplementTransactionPage", "Manual Supplement"));
+    document.getElementById("generalOperationSubmitBtn")?.addEventListener("click", () => submitValidatedOperation("generalOperationPage", state.activeGeneralOperationTitle || "Discrepancy Handling Operation"));
     document.getElementById("switchStatementReconSubmitBtn")?.addEventListener("click", () => completeActiveOperation("Switch to Statement Recon"));
     document.getElementById("uploadRefundResultSubmitBtn")?.addEventListener("click", () => completeActiveOperation(document.getElementById("uploadRefundResultTitle")?.textContent || "Refund Operation"));
     document.getElementById("manualClearDiffSubmitBtn")?.addEventListener("click", () => completeActiveOperation("Manual Clear Diff"));
@@ -10970,6 +11432,15 @@ ${lines}
     });
     document.querySelectorAll("[data-operation-close]").forEach(btn => {
       btn.addEventListener("click", closeOperationPage);
+    });
+    ["input", "change"].forEach(eventName => {
+      document.addEventListener(eventName, event => {
+        if (!event.target.matches("[data-required-field]")) return;
+        const page = event.target.closest("section[id]");
+        const shell = event.target.closest(".operation-page-shell");
+        if (!page || !shell?.dataset.validationSubmitted) return;
+        validateOperationPage(page.id);
+      });
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && document.body.classList.contains("operation-mode")) {
