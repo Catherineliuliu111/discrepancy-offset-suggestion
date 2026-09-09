@@ -8970,9 +8970,9 @@ ${lines}
         nodes: [
           { id: "wallet", icon: "wallet", title: "Refund to Wallet", desc: "Return funds to the user’s ShopeePay Wallet.", childrenLabel: "Refund Method", children: [
             { id: "wallet-online", action: "wallet-online", icon: "online", title: "Online Refund", desc: "Initiate a user-wallet refund directly through SPR", groups: { DFR: [["Payment Incurring Amount", "Increases."], ["Transaction Detail", "Increases; automatically created for the offline transaction."], ["Less TXN Detail", "Decreases."]] } },
-            { id: "wallet-offline", icon: "offline", title: "Offline Refund", desc: "Process the wallet refund outside SPR, then export or confirm the result.", childrenLabel: "Offline Refund Action", children: [
-              { id: "wallet-export", action: "wallet-export", icon: "export", title: "Export Offline Refund List", desc: "Export discrepancy details for offline wallet refund processing.", groups: { DFR: [["Processing Status", "Processing."]] } },
-              { id: "wallet-confirm", action: "wallet-confirm", icon: "confirm", title: "Confirm Offline Refund", desc: "After conduct offline refund, record offline wallet refund status in SPR.", groups: { DFR: [["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "Increases; the refund result is recorded for the offline transaction."], ["Less TXN Detail", "Decreases."]] } }
+            { id: "wallet-offline", icon: "offline", title: "Offline Refund", desc: "Process the wallet refund outside SPR. The user can export the refund list or confirm the result directly.", childrenLabel: "Offline Refund Action", children: [
+              { id: "wallet-export", action: "wallet-export", icon: "export", title: "Export Refund List", desc: "Export the refund list for offline wallet refund processing.", groups: { DFR: [["Processing Status", "Processing."]] } },
+              { id: "wallet-confirm", action: "wallet-confirm", icon: "confirm", title: "Confirm Refund Result", desc: "Confirm the completed offline wallet refund result directly in SPR.", groups: { DFR: [["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "Increases; the refund result is recorded for the offline transaction."], ["Less TXN Detail", "Decreases."]] } }
             ] }
           ] },
           { id: "bank", icon: "bank", title: "Refund to Bank Account / SOF", desc: "Return funds to the user’s Bank Account or original Source of Funds.", childrenLabel: "Refund Result", children: [
@@ -8987,9 +8987,9 @@ ${lines}
         nodes: [
           { id: "wallet", icon: "wallet", title: "Refund to Wallet", desc: "Return funds to the user’s ShopeePay Wallet.", childrenLabel: "Refund Method", children: [
             { id: "wallet-online", action: "wallet-online", icon: "online", title: "Online Refund", desc: "Initiate a user-wallet refund directly through SPR.", groups: { DFR: [["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "Increases; automatically created for the offline transaction."], ["Over TXN Detail", "Decreases."]] } },
-            { id: "wallet-offline", icon: "offline", title: "Offline Refund", desc: "Process the wallet refund outside SPR, then export or confirm the result.", childrenLabel: "Offline Refund Action", children: [
-              { id: "wallet-export", action: "wallet-export", icon: "export", title: "Export Offline Refund List", desc: "Export discrepancy details for offline wallet refund processing.", groups: { DFR: [["Processing Status", "Processing."]] } },
-              { id: "wallet-confirm", action: "wallet-confirm", icon: "confirm", title: "Confirm Offline Refund", desc: "After conduct offline refund, record offline wallet refund status in SPR.", groups: { DFR: [["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "Increases; the refund result is recorded for the offline transaction."], ["Over TXN Detail", "Decreases."]] } }
+            { id: "wallet-offline", icon: "offline", title: "Offline Refund", desc: "Process the wallet refund outside SPR. The user can export the refund list or confirm the result directly.", childrenLabel: "Offline Refund Action", children: [
+              { id: "wallet-export", action: "wallet-export", icon: "export", title: "Export Refund List", desc: "Export the refund list for offline wallet refund processing.", groups: { DFR: [["Processing Status", "Processing."]] } },
+              { id: "wallet-confirm", action: "wallet-confirm", icon: "confirm", title: "Confirm Refund Result", desc: "Confirm the completed offline wallet refund result directly in SPR.", groups: { DFR: [["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "Increases; the refund result is recorded for the offline transaction."], ["Over TXN Detail", "Decreases."]] } }
             ] }
           ] },
           { id: "bank", icon: "bank", title: "Refund to Bank Account / SOF", desc: "Return funds to the user’s Bank Account or original Source of Funds.", childrenLabel: "Offline Refund Action", children: [
@@ -9276,10 +9276,15 @@ ${lines}
     function isOperationNodeVisible(node) {
       if (state.operationEntryPoint === "upload") return true;
       const { row } = getSelectedRefundRows();
+      const type = String(row?.type || "").trim().toLowerCase();
+      const direction = String(row?.direction || "").trim().toLowerCase();
+      if (["bank-confirm", "bank-detail-available", "bank-no-detail"].includes(node.id)) {
+        if (type === "less txn") return node.id === "bank-confirm";
+        return type === "over txn" && direction === "out";
+      }
       // External refunds are only applicable to a bank-side Less OUT.
       if (node.id === "external-refund" || node.id === "external-refund-confirm") {
-        return String(row?.type || "").trim().toLowerCase() === "less txn"
-          && String(row?.direction || "").toLowerCase().includes("out");
+        return type === "less txn" && direction.includes("out");
       }
       return true;
     }
@@ -10977,7 +10982,7 @@ ${lines}
       const actionTitles = {
         "wallet-online": "Refund Fund - Refund to Wallet - Online Refund",
         "wallet-export": "Refund Fund - Refund to Wallet – Export Offline Refund List",
-        "wallet-confirm": "Refund Fund - Refund to Wallet – Confirm Offline Refund",
+        "wallet-confirm": "Refund Fund - Refund to Wallet – Confirm Refund Result",
         "bank-export": "Refund Fund - Refund to Bank Account / SOF – Export Offline Refund List",
         "bank-confirm": "Refund Fund - Refund to Bank Account / SOF – Confirm Offline Result",
         "bank-confirm-with": "Refund Fund - Refund to Bank Account / SOF – Confirm Offline Result - Bank Detail Available",
