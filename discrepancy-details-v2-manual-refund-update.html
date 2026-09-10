@@ -6262,10 +6262,10 @@
       grid-template-columns: 22px minmax(0, 1fr);
       gap: 8px;
       align-items: start;
-      padding: 8px 10px;
+      padding: 9px 10px;
       color: #4b5f78;
-      font-size: 11px;
-      line-height: 1.45;
+      font-size: 12.5px;
+      line-height: 1.5;
     }
 
     .column-m-impact-row + .column-m-impact-row {
@@ -6289,9 +6289,8 @@
       font-weight: 750;
     }
 
-    .column-m-impact-row em {
-      color: #135fca;
-      font-style: normal;
+    .column-m-impact-row .impact-emphasis {
+      color: #1f6ae0;
       font-weight: 700;
     }
 
@@ -9215,7 +9214,7 @@ ${lines}
           ] },
           { id: "bank", icon: "bank", title: "Refund to Bank Account / SOF", desc: "Return funds to the user’s Bank Account or original Source of Funds.", childrenLabel: "Refund Result", children: [
             { id: "bank-export", action: "bank-export", icon: "export", title: "Export Offline Refund List", desc: "Export discrepancy details for offline refund to Bank Account or original SOF.", groups: { DFR: [["Processing Status", "Processing."]] } },
-            { id: "bank-confirm", action: "bank-confirm", icon: "confirm", title: "Confirm Offline Result", desc: "Record the completed offline refund using the actual Refund Bank Account.", groups: { DFR: [["Bank Incurring Amount", "Total amount unchanged; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total amount unchanged; the refund amount equals the payment."], ["Transaction Detail", "Both offline payment and refund transaction details are created."], ["Less TXN Detail", "Decreases."]] } }
+            { id: "bank-confirm", action: "bank-confirm", icon: "confirm", title: "Confirm Offline Result", desc: "Record the offline refund transaction and status in SPR.", groups: { DFR: [["Bank Incurring Amount", "Total amount unchanged; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total amount unchanged; the refund amount equals the payment."], ["Transaction Detail", "Both offline payment and refund transaction details are created."], ["Less TXN Detail", "Decreases."]] } }
           ] }
         ]
       },
@@ -9231,10 +9230,10 @@ ${lines}
             ] }
           ] },
           { id: "bank", icon: "bank", title: "Refund to Bank Account / SOF", desc: "Return funds to the user’s Bank Account or original Source of Funds.", childrenLabel: "Offline Refund Action", children: [
-            { id: "bank-export", action: "bank-export", icon: "export", title: "Export Offline Refund List", desc: "Export discrepancy details for offline refund to Bank Account or original SOF.", groups: { DFR: [["Processing Status", "Processing."]] } },
-            { id: "bank-confirm", icon: "confirm", title: "Confirm Offline Result", desc: "After conduct offline refund, record the offline refund transaction and refund status in SPR", childrenLabel: "Bank Detail Availability", children: [
-              { id: "bank-detail-available", action: "bank-confirm-with", icon: "detail", title: "Bank Detail Available", desc: "After conducting the offline refund, confirm the result and wait for bank detail reconciliation.", groups: { DFR: [["Processing Status", "Processing."]] } },
-            { id: "bank-no-detail", action: "bank-confirm-without", icon: "noDetail", title: "Bank Detail Unavailable", desc: "After processing the offline refund, confirm the result when no bank detail will be provided.", groups: { "Statement Recon": [["Account Statement", "A new Account Statement is created based on the confirmed refund result and selected Bank Account."]], DFR: [["Bank Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Channel Detail", "Unchanged; no Channel Detail exists."], ["Transaction Detail", "The original refund transaction exists; if the actual Bank Account differs, it is reversed and an offline transaction is created."], ["Over TXN Detail", "Decreases."]] } }
+              { id: "bank-export", action: "bank-export", icon: "export", title: "Export Offline Refund List", desc: "Export discrepancy details for offline refund to Bank Account or original SOF.", groups: { DFR: [["Processing Status", "Processing."]] } },
+              { id: "bank-confirm", icon: "confirm", title: "Confirm Offline Result", desc: "Record the offline refund transaction and status in SPR.", childrenLabel: "Bank Detail Availability", children: [
+              { id: "bank-detail-available", action: "bank-confirm-with", icon: "detail", title: "Bank Detail Available", desc: "Confirm the refund status and wait for bank details for reconciliation.", groups: { DFR: [["Processing Status", "Processing."]] } },
+            { id: "bank-no-detail", action: "bank-confirm-without", icon: "noDetail", title: "Bank Detail Unavailable", desc: "Confirm the refund status and create an Account Statement when bank details are unavailable.", groups: { "Statement Recon": [["Account Statement", "A new Account Statement is created based on the confirmed refund result and selected Bank Account."]], DFR: [["Bank Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Channel Detail", "Unchanged; no Channel Detail exists."], ["Transaction Detail", "The original refund transaction exists; if the actual Bank Account differs, it is reversed and an offline transaction is created."], ["Over TXN Detail", "Decreases."]] } }
             ] }
           ] }
         ]
@@ -9351,14 +9350,14 @@ ${lines}
         groups: { DFR: [["Offline Wallet Refund", "Records the completed offline wallet refund result."]] }
       };
       const lessBankConfirm = {
-        desc: "Record the completed offline refund using the actual Refund Bank Account.",
+        desc: "Record the offline refund transaction and status in SPR.",
         groups: {
           "Statement Recon": [["Account Statement", "Generated for the refund based on the Bank Account entered by the user."]],
           DFR: [["Offline Refund Transaction", "Generated based on the Bank Account entered by the user."]]
         }
       };
       const overBankAvailable = {
-        desc: "After conduct offline refund, confirm refund status and waiting for bank detail to reconcile with.",
+        desc: "Confirm the refund status and wait for bank details for reconciliation.",
         groups: {
           "Statement Recon": [
             ["Account Statement", "Generated based on the actual Refund Bank Account."],
@@ -9368,7 +9367,7 @@ ${lines}
         }
       };
       const overBankUnavailable = {
-        desc: "After processing the offline refund, confirm the status and generate the account statement when the bank does not provide bank detail.",
+        desc: "Confirm the refund status and create an Account Statement when bank details are unavailable.",
         groups: {
           "Statement Recon": [["Account Statement", "Generated based on the actual Refund Bank Account."]],
           DFR: [["Transaction Detail", "If the actual Bank Account differs, reverse the original Transaction Detail and create an Offline Refund Transaction."]]
@@ -9435,10 +9434,11 @@ ${lines}
       paymentOver: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Payment Incurring Amount decreases.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
       paymentOverIncrease: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Payment Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
       bankConfirmLess: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: Account Statement already exists.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
-      createSelectedPaymentOver: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: the Payment Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling",
+      createSelectedPaymentOver: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: Payment Incurring Amount increases. Biz Code is updated if changed during discrepancy handling.\nDiscrepancy: Write off Over TXN Detail after discrepancy handling.",
       bankLess: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
       bankOver: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
       createBankOver: "Statement Recon: Create a new Account Statement.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
+      exportStatusOnly: "Processing Status: changes from Unprocessed to Processing.\nNext Step: confirm the refund result after offline processing is completed.",
       blank: "",
       switchRecon: "Statement Recon: Create an opposite Account Statement and a new Bank Statement for reconciliation.\nDFR Incurring Amount: the Bank Incurring Amount decreases.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling."
     });
@@ -9451,12 +9451,12 @@ ${lines}
 
       set("refund_less", "wallet-online", "paymentLess");
       set("refund_over", "wallet-online", "paymentOverIncrease");
-      set("refund_less", "wallet-export", "onHold");
-      set("refund_over", "wallet-export", "onHold");
+      set("refund_less", "wallet-export", "exportStatusOnly");
+      set("refund_over", "wallet-export", "exportStatusOnly");
       set("refund_less", "wallet-confirm", "paymentLess");
       set("refund_over", "wallet-confirm", "paymentOverIncrease");
-      set("refund_less", "bank-export", "onHold");
-      set("refund_over", "bank-export", "onHold");
+      set("refund_less", "bank-export", "exportStatusOnly");
+      set("refund_over", "bank-export", "exportStatusOnly");
       set("refund_less", "bank-confirm", "bankConfirmLess");
       set("refund_over", "bank-detail-available", "onHold");
       set("refund_over", "bank-no-detail", "createSelectedPaymentOver");
@@ -9475,12 +9475,51 @@ ${lines}
       set("recovery_over", "recover-detail", "onHold");
       set("recovery_less", "recover-no-detail", "bankLess");
       set("recovery_over", "recover-no-detail", "bankOver");
-      set("recovery_less", "recover-user-export", "onHold");
-      set("recovery_over", "recover-user-export", "onHold");
+      set("recovery_less", "recover-user-export", "exportStatusOnly");
+      set("recovery_over", "recover-user-export", "exportStatusOnly");
       set("recovery_less", "recover-user-confirm", "paymentLess");
       set("recovery_over", "recover-user-confirm", "paymentOverIncrease");
     }
     applyColumnMImpactCopy();
+
+    function escapeRegExp(value) {
+      return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function renderImpactRichText(value) {
+      const emphasisTerms = [
+        "Create a new Account Statement",
+        "Account Statement already exists",
+        "selected Bank Account",
+        "Payment Incurring Amount increases",
+        "Payment Incurring Amount decreases",
+        "Bank Incurring Amount increases",
+        "Bank Incurring Amount decreases",
+        "Payment Incurring Amount",
+        "Bank Incurring Amount",
+        "Over TXN",
+        "Less TXN",
+        "original transaction detail",
+        "offline payout transaction detail",
+        "Biz Code",
+        "Unprocessed",
+        "Processing",
+        "On-hold",
+        "refund result",
+        "deduction result"
+      ].sort((left, right) => right.length - left.length);
+      const matcher = new RegExp(emphasisTerms.map(escapeRegExp).join("|"), "gi");
+      let html = "";
+      let cursor = 0;
+      String(value).replace(matcher, (match, offset) => {
+        html += escapeHtml(String(value).slice(cursor, offset));
+        html += `<span class="impact-emphasis">${escapeHtml(match)}</span>`;
+        cursor = offset + match.length;
+        return match;
+      });
+      html += escapeHtml(String(value).slice(cursor));
+      return html;
+    }
 
     function columnMImpactRowsHtml(copy) {
       const text = String(copy || "").trim();
@@ -9489,7 +9528,7 @@ ${lines}
         const separator = line.indexOf(":");
         const label = separator >= 0 ? line.slice(0, separator + 1) : "";
         const value = separator >= 0 ? line.slice(separator + 1).trim() : line;
-        return `<div class="column-m-impact-row"><span class="column-m-impact-check">✓</span><div>${label ? `<strong>${escapeHtml(label)}</strong> ` : ""}${escapeHtml(value)}</div></div>`;
+        return `<div class="column-m-impact-row"><span class="column-m-impact-check">✓</span><div>${label ? `<strong>${escapeHtml(label)}</strong> ` : ""}${renderImpactRichText(value)}</div></div>`;
       }).join("");
     }
 
@@ -11205,6 +11244,24 @@ ${lines}
       showToast(`${operationTitle} completed.`, "success");
     }
 
+    function completeExportOperation(operationTitle) {
+      const rows = state.rows.filter(item => state.selectedRowIds.has(item.id));
+      if (!rows.length) {
+        showToast("Please select at least one discrepancy before exporting.", "warn");
+        return;
+      }
+
+      rows.forEach(row => {
+        row.processingStatus = "Processing";
+      });
+      state.selectedRowIds.clear();
+      renderTable();
+      syncActionButtons();
+      closeModal("#refundFundModal");
+      closeModal("#claimFundModal");
+      showToast(`${rows.length} record${rows.length === 1 ? "" : "s"} exported. Processing Status updated.`, "success");
+    }
+
     function renderPortalProcessingHistory(row) {
       const history = state.processingHistory[row.id];
       const tbody = document.querySelector("#discrepancyInfoPage .portal-history tbody");
@@ -11510,6 +11567,10 @@ ${lines}
         "bank-confirm-without": "Refund Fund - Refund to Bank Account / SOF – Confirm Offline Result - Bank Detail Unavailable"
       };
       const title = actionTitles[resolvedAction];
+      if (resolvedAction === "wallet-export" || resolvedAction === "bank-export") {
+        completeExportOperation(title);
+        return;
+      }
       closeModal("#refundFundModal");
       if (resolvedAction === "wallet-online") {
         openWalletRefundPage(title);
@@ -11558,6 +11619,10 @@ ${lines}
     document.getElementById("claimFundConfirmBtn").addEventListener("click", () => {
       const selectedAction = operationFlowState.recovery.selectedAction;
       if (!selectedAction) return;
+      if (selectedAction === "recover-user-export") {
+        completeExportOperation("Claim Fund - Claim Fund from User - Export Deduction List");
+        return;
+      }
       closeModal("#claimFundModal");
       openClaimFundPage(selectedAction === "external-refund" ? "user-confirm" : selectedAction);
     });
