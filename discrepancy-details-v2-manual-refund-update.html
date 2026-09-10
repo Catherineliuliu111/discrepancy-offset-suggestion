@@ -4035,7 +4035,8 @@
 	      min-width: 1180px !important;
 	    }
 
-    #confirmRefundResultPage .refund-bank-account-control {
+    #confirmRefundResultPage .refund-bank-account-control,
+    #confirmRefundResultPage input[aria-label="Refund Destination"] {
       width: 204px;
       min-width: 204px;
     }
@@ -10852,16 +10853,20 @@ ${lines}
         </td>
         ${options.includeRefundBankAccount ? `
         <td>
-          <select class="operation-select-control compact refund-bank-account-control" aria-label="Refund Bank Account">
+          <select class="operation-select-control compact refund-bank-account-control" aria-label="Refund Bank Account" required>
             <option value="">Select Bank Account</option>
             ${refundBankAccountOptions()}
           </select>
         </td>` : ""}
         <td>
-          <select class="operation-select-control compact" aria-label="${options.includeRefundBankAccount ? "Refund Destination" : "Refund Bank Account"}" required>
+          ${options.includeRefundBankAccount ? `
+          <input class="inline-field-input compact" type="text" aria-label="Refund Destination" placeholder="Enter refund destination" required />
+          ` : `
+          <select class="operation-select-control compact" aria-label="Refund Bank Account" required>
             <option value="">Select Bank Account</option>
             ${refundBankAccountOptions()}
           </select>
+          `}
         </td>
         <td><input class="inline-field-input compact" aria-label="Bank Account Name" placeholder="Enter account name" /></td>
         <td><input class="inline-field-input compact" aria-label="Bank Account No" placeholder="Enter account number" /></td>
@@ -11001,7 +11006,7 @@ ${lines}
       if (includeRefundBankAccount) {
         const bankAccountHeader = document.createElement("th");
         bankAccountHeader.id = "confirmRefundBankAccountHeader";
-        bankAccountHeader.textContent = "Refund Bank Account";
+        bankAccountHeader.innerHTML = '<span class="required-mark">*</span>Refund Bank Account';
         document.getElementById("confirmRefundDestinationHeader").before(bankAccountHeader);
       }
       document.getElementById("confirmRefundDestinationHeader").innerHTML = '<span class="required-mark">*</span>Refund Destination';
