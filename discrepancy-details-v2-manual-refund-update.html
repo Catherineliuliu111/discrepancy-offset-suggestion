@@ -3643,6 +3643,20 @@
       color: #137647;
     }
 
+    #supplementTransactionPage .source-payment-link {
+      padding-right: 36px;
+      font: inherit;
+    }
+
+    #supplementTransactionPage [data-required-field="Business Entity"] {
+      width: 202px;
+    }
+
+    #supplementTransactionPage .validation-field select {
+      border: 1px solid transparent;
+      padding-right: 36px;
+    }
+
     .supplement-actions {
       display: flex;
       align-items: center;
@@ -7831,7 +7845,7 @@
 	          <div class="manual-refund-shell operation-page-shell">
 	            <div class="manual-refund-top">
 	              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
-	              <button class="btn primary" id="supplementTransactionSubmitBtn" disabled>Submit</button>
+	              <button class="btn primary" id="supplementTransactionSubmitBtn">Submit</button>
 	              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
 		            </div>
 
@@ -10267,15 +10281,22 @@ ${lines}
       const message = document.getElementById("operationValidationMessage");
       banner?.classList.add("hidden");
       if (message) message.textContent = "";
-      document.querySelectorAll(".operation-page-shell.validation-banner-visible").forEach(shell => {
+      document.querySelectorAll(".operation-page-shell[data-validation-submitted]").forEach(shell => {
         shell.classList.remove("validation-banner-visible");
         delete shell.dataset.validationSubmitted;
       });
       document.querySelectorAll(".validation-field.invalid").forEach(field => field.classList.remove("invalid"));
+      document.querySelectorAll("[data-required-field][aria-invalid]").forEach(field => field.removeAttribute("aria-invalid"));
     }
 
     function operationFieldError(field) {
       const label = field.dataset.requiredField || "This field";
+      if (field.hasAttribute("data-source-payment-row")) {
+        const payment = state.supplementLinks[field.dataset.sourcePaymentRow];
+        if (!payment?.paymentId) return "Source Payment ID is required. Please link a source payment.";
+        if (!isSourcePaymentStatusAllowed(payment)) return "Source Payment status is not eligible. Select an INBOUND payment with Success status or an OUTBOUND payment with Failed status.";
+        return "";
+      }
       const value = String(field.value || "").trim();
       if (!value) return `${label} is required.`;
       if (field.hasAttribute("data-reject-others") && value.toLowerCase() === "others") {
@@ -11267,10 +11288,7 @@ ${lines}
 
     function renderSourcePaymentCell(row) {
       const linked = state.supplementLinks[row.id];
-      if (linked) {
-        return `<span class="inline-field source-payment-link linked" data-source-payment-row="${escapeHtml(row.id)}">${escapeHtml(linked.paymentId)} <span class="field-caret">↗</span></span>`;
-      }
-      return `<span class="inline-field source-payment-link" data-source-payment-row="${escapeHtml(row.id)}">Link Source Payment <span class="field-caret">＋</span></span>`;
+      return `<div class="validation-field"><button type="button" class="inline-field source-payment-link${linked ? " linked" : ""}" data-source-payment-row="${escapeHtml(row.id)}" data-required-field="Source Payment ID">${escapeHtml(linked?.paymentId || "Link Source Payment")} <span class="field-caret">${linked ? "↗" : "＋"}</span></button></div>`;
     }
 
 	    function renderLinkedSourceStatus(row) {
@@ -11281,10 +11299,12 @@ ${lines}
 	    }
 	
 	    function updateSupplementSubmitState() {
-	      const { rows } = getSupplementTransactionRows();
-		      const allLinkedAllowed = rows.length > 0 && rows.every(row => isSourcePaymentStatusAllowed(state.supplementLinks[row.id]));
 		      const submitBtn = document.getElementById("supplementTransactionSubmitBtn");
-		      if (submitBtn) submitBtn.disabled = !allLinkedAllowed;
+		      if (submitBtn) submitBtn.disabled = false;
+          const page = document.getElementById("supplementTransactionPage");
+          if (page.querySelector(".operation-page-shell").dataset.validationSubmitted) {
+            validateOperationPage(page.id);
+          }
 			      const submitHint = document.getElementById("supplementSubmitHint");
 			      if (submitHint) {
 			        submitHint.textContent = "";
@@ -11381,7 +11401,7 @@ ${lines}
 	      if (!isSourcePaymentStatusAllowed(payment) || !state.activeSourceRowId) return;
 	      linkSourcePayment(state.activeSourceRowId, payment);
 	      closeModal("#sourcePaymentModal");
-	      openSupplementTransactionPage();
+	      refreshSupplementSourcePayments();
     }
 
     function parsePaymentIds(value) {
@@ -11511,8 +11531,21 @@ ${lines}
 	        linkedCount += 1;
 	      });
       closeModal("#batchSourcePaymentModal");
-      openSupplementTransactionPage();
+      refreshSupplementSourcePayments();
       showToast(`Batch link confirmed: ${linkedCount} linked.`, "success");
+    }
+
+    function refreshSupplementSourcePayments() {
+      // Update linked cells without resetting the user's other form selections.
+      document.querySelectorAll("#supplementTransactionPage [data-source-payment-row]").forEach(button => {
+        const row = state.rows.find(item => item.id === button.dataset.sourcePaymentRow);
+        if (!row) return;
+        const linked = state.supplementLinks[row.id];
+        button.classList.toggle("linked", Boolean(linked));
+        button.innerHTML = `${escapeHtml(linked?.paymentId || "Link Source Payment")} <span class="field-caret">${linked ? "↗" : "＋"}</span>`;
+        button.closest("td").nextElementSibling.innerHTML = renderLinkedSourceStatus(row);
+      });
+      updateSupplementSubmitState();
     }
 
     function showToast(message, kind = "") {
