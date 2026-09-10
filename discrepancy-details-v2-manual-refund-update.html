@@ -4743,13 +4743,13 @@
     }
 
     #refundFundModal #refundFundConfirmBtn {
-      width: 122px;
-      height: 42px;
-      min-height: 42px;
+      width: 124px;
+      height: 44px;
+      min-height: 44px;
       justify-content: center;
       border-radius: 8px;
-      font-size: 20px;
-      font-weight: 500;
+      font-size: 16px;
+      font-weight: 700;
       box-shadow: none;
     }
 
@@ -5301,24 +5301,21 @@
       align-items: center;
     }
 
-    /* Upload File to Handle > Claim Fund follows the compact production
-       selection layout: two plain options, one row per operation. */
+    /* Upload choices share the operation-dialog selection treatment. */
     #uploadClaimFundModal .claim-options {
       display: grid;
-      gap: 0;
-      border-top: 1px solid #e5e7eb;
+      gap: 12px;
     }
 
     #uploadClaimFundModal .claim-option {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 28px;
+      grid-template-columns: minmax(0, 1fr) 24px;
       gap: 18px;
       align-items: center;
       min-height: 92px;
-      padding: 18px 0;
-      border: 0;
-      border-bottom: 1px solid #e5e7eb;
-      border-radius: 0;
+      padding: 18px;
+      border: 1px solid #d2ddea;
+      border-radius: 8px;
       background: #fff;
       cursor: pointer;
       transition: background 0.15s ease;
@@ -5326,8 +5323,8 @@
 
     #uploadClaimFundModal .claim-option:hover,
     #uploadClaimFundModal .claim-option.selected {
-      border-color: transparent;
-      background: #f7f8fa;
+      border-color: #3182ff;
+      background: #e9f3ff;
       box-shadow: none;
     }
 
@@ -5340,34 +5337,45 @@
     }
 
     #uploadClaimFundModal .claim-title {
-      display: inline;
-      margin-right: 8px;
+      display: block;
+      margin-bottom: 8px;
       color: #1f2937;
       font-size: 18px;
-      font-weight: 600;
+      font-weight: 750;
     }
 
     #uploadClaimFundModal .claim-info,
     #uploadClaimFundModal .claim-info-line {
-      display: inline;
+      display: block;
     }
 
     #uploadClaimFundModal .claim-info-line {
-      color: #1f2937;
-      font-size: 17px;
+      color: #75849b;
+      font-size: 15px;
       line-height: 1.55;
     }
 
     #uploadClaimFundModal .claim-check {
-      color: #1f2937;
-      font-size: 24px;
+      display: grid;
+      place-items: center;
+      align-self: start;
+      margin-top: 2px;
+      width: 22px;
+      height: 22px;
+      border: 2px solid #bdcadc;
+      border-radius: 50%;
+      color: transparent;
+      background: #fff;
+      font-size: 14px;
       font-weight: 700;
-      opacity: 0;
+      opacity: 1;
       text-align: center;
     }
 
     #uploadClaimFundModal .claim-option.selected .claim-check {
-      opacity: 1;
+      color: #fff;
+      background: #3182ff;
+      border-color: #3182ff;
     }
 
     #uploadConfirmedOfflineTransactionModal .modal {
@@ -6530,6 +6538,212 @@
     text-overflow: ellipsis;
     vertical-align: middle;
   }
+    /* Shared operation dialogs follow the approved reference at CSS-pixel scale. */
+    :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+        #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+        #uploadClaimFundModal, #uploadManualRefundModal).modal-backdrop.open {
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(28, 36, 48, .38);
+      backdrop-filter: none;
+    }
+    :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+        #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+        #uploadClaimFundModal, #uploadManualRefundModal) .modal {
+      width: min(1040px, 100%);
+      max-width: 1040px;
+      max-height: calc(100dvh - 48px);
+      height: auto;
+      min-height: 0;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-self: flex-start;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 20px 64px rgba(24, 39, 60, .18);
+    }
+    :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+        #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+        #uploadClaimFundModal, #uploadManualRefundModal) .modal .modal-head {
+      min-height: 72px;
+      padding: 18px 26px;
+      flex: 0 0 auto;
+      background: #fff;
+      border-bottom: 1px solid #dce3ed;
+    }
+    :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+        #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+        #uploadClaimFundModal, #uploadManualRefundModal) .modal .modal-head strong {
+      font-size: 24px !important;
+      line-height: 1.3;
+      font-weight: 750;
+      color: #222c3a;
+    }
+    :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+        #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+        #uploadClaimFundModal, #uploadManualRefundModal) .modal .modal-body {
+      padding: 22px 26px 26px;
+      background: #fbfcfe;
+      overflow: auto;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+    :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+        #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+        #uploadClaimFundModal, #uploadManualRefundModal) .modal .modal-foot {
+      min-height: 76px;
+      padding: 16px 26px;
+      flex: 0 0 auto;
+      background: #fff;
+      border-top: 1px solid #dce3ed;
+    }
+    :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+        #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+        #uploadClaimFundModal, #uploadManualRefundModal) .modal .modal-foot .btn.primary {
+      width: auto;
+      min-width: 124px;
+      height: 44px;
+      min-height: 44px;
+      padding: 0 22px;
+      border-radius: 8px;
+      background: #216be8;
+      box-shadow: none;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+        #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+        #uploadClaimFundModal, #uploadManualRefundModal) .modal .modal-head .ghost-icon {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      box-shadow: none;
+      color: #7c899c;
+      font-size: 27px;
+    }
+    .operation-dialog .modal-head .ghost-icon:hover { background: #edf3fb; }
+    .operation-dialog * { letter-spacing: 0; }
+    .operation-dialog .flow-info {
+      padding: 13px 16px;
+      gap: 12px;
+      margin-bottom: 18px;
+      background: #e9f3ff;
+      border-color: #99c5ff;
+      border-radius: 8px;
+      color: #3b5978;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .operation-dialog .flow-info-icon { width: 20px; height: 20px; flex-basis: 20px; font-size: 13px; margin-top: 2px; }
+    .operation-dialog .flow-tree,
+    .operation-dialog .flow-children { gap: 12px; }
+    .operation-dialog .flow-node { border-color: #d2ddea; box-shadow: none; }
+    .operation-dialog .flow-node.open,
+    .operation-dialog .flow-node.selected { border-color: #3182ff; background: #e9f3ff; }
+    .operation-dialog .flow-node.open > .flow-summary,
+    .operation-dialog .flow-node.selected > .flow-summary { background: transparent; }
+    .operation-dialog .flow-summary { padding: 16px 18px; }
+    .operation-dialog .flow-title-row {
+      grid-template-columns: 44px minmax(0, 1fr) 24px;
+      gap: 14px;
+      align-items: start;
+    }
+    .operation-dialog .flow-title { padding-top: 3px; font-size: 18px; line-height: 1.4; color: #242e3c; }
+    .operation-dialog .flow-icon { width: 44px; height: 44px; border-radius: 8px; background: #dceaff; color: #3182f6; }
+    .operation-dialog .flow-icon svg { width: 24px; height: 24px; }
+    .operation-dialog .flow-indicator { width: 22px; height: 22px; margin-top: 4px; font-size: 14px; border: 2px solid #bdcadc; }
+    .operation-dialog .flow-description { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: #75849b; }
+    .operation-dialog .flow-children-wrap { padding: 0 18px 18px; background: transparent; }
+    .operation-dialog .flow-children .flow-title { font-size: 17px; }
+    .operation-dialog .flow-children .flow-icon { width: 38px; height: 38px; }
+    .operation-dialog .flow-children .flow-title-row { grid-template-columns: 38px minmax(0, 1fr) 24px; }
+    .operation-dialog .flow-children .flow-description { margin-left: 0; }
+    .operation-dialog .flow-leaf-content { padding: 0 18px 16px; }
+    .operation-dialog .flow-impact-title { margin: 6px 0 10px; font-size: 15px; line-height: 1.5; color: #2b3d55; }
+    .operation-dialog .column-m-impact-list,
+    .operation-dialog #operationInfoImpactList,
+    .operation-dialog [data-fund-disposition-impact-list] {
+      padding: 10px 16px;
+      border: 1px solid #cbdff8;
+      border-left: 4px solid #3182f6;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .operation-dialog .column-m-impact-row {
+      grid-template-columns: 20px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px 0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #50627b;
+      overflow-wrap: anywhere;
+    }
+    .operation-dialog .column-m-impact-row strong { color: #2c3e56; font-weight: 750; }
+    .operation-dialog .column-m-impact-row .impact-emphasis { color: #216feb; font-weight: 750; }
+    .operation-dialog .column-m-impact-check { width: 19px; height: 19px; margin-top: 2px; font-size: 12px; }
+    .operation-dialog .fund-disposition-option { padding: 18px; }
+    .operation-dialog .fund-disposition-option.selected { background: #e9f3ff; box-shadow: none; border-color: #3182ff; }
+    .operation-dialog .fund-disposition-copy { padding: 0; border: 0; background: transparent; font-size: 15px; }
+    .operation-dialog .fund-disposition-impact { margin-left: 0; border-top: 0; }
+    .operation-dialog .flow-summary:focus-visible { outline: 2px solid #216be8; outline-offset: -4px; border-radius: 6px; }
+    .operation-dialog .claim-options { gap: 12px; }
+    .operation-dialog .claim-option { padding: 18px; border-radius: 8px; border-color: #d2ddea; box-shadow: none; }
+    .operation-dialog .claim-option.selected { background: #e9f3ff; border-color: #3182ff; }
+    .operation-dialog .claim-title { font-size: 18px; color: #242e3c; }
+    .operation-dialog .claim-info { margin-top: 8px; background: transparent; border: 0; padding: 0; font-size: 15px; line-height: 1.55; color: #75849b; }
+    .operation-dialog .refund-option { border-radius: 8px; border-color: #d2ddea; box-shadow: none; }
+    .operation-dialog .refund-option.selected { background: #e9f3ff; border-color: #3182ff; }
+    .operation-dialog .refund-option-title { font-size: 18px; }
+    .operation-dialog .refund-copy { background: transparent; border: 0; color: #75849b; font-size: 15px; line-height: 1.55; }
+    .operation-dialog .refund-mode-card,
+    .operation-dialog .bank-report-option { border-radius: 8px; box-shadow: none; }
+    .operation-dialog .refund-mode-card.selected,
+    .operation-dialog .bank-report-option.selected { background: #e9f3ff; border-color: #3182ff; }
+    .operation-dialog .refund-mode-card-title,
+    .operation-dialog .bank-report-head { font-size: 17px; }
+    .operation-dialog .refund-mode-card-copy,
+    .operation-dialog .bank-report-copy { font-size: 15px; line-height: 1.55; color: #75849b; }
+    #uploadRefundFundSection { display: grid; gap: 12px; }
+    #uploadManualRefundModal .refund-flow-badge { display: none; }
+    #uploadManualRefundModal .refund-path-option.selected { background: #e9f3ff; border-color: #3182ff; }
+    #uploadManualRefundModal .refund-option-icon { background-color: #dceaff; color: #3182f6; border-radius: 8px; }
+    #uploadManualRefundModal .refund-path-option.selected .refund-option-icon { background-color: #3182f6; color: #fff; }
+    #uploadManualRefundModal .bank-report-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    #uploadManualRefundModal .bank-report-head { color: #242e3c; font-size: 17px; }
+    #uploadManualRefundModal .bank-report-copy { padding: 0; border: 0; background: transparent; }
+    #uploadManualRefundModal .bank-detail-title::before { color: #3182f6; }
+    #uploadManualRefundModal .refund-mode-card-title { color: #242e3c; font-size: 17px; }
+    #uploadManualRefundModal .refund-mode-card-copy { font-size: 15px; line-height: 1.55; color: #75849b; }
+    @media (max-width: 760px) {
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal).modal-backdrop.open { padding: 10px; }
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal) .modal { max-height: calc(100dvh - 20px); }
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal) .modal :is(.modal-head, .modal-body, .modal-foot) { padding: 14px; }
+      .operation-dialog .modal .modal-head strong { overflow-wrap: anywhere; }
+      #uploadManualRefundModal .refund-mode-select,
+      #uploadManualRefundModal .bank-report-grid { grid-template-columns: minmax(0, 1fr); }
+      .operation-dialog .fund-disposition-copy { margin-left: 0; }
+      .operation-dialog .flow-summary { padding: 12px; }
+      .operation-dialog .flow-title { font-size: 16px; }
+      .operation-dialog .flow-children .flow-title { font-size: 16px; }
+      .operation-dialog .flow-description,
+      .operation-dialog .flow-children .flow-description { margin: 8px 0 0; padding: 0; font-size: 14px; }
+      .operation-dialog .flow-children-wrap { padding: 0 8px 8px; }
+      .operation-dialog .flow-leaf-content { padding: 0 10px 12px; }
+      .operation-dialog .column-m-impact-list { padding: 6px 10px; }
+      .operation-dialog .column-m-impact-row { font-size: 14px; }
+    }
   </style>
 </head>
 <body>
@@ -6622,8 +6836,8 @@
                     <span>Claim Fund</span>
                     <span class="info-dot tip" data-tip="Claim funds from the bank or user for selected discrepancy items.">i</span>
                   </div>
-                  <div class="dropdown-item" data-handle-title="Confirm Offline Transaction">
-                    <span>Confirm Offline Transaction</span>
+                  <div class="dropdown-item" data-handle-title="Confirm Completed Refund">
+                    <span>Confirm Completed Refund</span>
                     <span class="info-dot tip" data-tip="Confirm a completed offline refund transaction.">i</span>
                   </div>
                   <div class="dropdown-item" data-handle-title="Switch To Statement Recon">
@@ -6659,8 +6873,8 @@
                   <div class="dropdown-item" data-operation-title="Claim Fund">
                     <span>Claim Fund</span>
                   </div>
-                  <div class="dropdown-item" data-operation-title="Confirm Offline Transaction">
-                    <span>Confirm Offline Transaction</span>
+                  <div class="dropdown-item" data-operation-title="Confirm Completed Refund">
+                    <span>Confirm Completed Refund</span>
                   </div>
                   <div class="dropdown-item" data-operation-title="Confirm Fund Loss/Revenue">
                     <span>Confirm Fund Loss/Revenue</span>
@@ -7039,7 +7253,7 @@
         <section class="hidden" id="confirmedOfflineRefundPage">
           <div class="manual-refund-shell operation-page-shell">
             <div class="manual-refund-top">
-              <div class="manual-refund-title">Confirm Completed Transaction – Confirm Completed Refund</div>
+              <div class="manual-refund-title">Confirm Completed Refund</div>
               <button class="btn primary" id="cotSubmitBtn">Submit</button>
               <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
             </div>
@@ -7623,7 +7837,7 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="operationInfoModal">
+  <div class="modal-backdrop operation-dialog" id="operationInfoModal">
     <div class="modal flow-modal direct-operation-modal">
       <div class="modal-head">
         <strong id="operationInfoTitle">Operation</strong>
@@ -7681,7 +7895,7 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="refundFundModal">
+  <div class="modal-backdrop operation-dialog" id="refundFundModal">
     <div class="modal flow-modal">
       <div class="modal-head">
         <strong id="refundFundFlowTitle">Refund/Payout Fund</strong>
@@ -7697,10 +7911,10 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="confirmedOfflineRefundModal">
+  <div class="modal-backdrop operation-dialog" id="confirmedOfflineRefundModal">
     <div class="modal flow-modal">
       <div class="modal-head">
-        <strong id="confirmedOfflineRefundFlowTitle">Confirm Offline Transaction</strong>
+        <strong id="confirmedOfflineRefundFlowTitle">Confirm Completed Refund</strong>
         <button class="ghost-icon" data-close="#confirmedOfflineRefundModal">✕</button>
       </div>
       <div class="modal-body">
@@ -7713,23 +7927,14 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="uploadConfirmedOfflineTransactionModal">
+  <div class="modal-backdrop operation-dialog" id="uploadConfirmedOfflineTransactionModal">
     <div class="modal">
       <div class="modal-head">
-        <strong>Confirm Offline Transaction</strong>
+        <strong>Confirm Completed Refund</strong>
         <button class="ghost-icon" data-close="#uploadConfirmedOfflineTransactionModal" aria-label="Close">×</button>
       </div>
       <div class="modal-body">
-        <div class="upload-confirmed-options">
-          <div class="upload-confirmed-option selected" data-upload-confirmed-kind="refund">
-            <span class="upload-confirmed-icon">↩</span>
-            <span>
-              <span class="upload-confirmed-title">Confirm Completed Refund</span>
-              <span class="upload-confirmed-description">Upload the completed offline refund transaction result.</span>
-            </span>
-            <span class="upload-confirmed-check">✓</span>
-          </div>
-        </div>
+        <div class="flow-info"><span class="flow-info-icon">i</span><span>Upload the completed offline refund transaction result.</span></div>
       </div>
       <div class="modal-foot">
         <button class="btn primary" id="uploadConfirmedOfflineTransactionConfirmBtn" disabled>Confirm</button>
@@ -7747,7 +7952,7 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="claimFundModal">
+  <div class="modal-backdrop operation-dialog" id="claimFundModal">
     <div class="modal flow-modal">
       <div class="modal-head">
         <strong id="fundRecoveryFlowTitle">Claim Fund</strong>
@@ -7763,7 +7968,7 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="invalidateModal">
+  <div class="modal-backdrop operation-dialog" id="invalidateModal">
     <div class="modal flow-modal">
       <div class="modal-head">
         <strong id="invalidateFlowTitle">Invalidate</strong>
@@ -7779,7 +7984,7 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="uploadClaimFundModal">
+  <div class="modal-backdrop operation-dialog" id="uploadClaimFundModal">
     <div class="modal claim-modal">
       <div class="modal-head">
         <strong>Claim Fund</strong>
@@ -7814,7 +8019,7 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="uploadManualRefundModal">
+  <div class="modal-backdrop operation-dialog" id="uploadManualRefundModal">
     <div class="modal refund-modal">
       <div class="modal-head">
         <strong style="font-size:20px;">Refund/Payout Fund</strong>
@@ -8489,8 +8694,8 @@
 
     const demoRows = [
       // Put payout fixtures first so they are immediately visible on page 1.
-      makeDemoRow(1, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Transaction - Confirm Completed Refund", reason: "Completed offline transaction requires confirmation" }),
-      makeDemoRow(2, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Transaction - Confirm Completed Refund", reason: "Completed offline transaction requires confirmation" }),
+      makeDemoRow(1, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Refund", reason: "Completed offline transaction requires confirmation" }),
+      makeDemoRow(2, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Refund", reason: "Completed offline transaction requires confirmation" }),
       makeDemoRow(3, { type: "Less TXN", direction: "IN", handlingType: "Update to Success", sourceStatus: "Pending", reason: "Bank settlement successful; internal payment remains Pending" }),
       makeDemoRow(4, { type: "Diff TXN", direction: "IN", channelDirection: "OUT", handlingType: "On-Hold", reason: "Final accounting treatment is pending external confirmation" }),
       makeDemoRow(5, { type: "Over TXN", direction: "IN", handlingType: "Offset", reason: "Payment and refund exist internally without bank movement" }),
@@ -8514,8 +8719,8 @@
       makeDemoRow(23, { type: "Over TXN", direction: "IN", handlingType: "Claim Fund - Claim Fund from Bank - Bank Detail Available", reason: "Missing incoming settlement detail will be provided" }),
       makeDemoRow(24, { type: "Less TXN", direction: "OUT", handlingType: "Claim Fund - Claim Fund from Bank - Bank Detail Unavailable", reason: "Bank recovery confirmed without detail" }),
       makeDemoRow(25, { type: "Over TXN", direction: "IN", handlingType: "Claim Fund - Claim Fund from Bank - Bank Detail Unavailable", reason: "Missing settlement recovery confirmed without detail" }),
-      makeDemoRow(26, { type: "Less TXN", direction: "OUT", sourceStatus: "Failed", sourcePaymentId: "SPM-DEMO-26", handlingType: "Confirm Completed Transaction - Confirm Completed Refund", reason: "External refund completed; SPM Refund is Failed" }),
-      makeDemoRow(27, { type: "Less TXN", direction: "OUT", sourceStatus: "", sourcePaymentId: "", handlingType: "Confirm Completed Transaction - Confirm Completed Refund", reason: "Existing Offline Transaction requires later bank-detail matching" }),
+      makeDemoRow(26, { type: "Less TXN", direction: "OUT", sourceStatus: "Failed", sourcePaymentId: "SPM-DEMO-26", handlingType: "Confirm Completed Refund", reason: "External refund completed; SPM Refund is Failed" }),
+      makeDemoRow(27, { type: "Less TXN", direction: "OUT", sourceStatus: "", sourcePaymentId: "", handlingType: "Confirm Completed Refund", reason: "Existing Offline Transaction requires later bank-detail matching" }),
       makeDemoRow(28, { type: "Over TXN", direction: "IN", handlingType: "Claim Fund - Claim Fund from User - Export Deduction List", reason: "Offline wallet deduction requires export" }),
       makeDemoRow(29, { type: "Less TXN", direction: "OUT", handlingType: "Claim Fund - Claim Fund from User - Export Deduction List", reason: "Offline wallet deduction requires export" }),
       makeDemoRow(30, { type: "Over TXN", direction: "IN", handlingType: "Claim Fund - Claim Fund from User - Confirm Deduction Result", reason: "User deduction completed after bank recovery failed" }),
@@ -8965,7 +9170,7 @@ ${lines}
       const supplementAllowed = selectedRows.length > 0 && selectedRows.every(isSupplementTransactionEligible);
       document.querySelector('[data-handle-title="Manual Supplement"]')?.classList.toggle("disabled", !supplementAllowed);
       const confirmedOfflineTransactionAllowed = selectedRows.length > 0 && selectedRows.every(isConfirmedOfflineTransactionEligible);
-      document.querySelector('[data-handle-title="Confirm Offline Transaction"]')?.classList.toggle("disabled", !confirmedOfflineTransactionAllowed);
+      document.querySelector('[data-handle-title="Confirm Completed Refund"]')?.classList.toggle("disabled", !confirmedOfflineTransactionAllowed);
       const switchStatementReconAllowed = selectedRows.length > 0 && selectedRows.every(isSwitchStatementReconEligible);
       document.querySelector('[data-handle-title="Switch To Statement Recon"]')?.classList.toggle("disabled", !switchStatementReconAllowed);
     }
@@ -9256,15 +9461,15 @@ ${lines}
         ]
       },
       confirmed_offline_transaction_less: {
-        title: "Confirm Offline Transaction",
-        info: "Use this operation only after the offline transaction has been completed. It records the completed Offline Transaction; it does not initiate another refund through SPR.",
+        title: "Confirm Completed Refund",
+        info: "Confirm the completed external refund and create the missing Offline Transaction in SPR. No additional refund is initiated.",
         nodes: [
           { id: "confirmed-offline-refund", action: "external-refund-confirm", icon: "refund", title: "Confirm Completed Refund", desc: "Confirm the completed external refund and create the missing Offline Transaction in SPR. No additional refund is initiated.", groups: { DFR: [["Bank Incurring Amount", "Total amount unchanged; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "A new Offline Transaction is created."], ["Less TXN Detail", "Decreases after reconciliation."]] } }
         ]
       },
       confirmed_offline_transaction_over: {
-        title: "Confirm Offline Transaction",
-        info: "Use this operation only after the offline transaction has been completed. It records the completed Offline Transaction; it does not initiate another refund through SPR.",
+        title: "Confirm Completed Refund",
+        info: "Confirm the completed external refund and create the missing Offline Transaction in SPR. No additional refund is initiated.",
         nodes: [
           { id: "confirmed-offline-refund", action: "external-refund-confirm", icon: "refund", title: "Confirm Completed Refund", desc: "Confirm the completed external refund and create the missing Offline Transaction in SPR. No additional refund is initiated.", groups: { DFR: [["Bank Incurring Amount", "Total amount unchanged; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "A new Offline Transaction is created."], ["Less TXN Detail", "Decreases after reconciliation."]] } }
         ]
@@ -9662,7 +9867,7 @@ ${lines}
       const visibleChildren = (node.children || []).filter(isOperationNodeVisible);
       const impactKey = getOperationFlowImpactKey(node, flowState.scenarioKey);
       const impactHtml = isLeaf && isSelected ? operationFlowImpactHtml(node.groups, impactKey) : "";
-      return `<article class="flow-node ${isLeaf ? "leaf" : ""} ${isOpen ? "open" : ""} ${isSelected ? "selected" : ""} ${eligible ? "" : "ineligible"}" data-flow-node-id="${escapeHtml(node.id)}"><div class="flow-summary"><div class="flow-title-row"><div class="flow-icon flow-icon-${escapeHtml(node.icon)}">${operationFlowIcons[node.icon] || operationFlowIcons.confirm}</div><div class="flow-title">${escapeHtml(node.title)}</div><div class="flow-indicator">✓</div></div><div class="flow-description">${escapeHtml(node.desc)}</div></div>${impactHtml ? `<div class="flow-leaf-content">${impactHtml}</div>` : ""}${visibleChildren.length && isOpen ? `<div class="flow-children-wrap"><div class="flow-children">${visibleChildren.map(child => renderOperationFlowNode(child, flowState)).join("")}</div></div>` : ""}</article>`;
+      return `<article class="flow-node ${isLeaf ? "leaf" : ""} ${isOpen ? "open" : ""} ${isSelected ? "selected" : ""} ${eligible ? "" : "ineligible"}" data-flow-node-id="${escapeHtml(node.id)}"><div class="flow-summary" role="button" tabindex="${eligible ? "0" : "-1"}" aria-disabled="${!eligible}" ${isLeaf ? `aria-pressed="${isSelected}"` : `aria-expanded="${isOpen}"`}><div class="flow-title-row"><div class="flow-icon flow-icon-${escapeHtml(node.icon)}">${operationFlowIcons[node.icon] || operationFlowIcons.confirm}</div><div><div class="flow-title">${escapeHtml(node.title)}</div><div class="flow-description">${escapeHtml(node.desc)}</div></div><div class="flow-indicator">✓</div></div></div>${impactHtml ? `<div class="flow-leaf-content">${impactHtml}</div>` : ""}${visibleChildren.length && isOpen ? `<div class="flow-children-wrap"><div class="flow-children">${visibleChildren.map(child => renderOperationFlowNode(child, flowState)).join("")}</div></div>` : ""}</article>`;
     }
 
     function renderOperationFlow(kind) {
@@ -9680,10 +9885,22 @@ ${lines}
       const confirmButton = document.getElementById(ids.confirm);
       title.textContent = scenario.title;
       info.innerHTML = `<span class="flow-info-icon">i</span><span>${escapeHtml(scenario.info)}</span>`;
+      if (kind === "confirmed") {
+        const node = scenario.nodes[0];
+        tree.innerHTML = operationFlowImpactHtml(node.groups, getOperationFlowImpactKey(node, flowState.scenarioKey));
+        confirmButton.disabled = !isOperationNodeEligible(node);
+        return;
+      }
       tree.innerHTML = scenario.nodes.filter(isOperationNodeVisible).map(node => renderOperationFlowNode(node, flowState)).join("");
       confirmButton.disabled = !flowState.selectedAction;
 
       tree.querySelectorAll(".flow-summary").forEach(summary => {
+        summary.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            summary.click();
+          }
+        });
         summary.addEventListener("click", event => {
           event.stopPropagation();
           const article = summary.closest(".flow-node");
@@ -9714,6 +9931,10 @@ ${lines}
       flowState.openPath = [];
       flowState.selectedLeaf = "";
       flowState.selectedAction = "";
+      if (kind === "confirmed") {
+        flowState.selectedLeaf = "confirmed-offline-refund";
+        flowState.selectedAction = "external-refund-confirm";
+      }
       renderOperationFlow(kind);
     }
 
@@ -10266,7 +10487,7 @@ ${lines}
       const rows = selectedRows.length ? selectedRows : (row ? [row] : []);
       state.cotMatches ||= {};
       rows.forEach((item, index) => { if (!(item.id in state.cotMatches)) state.cotMatches[item.id] = index === 0 ? cotPaymentCandidates[0].id : ""; });
-      showOperationPage("confirmedOfflineRefundPage", "Confirm Completed Transaction - Confirm Completed Refund");
+      showOperationPage("confirmedOfflineRefundPage", "Confirm Completed Refund");
       document.getElementById("cotType").textContent = row?.type || "Less TXN";
       document.getElementById("cotCount").textContent = rows.length || 1;
       document.getElementById("cotDirection").textContent = row?.direction || "OUT";
@@ -10517,7 +10738,6 @@ ${lines}
     }
 
     function openUploadConfirmedOfflineTransactionPopup() {
-      document.querySelectorAll("[data-upload-confirmed-kind]").forEach(node => node.classList.toggle("selected", node.dataset.uploadConfirmedKind === "refund"));
       document.getElementById("uploadConfirmedOfflineTransactionConfirmBtn").disabled = false;
       openModal("#uploadConfirmedOfflineTransactionModal");
     }
@@ -11421,7 +11641,7 @@ ${lines}
           openUploadClaimFundPopup();
           return;
         }
-        if (title === "Confirm Offline Transaction") {
+        if (title === "Confirm Completed Refund") {
           openUploadConfirmedOfflineTransactionPopup();
           return;
         }
@@ -11437,10 +11657,10 @@ ${lines}
         openGeneralOperationPage("Manual Writeoff");
       } else if (title === "Invalidate") {
         openModal("#invalidateModal");
-      } else if (title === "Confirm Offline Transaction") {
+      } else if (title === "Confirm Completed Refund") {
         const selectedRows = state.rows.filter(row => state.selectedRowIds.has(row.id));
         if (requireEligibleSelection && (!selectedRows.length || !selectedRows.every(isConfirmedOfflineTransactionEligible))) {
-          showToast("Confirm Offline Transaction is available for Less OUT with Failed or blank Source Status, or Over OUT cases.", "warn");
+          showToast("Confirm Completed Refund is available for Less OUT with Failed or blank Source Status, or Over OUT cases.", "warn");
         } else {
           openModal("#confirmedOfflineRefundModal");
         }
@@ -11626,7 +11846,7 @@ ${lines}
       closeModal("#invalidateModal");
       showToast(`${title} confirmed.`, "success");
     });
-    document.getElementById("cotSubmitBtn").addEventListener("click", () => completeActiveOperation("Confirm Completed Transaction - Confirm Completed Refund"));
+    document.getElementById("cotSubmitBtn").addEventListener("click", () => completeActiveOperation("Confirm Completed Refund"));
     document.getElementById("cotSearchBtn").addEventListener("click", searchCotPayments);
     document.getElementById("cotModalClose").addEventListener("click", () => closeModal("#cotPaymentModal"));
     document.getElementById("cotCancelBtn").addEventListener("click", () => closeModal("#cotPaymentModal"));
@@ -11737,16 +11957,9 @@ ${lines}
       closeModal("#uploadClaimFundModal");
       openUploadClaimFundResultPage(selected);
     });
-    document.querySelectorAll("[data-upload-confirmed-kind]").forEach(option => {
-      option.addEventListener("click", () => {
-        document.querySelectorAll("[data-upload-confirmed-kind]").forEach(node => node.classList.remove("selected"));
-        option.classList.add("selected");
-        document.getElementById("uploadConfirmedOfflineTransactionConfirmBtn").disabled = false;
-      });
-    });
     document.getElementById("uploadConfirmedOfflineTransactionConfirmBtn").addEventListener("click", () => {
       closeModal("#uploadConfirmedOfflineTransactionModal");
-      openUploadOperationResultPage("Confirm Offline Transaction - Refund");
+      openUploadOperationResultPage("Confirm Completed Refund");
     });
     document.querySelectorAll("[data-upload-refund-path]").forEach(option => {
       option.addEventListener("click", (event) => {
