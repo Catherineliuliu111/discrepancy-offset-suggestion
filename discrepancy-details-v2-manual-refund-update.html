@@ -9189,6 +9189,28 @@ ${lines}
       return { selectedRows, row, totalAmount };
     }
 
+    function getSelectedCaseContext() {
+      const { selectedRows, row } = getSelectedRefundRows();
+      const rows = selectedRows.length ? selectedRows : (row ? [row] : []);
+      const cases = rows.map(item => ({
+        type: String(item?.type || "").trim().toLowerCase(),
+        direction: String(item?.direction || "").trim().toLowerCase()
+      }));
+      const firstCase = cases[0] || { type: "", direction: "" };
+      const isSameCase = cases.every(item => item.type === firstCase.type && item.direction === firstCase.direction);
+      return {
+        row,
+        selectedRows,
+        type: firstCase.type,
+        direction: firstCase.direction,
+        isOver: firstCase.type === "over txn",
+        isLess: firstCase.type === "less txn",
+        isIn: firstCase.direction === "in",
+        isOut: firstCase.direction === "out",
+        isSameCase
+      };
+    }
+
     const operationFlowIcons = {
       wallet: '<svg viewBox="0 0 24 24"><path d="M4 7.5h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-12a2 2 0 0 1 2-2h12"/><path d="M16 13h5"/><path d="m10 10-3 3 3 3"/><path d="M7 13h7"/></svg>',
       bank: '<svg viewBox="0 0 24 24"><path d="m3 9 9-5 9 5"/><path d="M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/></svg>',
@@ -9441,9 +9463,11 @@ ${lines}
       createSelectedPaymentOver: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: Payment Incurring Amount increases. Biz Code is updated if changed during discrepancy handling.\nDiscrepancy: Write off Over TXN Detail after discrepancy handling.",
       bankLess: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
       bankOver: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
-      createBankOver: "Statement Recon: Create a new Account Statement.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
+      createPayoutLess: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Create the offline payout transaction detail based on selected bank account and Less TXN Detail will be written off after discrepancy handling.",
+      createPayoutOver: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Reverse the original transaction detail and create new offline payout transaction detail if payout bank account changed and Over TXN Detail will be written off after discrepancy handling.",
       exportStatusOnly: "Processing Status: changes from Unprocessed to Processing.\nNext Step: confirm the refund result after offline processing is completed.",
       processingStatusOnly: "Processing Status: changes from Unprocessed to Processing.",
+      onHoldStatusOnly: "Processing Status: changes from Unprocessed to On-Hold.",
       blank: "",
       switchRecon: "Statement Recon: Create an opposite Account Statement and a new Bank Statement for reconciliation.\nDFR Incurring Amount: the Bank Incurring Amount decreases.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling."
     });
@@ -9470,14 +9494,14 @@ ${lines}
       set("confirmed_offline_transaction_over", "confirmed-offline-refund", "paymentOverIncrease");
       set("confirmed_offline_transaction_less", "payout-detail-available", "processingStatusOnly");
       set("confirmed_offline_transaction_over", "payout-detail-available", "processingStatusOnly");
-      set("confirmed_offline_transaction_less", "payout-detail-unavailable", "createBankOver");
-      set("confirmed_offline_transaction_over", "payout-detail-unavailable", "createBankOver");
+      set("confirmed_offline_transaction_less", "payout-detail-unavailable", "createPayoutLess");
+      set("confirmed_offline_transaction_over", "payout-detail-unavailable", "createPayoutOver");
 
       set("invalidate", "invalidate-channel-detail", "oppositeBankLess");
       set("invalidate", "invalidate-transaction-detail", "paymentOver");
 
-      set("recovery_less", "recover-detail", "processingStatusOnly");
-      set("recovery_over", "recover-detail", "processingStatusOnly");
+      set("recovery_less", "recover-detail", "onHoldStatusOnly");
+      set("recovery_over", "recover-detail", "onHoldStatusOnly");
       set("recovery_less", "recover-no-detail", "bankLess");
       set("recovery_over", "recover-no-detail", "bankOver");
       set("recovery_less", "recover-user-export", "processingStatusOnly");
@@ -9486,6 +9510,36 @@ ${lines}
       set("recovery_over", "recover-user-confirm", "paymentOverIncrease");
     }
     applyColumnMImpactCopy();
+
+    function getOperationFlowImpactKey(node, scenarioKey) {
+      const { isOver } = getSelectedCaseContext();
+      if (scenarioKey === "refund_less" || scenarioKey === "refund_over") {
+        if (node.id === "wallet-online" || node.id === "wallet-confirm") {
+          return isOver ? "paymentOverIncrease" : "paymentLess";
+        }
+        if (node.id === "bank-detail-available") return "processingStatusOnly";
+        if (node.id === "bank-no-detail") {
+          return isOver ? "createSelectedPaymentOver" : "bankConfirmLess";
+        }
+      }
+      if (scenarioKey === "confirmed_offline_transaction_less" || scenarioKey === "confirmed_offline_transaction_over") {
+        if (node.id === "confirmed-offline-refund") {
+          return isOver ? "paymentOverIncrease" : "paymentLess";
+        }
+        if (node.id === "payout-detail-unavailable") {
+          return isOver ? "createPayoutOver" : "createPayoutLess";
+        }
+      }
+      if (scenarioKey === "recovery_less" || scenarioKey === "recovery_over") {
+        if (node.id === "recover-no-detail") return isOver ? "bankOver" : "bankLess";
+        if (node.id === "recover-user-confirm") return isOver ? "paymentOverIncrease" : "paymentLess";
+      }
+      if (scenarioKey === "invalidate") {
+        if (node.id === "invalidate-channel-detail") return "oppositeBankLess";
+        if (node.id === "invalidate-transaction-detail") return "paymentOver";
+      }
+      return node.columnMImpactKey || "";
+    }
 
     function escapeRegExp(value) {
       return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -9540,8 +9594,8 @@ ${lines}
     function columnMImpactHtml(copy) {
       const rows = columnMImpactRowsHtml(copy);
       if (!rows) return "";
-      const isProcessingStatusOnly = copy === columnMImpactCopy.processingStatusOnly;
-      return `${isProcessingStatusOnly ? "" : '<div class="flow-impact-title">Impact on Statement Recon &amp; DFR</div>'}<div class="column-m-impact-list${isProcessingStatusOnly ? " processing-status-only" : ""}">${rows}</div>`;
+      const isStatusOnly = copy === columnMImpactCopy.processingStatusOnly || copy === columnMImpactCopy.onHoldStatusOnly;
+      return `${isStatusOnly ? "" : '<div class="flow-impact-title">Impact on Statement Recon &amp; DFR</div>'}<div class="column-m-impact-list${isStatusOnly ? " processing-status-only" : ""}">${rows}</div>`;
     }
 
     function getDirectColumnMImpactCopy(title, disposition = "") {
@@ -9554,7 +9608,7 @@ ${lines}
       const type = String(row?.type || "").trim().toLowerCase();
       const direction = String(row?.direction || "").trim().toLowerCase();
       if (disposition === "loss" && type === "over txn" && direction === "in") return columnMImpactCopy.bankOver;
-      if (disposition === "loss" && type === "less txn" && direction === "out") return columnMImpactCopy.createBankOver;
+      if (disposition === "loss" && type === "less txn" && direction === "out") return columnMImpactCopy.paymentLess;
       if (disposition === "revenue" && type === "over txn" && direction === "out") return columnMImpactCopy.blank;
       if (disposition === "revenue" && type === "less txn" && direction === "in") return columnMImpactCopy.paymentLess;
       return "";
@@ -9592,31 +9646,28 @@ ${lines}
 
     function isOperationNodeVisible(node) {
       if (state.operationEntryPoint === "upload") return true;
-      const { row } = getSelectedRefundRows();
-      const type = String(row?.type || "").trim().toLowerCase();
-      const direction = String(row?.direction || "").trim().toLowerCase();
+      const { isLess, isOver, isOut } = getSelectedCaseContext();
       if (["bank-confirm", "bank-detail-available", "bank-no-detail"].includes(node.id)) {
-        if (type === "less txn") return node.id === "bank-confirm";
-        return type === "over txn" && direction === "out";
+        if (isLess) return node.id === "bank-confirm";
+        return isOver && isOut;
       }
       // External refunds are only applicable to a bank-side Less OUT.
       if (node.id === "external-refund" || node.id === "external-refund-confirm") {
-        return type === "less txn" && direction.includes("out");
+        const { isLess: isLessTxn, isOut: isOutFund } = getSelectedCaseContext();
+        return isLessTxn && isOutFund;
       }
       return true;
     }
 
     function isOperationNodeEligible(node) {
       if (state.operationEntryPoint === "upload") return true;
-      const { row } = getSelectedRefundRows();
-      const type = String(row?.type || "").trim().toLowerCase();
-      const direction = String(row?.direction || "").trim().toLowerCase();
+      const { row, isOver, isLess, isOut } = getSelectedCaseContext();
       if (node.id === "confirmed-offline-refund") return isConfirmedOfflineRefundEligible(row);
       if (["confirmed-offline-payout", "payout-detail-available", "payout-detail-unavailable"].includes(node.id)) {
-        return type === "over txn" && direction === "out";
+        return (isOver || isLess) && isOut;
       }
-      if (node.id === "invalidate-channel-detail") return type === "less txn";
-      if (node.id === "invalidate-transaction-detail") return type === "over txn";
+      if (node.id === "invalidate-channel-detail") return isLess;
+      if (node.id === "invalidate-transaction-detail") return isOver;
       return true;
     }
 
@@ -9637,7 +9688,8 @@ ${lines}
       const eligible = isOperationNodeEligible(node);
       const isSelected = isLeaf && flowState.selectedLeaf === node.id;
       const visibleChildren = (node.children || []).filter(isOperationNodeVisible);
-      const impactHtml = isLeaf && isSelected ? operationFlowImpactHtml(node.groups, node.columnMImpactKey) : "";
+      const impactKey = getOperationFlowImpactKey(node, flowState.scenarioKey);
+      const impactHtml = isLeaf && isSelected ? operationFlowImpactHtml(node.groups, impactKey) : "";
       return `<article class="flow-node ${isLeaf ? "leaf" : ""} ${isOpen ? "open" : ""} ${isSelected ? "selected" : ""} ${eligible ? "" : "ineligible"}" data-flow-node-id="${escapeHtml(node.id)}"><div class="flow-summary"><div class="flow-title-row"><div class="flow-icon flow-icon-${escapeHtml(node.icon)}">${operationFlowIcons[node.icon] || operationFlowIcons.confirm}</div><div class="flow-title">${escapeHtml(node.title)}</div><div class="flow-indicator">✓</div></div><div class="flow-description">${escapeHtml(node.desc)}</div></div>${impactHtml ? `<div class="flow-leaf-content">${impactHtml}</div>` : ""}${visibleChildren.length && isOpen ? `<div class="flow-children-wrap"><div class="flow-children">${visibleChildren.map(child => renderOperationFlowNode(child, flowState)).join("")}</div></div>` : ""}</article>`;
     }
 
@@ -9679,14 +9731,14 @@ ${lines}
     }
 
     function prepareOperationFlow(kind) {
-      const { row } = getSelectedRefundRows();
-      const isOverTxn = String(row?.type || "").trim().toLowerCase() === "over txn";
+      const { isOver, type, direction } = getSelectedCaseContext();
       const flowState = operationFlowState[kind];
       flowState.scenarioKey = kind === "confirmed"
-        ? `confirmed_offline_transaction_${isOverTxn ? "over" : "less"}`
+        ? `confirmed_offline_transaction_${isOver ? "over" : "less"}`
         : kind === "invalidate"
           ? "invalidate"
-        : `${kind === "refund" ? "refund" : "recovery"}_${isOverTxn ? "over" : "less"}`;
+        : `${kind === "refund" ? "refund" : "recovery"}_${isOver ? "over" : "less"}`;
+      flowState.caseSignature = `${type}|${direction}`;
       flowState.openPath = [];
       flowState.selectedLeaf = "";
       flowState.selectedAction = "";
@@ -11387,6 +11439,13 @@ ${lines}
     toggleDropdown("handlingBtn", "handlingDropdown");
 
     function openOperationPopup(title, requireEligibleSelection = true) {
+      if (state.operationEntryPoint !== "upload" && requireEligibleSelection) {
+        const { selectedRows, isSameCase } = getSelectedCaseContext();
+        if (selectedRows.length > 1 && !isSameCase) {
+          showToast("Select rows with the same Discrepancy Type and Fund Direction.", "warn");
+          return;
+        }
+      }
       if (state.operationEntryPoint === "upload") {
         if (title === "Update To Success" || title === "Manual Writeoff") {
           openGeneralOperationPage(title === "Update To Success" ? "Update to Success" : "Manual Writeoff");
