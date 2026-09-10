@@ -4035,6 +4035,11 @@
 	      min-width: 1180px !important;
 	    }
 
+    #confirmRefundResultPage .refund-bank-account-control {
+      width: 204px;
+      min-width: 204px;
+    }
+
 	    .supplement-notes-grid .notes-row {
 	      grid-template-columns: 180px minmax(0, 1fr);
 	    }
@@ -10845,8 +10850,15 @@ ${lines}
             <option>Failed</option>
           </select>
         </td>
+        ${options.includeRefundBankAccount ? `
         <td>
-          <select class="operation-select-control compact" aria-label="Refund Bank Account" required>
+          <select class="operation-select-control compact refund-bank-account-control" aria-label="Refund Bank Account">
+            <option value="">Select Bank Account</option>
+            ${refundBankAccountOptions()}
+          </select>
+        </td>` : ""}
+        <td>
+          <select class="operation-select-control compact" aria-label="${options.includeRefundBankAccount ? "Refund Destination" : "Refund Bank Account"}" required>
             <option value="">Select Bank Account</option>
             ${refundBankAccountOptions()}
           </select>
@@ -10954,6 +10966,8 @@ ${lines}
       const isLessTxn = normalizedType.includes("less");
       const isRefundPayoutPath = normalizedTitle.includes("refund to wallet")
         || (normalizedTitle.includes("bank account") && normalizedTitle.includes("confirm offline result"));
+      const includeRefundBankAccount = normalizedTitle.includes("bank account")
+        && normalizedTitle.includes("confirm offline result") && !detailStatus;
       const useRefundPayoutDate = isLessTxn && isRefundPayoutPath;
       const useRefundDate = isLessTxn
         && (normalizedTitle.includes("refund to wallet") || normalizedTitle.includes("bank detail unavailable"));
@@ -10983,6 +10997,13 @@ ${lines}
       document.getElementById("confirmRefundAmount").textContent = `RM${totalAmount.toFixed(2)}`;
       document.getElementById("confirmRefundPromptText").textContent = confirmRefundPromptText;
       document.getElementById("confirmRefundStatusHeader").innerHTML = '<span class="required-mark">*</span>Refund Status';
+      document.getElementById("confirmRefundBankAccountHeader")?.remove();
+      if (includeRefundBankAccount) {
+        const bankAccountHeader = document.createElement("th");
+        bankAccountHeader.id = "confirmRefundBankAccountHeader";
+        bankAccountHeader.textContent = "Refund Bank Account";
+        document.getElementById("confirmRefundDestinationHeader").before(bankAccountHeader);
+      }
       document.getElementById("confirmRefundDestinationHeader").innerHTML = '<span class="required-mark">*</span>Refund Destination';
       document.getElementById("confirmRefundNameHeader").textContent = "Destination Name";
       document.getElementById("confirmRefundNumberHeader").textContent = "Destination No";
@@ -11005,7 +11026,7 @@ ${lines}
         const displayDateLabel = item.type === "Less TXN" && isRefundPayoutPath ? "Refund/Payout Date" : dateLabel;
         return `
         <tr>
-          ${refundOutcomeFieldsHtml({ isPayout: false })}
+          ${refundOutcomeFieldsHtml({ isPayout: false, includeRefundBankAccount })}
           <td>${escapeHtml(item.id)}</td>
           <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
           <td>${escapeHtml(item.reconId)}</td>
