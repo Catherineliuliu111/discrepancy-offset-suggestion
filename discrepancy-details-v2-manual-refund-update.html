@@ -10950,10 +10950,15 @@ ${lines}
       const displayTitle = detailStatus ? title.slice(0, -(detailStatus.length + 3)) : title;
       const isOverTxn = normalizedType.includes("over");
       const isLessTxn = normalizedType.includes("less");
+      const isRefundPayoutPath = normalizedTitle.includes("refund to wallet")
+        || (normalizedTitle.includes("bank account") && normalizedTitle.includes("confirm offline result"));
+      const useRefundPayoutDate = isLessTxn && isRefundPayoutPath;
       const useRefundDate = isLessTxn
         && (normalizedTitle.includes("refund to wallet") || normalizedTitle.includes("bank detail unavailable"));
       const useClearingDate = isOverTxn;
-      const confirmRefundPromptText = useRefundDate
+      const confirmRefundPromptText = useRefundPayoutDate
+        ? "Confirm the offline refund result. Please ensure Refund/Payout Date and Biz Code are correct."
+        : useRefundDate
         ? "Confirm the offline refund result. Please ensure Refund Date and Biz Code are correct."
         : isOverTxn
         ? "Confirm the final bank refund result and clearing date."
@@ -10979,7 +10984,9 @@ ${lines}
       document.getElementById("confirmRefundDestinationHeader").innerHTML = '<span class="required-mark">*</span>Refund Destination';
       document.getElementById("confirmRefundNameHeader").textContent = "Destination Name";
       document.getElementById("confirmRefundNumberHeader").textContent = "Destination No";
-      document.getElementById("confirmRefundDateHeader").innerHTML = useRefundDate
+      document.getElementById("confirmRefundDateHeader").innerHTML = useRefundPayoutDate
+        ? 'Refund/Payout Date <span class="table-info-icon refund-date-info" title="Refund/Payout Date is the date when the offline refund or payout occurred. When this discrepancy is resolved, the system will generate an account statement. This date will be used for comparison, with whichever is later set as the clearing/accounting date." aria-label="Refund/Payout Date information">i</span><span class="table-edit-icon">✎</span>'
+        : useRefundDate
         ? 'Refund Date <span class="table-info-icon refund-date-info" title="Refund date is the date when offline refund happened. When this discrepancy is resolved, the system will generate an account statement. The refund date will be used for comparison, with whichever is later set as the clearing/accounting date." aria-label="Refund date information">i</span><span class="table-edit-icon">✎</span>'
         : useClearingDate
         ? 'Clearing Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span>'
@@ -10993,6 +11000,7 @@ ${lines}
       const confirmRefundTableBody = document.getElementById("confirmRefundTableBody");
       confirmRefundTableBody.innerHTML = confirmRows.map(item => {
         const dateLabel = item.type === "Over TXN" ? "Clearing Date" : (normalizedTitle.includes("refund to wallet") || normalizedTitle.includes("bank detail unavailable")) ? "Refund Date" : "Transaction Date";
+        const displayDateLabel = item.type === "Less TXN" && isRefundPayoutPath ? "Refund/Payout Date" : dateLabel;
         return `
         <tr>
           ${refundOutcomeFieldsHtml({ isPayout: false })}
@@ -11000,7 +11008,7 @@ ${lines}
           <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
           <td>${escapeHtml(item.reconId)}</td>
           <td>${escapeHtml(item.source)}</td>
-          <td>${mixedTypes ? `<div>${dateLabel}</div>` : ""}<input class="inline-field-input compact" type="date" aria-label="${dateLabel}" ${dateLabel !== "Transaction Date" ? `data-required-field="${dateLabel}"` : ""} value="${currentIsoDate()}" /></td>
+          <td>${mixedTypes ? `<div>${displayDateLabel}</div>` : ""}<input class="inline-field-input compact" type="date" aria-label="${displayDateLabel}" ${dateLabel !== "Transaction Date" ? `data-required-field="${displayDateLabel}"` : ""} value="${currentIsoDate()}" /></td>
           <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
           <td><span class="inline-field compact">SHOPEE-MY <span class="field-caret">⌄</span></span></td>
           <td>${escapeHtml(item.sourceStatus || "-")}</td>
