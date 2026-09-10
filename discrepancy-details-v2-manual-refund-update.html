@@ -6257,6 +6257,10 @@
       background: #fff;
     }
 
+    .column-m-impact-list.processing-status-only {
+      margin-top: 7px;
+    }
+
     .column-m-impact-row {
       display: grid;
       grid-template-columns: 22px minmax(0, 1fr);
@@ -9439,6 +9443,7 @@ ${lines}
       bankOver: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
       createBankOver: "Statement Recon: Create a new Account Statement.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
       exportStatusOnly: "Processing Status: changes from Unprocessed to Processing.\nNext Step: confirm the refund result after offline processing is completed.",
+      processingStatusOnly: "Processing Status: changes from Unprocessed to Processing.",
       blank: "",
       switchRecon: "Statement Recon: Create an opposite Account Statement and a new Bank Statement for reconciliation.\nDFR Incurring Amount: the Bank Incurring Amount decreases.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling."
     });
@@ -9458,21 +9463,21 @@ ${lines}
       set("refund_less", "bank-export", "exportStatusOnly");
       set("refund_over", "bank-export", "exportStatusOnly");
       set("refund_less", "bank-confirm", "bankConfirmLess");
-      set("refund_over", "bank-detail-available", "onHold");
+      set("refund_over", "bank-detail-available", "processingStatusOnly");
       set("refund_over", "bank-no-detail", "createSelectedPaymentOver");
 
       set("confirmed_offline_transaction_less", "confirmed-offline-refund", "paymentLess");
       set("confirmed_offline_transaction_over", "confirmed-offline-refund", "paymentOverIncrease");
-      set("confirmed_offline_transaction_less", "payout-detail-available", "onHold");
-      set("confirmed_offline_transaction_over", "payout-detail-available", "onHold");
+      set("confirmed_offline_transaction_less", "payout-detail-available", "processingStatusOnly");
+      set("confirmed_offline_transaction_over", "payout-detail-available", "processingStatusOnly");
       set("confirmed_offline_transaction_less", "payout-detail-unavailable", "createBankOver");
       set("confirmed_offline_transaction_over", "payout-detail-unavailable", "createBankOver");
 
       set("invalidate", "invalidate-channel-detail", "oppositeBankLess");
       set("invalidate", "invalidate-transaction-detail", "paymentOver");
 
-      set("recovery_less", "recover-detail", "onHold");
-      set("recovery_over", "recover-detail", "onHold");
+      set("recovery_less", "recover-detail", "processingStatusOnly");
+      set("recovery_over", "recover-detail", "processingStatusOnly");
       set("recovery_less", "recover-no-detail", "bankLess");
       set("recovery_over", "recover-no-detail", "bankOver");
       set("recovery_less", "recover-user-export", "exportStatusOnly");
@@ -9534,7 +9539,9 @@ ${lines}
 
     function columnMImpactHtml(copy) {
       const rows = columnMImpactRowsHtml(copy);
-      return rows ? `<div class="flow-impact-title">Impact on Statement Recon &amp; DFR</div><div class="column-m-impact-list">${rows}</div>` : "";
+      if (!rows) return "";
+      const isProcessingStatusOnly = copy === columnMImpactCopy.processingStatusOnly;
+      return `${isProcessingStatusOnly ? "" : '<div class="flow-impact-title">Impact on Statement Recon &amp; DFR</div>'}<div class="column-m-impact-list${isProcessingStatusOnly ? " processing-status-only" : ""}">${rows}</div>`;
     }
 
     function getDirectColumnMImpactCopy(title, disposition = "") {
