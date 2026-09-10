@@ -6731,6 +6731,8 @@
       :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
           #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
           #uploadClaimFundModal, #uploadManualRefundModal).operation-dialog .modal {
+        width: min(720px, 100%);
+        max-width: 720px;
         max-height: calc(100dvh - 20px);
       }
       :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
