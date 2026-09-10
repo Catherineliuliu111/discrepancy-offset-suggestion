@@ -6720,6 +6720,106 @@
     #uploadManualRefundModal .bank-detail-title::before { color: #3182f6; }
     #uploadManualRefundModal .refund-mode-card-title { color: #242e3c; font-size: 17px; }
     #uploadManualRefundModal .refund-mode-card-copy { font-size: 15px; line-height: 1.55; color: #75849b; }
+    /* Compact desktop density keeps expanded operation paths in one viewport. */
+    @media (min-width: 761px) {
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal).operation-dialog.open {
+        --dialog-gap: 6px;
+        padding: 10px;
+      }
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal).operation-dialog .modal {
+        max-height: calc(100dvh - 20px);
+      }
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal).operation-dialog .modal .modal-head {
+        min-height: 46px;
+        padding: 8px 16px;
+      }
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal).operation-dialog .modal .modal-head strong {
+        font-size: 18px !important;
+      }
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal).operation-dialog .modal .modal-head .ghost-icon {
+        width: 28px; height: 28px; flex-basis: 28px; font-size: 22px;
+      }
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal).operation-dialog .modal .modal-body {
+        padding: 10px 16px;
+      }
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal).operation-dialog .modal .modal-foot {
+        min-height: 48px; padding: 7px 16px;
+      }
+      :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
+          #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
+          #uploadClaimFundModal, #uploadManualRefundModal).operation-dialog .modal .modal-foot .btn.primary,
+      #refundFundModal #refundFundConfirmBtn {
+        width: 96px; min-width: 96px; height: 32px; min-height: 32px; padding: 0 14px; font-size: 13px;
+      }
+      .operation-dialog .flow-info { padding: 7px 10px; gap: 8px; margin-bottom: 8px; font-size: 12px; line-height: 1.4; }
+      .operation-dialog .flow-info-icon { width: 16px; height: 16px; flex-basis: 16px; font-size: 11px; margin-top: 0; }
+      .operation-dialog .flow-tree,
+      .operation-dialog .flow-children { gap: var(--dialog-gap); }
+      .operation-dialog .flow-summary { padding: 6px 10px; }
+      .operation-dialog .flow-title-row,
+      .operation-dialog .flow-children .flow-title-row { grid-template-columns: 28px minmax(0, 1fr) 18px; gap: 9px; }
+      .operation-dialog .flow-title,
+      .operation-dialog .flow-children .flow-title { padding: 0; font-size: 13px; line-height: 1.4; }
+      .operation-dialog .flow-icon,
+      .operation-dialog .flow-children .flow-icon { width: 28px; height: 28px; border-radius: 6px; }
+      .operation-dialog .flow-icon svg { width: 18px; height: 18px; }
+      .operation-dialog .flow-indicator { width: 18px; height: 18px; margin-top: 1px; font-size: 11px; }
+      .operation-dialog .flow-description { margin: 2px 0 0; font-size: 12px; line-height: 1.4; }
+      .operation-dialog .flow-children-wrap { padding: 0 10px 6px; }
+      .operation-dialog .flow-leaf-content { padding: 0 10px 6px; }
+      .operation-dialog .flow-impact-title { margin: 4px 0 5px; font-size: 12px; line-height: 1.4; }
+      .operation-dialog .column-m-impact-list,
+      .operation-dialog #operationInfoImpactList,
+      .operation-dialog [data-fund-disposition-impact-list] { padding: 3px 10px; border-left-width: 3px; }
+      .operation-dialog .column-m-impact-row { grid-template-columns: 16px minmax(0, 1fr); padding: 6px 0; gap: 7px; font-size: 12px; line-height: 1.4; }
+      .operation-dialog .column-m-impact-check { width: 15px; height: 15px; margin-top: 1px; font-size: 10px; }
+      .operation-dialog .fund-disposition-warning { padding: 8px 10px; font-size: 12px; }
+      .operation-dialog .fund-disposition-options { gap: 6px; }
+      .operation-dialog .fund-disposition-option { padding: 10px; }
+      .operation-dialog .fund-disposition-option-head { font-size: 13px; gap: 9px; }
+      .operation-dialog .fund-disposition-icon { width: 28px; height: 28px; flex-basis: 28px; border-radius: 6px; }
+      .operation-dialog .fund-disposition-icon svg { width: 20px; height: 20px; }
+      .operation-dialog .fund-disposition-copy { margin: 4px 0 0 37px; font-size: 12px; line-height: 1.4; }
+      .operation-dialog .fund-disposition-impact { margin-top: 6px; padding-top: 0; }
+      #uploadClaimFundModal .claim-options,
+      #uploadRefundFundSection { gap: 6px; }
+      #uploadClaimFundModal .claim-option { min-height: 0; padding: 10px; gap: 10px; }
+      #uploadClaimFundModal .claim-title { font-size: 13px; margin-bottom: 3px; }
+      #uploadClaimFundModal .claim-info,
+      #uploadClaimFundModal .claim-info-line { font-size: 12px; margin-top: 0; line-height: 1.4; }
+      #uploadClaimFundModal .claim-check { width: 18px; height: 18px; font-size: 11px; }
+      #uploadManualRefundModal .refund-option { padding: 10px; }
+      #uploadManualRefundModal .refund-option-title { font-size: 13px; gap: 9px; }
+      #uploadManualRefundModal .refund-option-icon { width: 28px; height: 28px; flex-basis: 28px; }
+      #uploadManualRefundModal .wallet-icon::before { width: 16px; height: 12px; border-width: 1.5px; border-radius: 3px; box-shadow: inset 0 3px 0 rgba(0, 0, 0, .12); }
+      #uploadManualRefundModal .wallet-icon::after { width: 3px; height: 3px; right: 7px; bottom: 8px; }
+      #uploadManualRefundModal .bank-icon::before { top: 5px; width: 18px; height: 5px; }
+      #uploadManualRefundModal .bank-icon::after { width: 16px; height: 12px; margin-top: 6px; border-width: 2px 0; background: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px); }
+      #uploadManualRefundModal .refund-copy { padding: 0; margin-top: 6px; font-size: 12px; line-height: 1.4; }
+      #uploadManualRefundModal .refund-copy p { margin: 4px 0; }
+      #uploadManualRefundModal .refund-mode-select,
+      #uploadManualRefundModal .bank-report-grid { gap: 6px; }
+      #uploadManualRefundModal .refund-mode-card,
+      #uploadManualRefundModal .bank-report-option { padding: 8px 10px; min-height: 0; }
+      #uploadManualRefundModal .refund-mode-card-title,
+      #uploadManualRefundModal .bank-report-head { font-size: 13px; }
+      #uploadManualRefundModal .refund-mode-card-copy,
+      #uploadManualRefundModal .bank-report-copy { font-size: 12px; line-height: 1.4; margin-top: 4px; }
+    }
     @media (max-width: 760px) {
       :is(#refundFundModal, #claimFundModal, #invalidateModal, #operationInfoModal,
           #confirmedOfflineRefundModal, #uploadConfirmedOfflineTransactionModal,
