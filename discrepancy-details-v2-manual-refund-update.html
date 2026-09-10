@@ -3428,8 +3428,8 @@
     .operation-validation-banner {
       position: fixed;
       z-index: 1200;
-      top: 118px;
-      left: calc(248px + (100vw - 248px) / 2);
+      top: 16px;
+      left: 50%;
       display: flex;
       align-items: flex-start;
       gap: 11px;
@@ -3470,10 +3470,14 @@
       color: #824149;
       font-size: 13px;
       line-height: 1.45;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+      max-height: 200px;
+      overflow-y: auto;
     }
 
     .operation-page-shell.validation-banner-visible {
-      padding-top: 76px;
+      padding-top: var(--validation-offset, 120px);
     }
 
     .validation-field {
@@ -3485,8 +3489,28 @@
       width: 100%;
     }
 
+    .operation-page-shell .validation-field :is(input, select, textarea) {
+      box-sizing: border-box;
+      border: 1px solid #d8dee8;
+      padding-right: 32px;
+      min-width: 160px;
+      max-width: 100%;
+    }
+
+    .operation-page-shell .validation-field select { min-width: 204px; }
+    .operation-page-shell .validation-field .sla-input { min-width: 76px; }
+    .operation-page-shell .manual-table :is(th, td):nth-child(-n+2) {
+      position: static;
+      left: auto;
+      text-align: left;
+    }
+    .operation-upload-filename { overflow-wrap: anywhere; font-size: 13px; }
+    .operation-upload-input { display: none; }
+
     .validation-field.invalid input,
     .validation-field.invalid select,
+    .validation-field.invalid textarea,
+    .validation-field.invalid [data-upload-trigger],
     .validation-field.invalid .inline-field,
     .validation-field.invalid .operation-select-input {
       border-color: #d9363e !important;
@@ -3523,6 +3547,7 @@
 
     @media (max-width: 900px) {
       .operation-validation-banner {
+        top: 118px;
         left: 50%;
         width: calc(100vw - 32px);
       }
@@ -10276,6 +10301,240 @@ ${lines}
       return ["discrepancyInfoPage", "manualRefundPage", "walletRefundPage", "confirmRefundResultPage", "confirmedOfflineRefundPage", "bankDetailReportPage", "uploadRefundResultPage", "uploadClaimFundResultPage", "claimFundPage", "switchStatementReconPage", "manualClearDiffPage", "generalOperationPage", "supplementTransactionPage"];
     }
 
+    const operationBizCodes = ["Offline Refund", "Offline Payment", "Wallet Deduction", "Manual Supplement", "Manual Writeoff", "Fund Loss", "Fund Revenue"];
+    const alwaysRequiredOperationFields = new Set(["Biz Code", "Refund Date", "Clearing Date"]);
+
+    function operationLabel(node) {
+      const copy = node.cloneNode(true);
+      copy.querySelectorAll(".table-info-icon, .table-edit-icon, .field-caret, input, select, button").forEach(item => item.remove());
+      return copy.textContent.replace(/\*/g, "").replace(/\s*:\s*$/, "").replace(/\s+/g, " ").trim();
+    }
+
+    function prepareOperationField(container, label, required) {
+      let control = container.querySelector("input, select, textarea, [data-required-field]");
+      label = control?.dataset.requiredField || label;
+      if (!required && !control?.required && !control?.dataset.requiredField) return;
+      if (!control) {
+        const display = container.querySelector(".inline-field, .muted-input-cell") || container;
+        const value = operationLabel(display);
+        if (label === "Biz Code") {
+          control = document.createElement("select");
+          control.className = "operation-select-control compact";
+          control.add(new Option("Select Biz Code", ""));
+          const existing = [...display.querySelectorAll(".refund-tag")].map(item => item.textContent.trim());
+          const initial = existing.at(-1) || value;
+          [...new Set(["Others", ...existing, ...operationBizCodes, ...(initial && initial !== "-" ? [initial] : [])])].forEach(code => control.add(new Option(code, code)));
+          control.value = initial === "-" ? "" : initial;
+        } else {
+          control = document.createElement("input");
+          control.className = container.tagName === "TD" ? "inline-field-input compact" : "remark-input operation-wide-input";
+          control.type = /Date$/.test(label) ? "date" : label === "SLA" ? "number" : "text";
+          control.value = value === "-" ? "" : /Date$/.test(label) ? value.slice(0, 10) : value;
+          control.placeholder = `Enter ${label}`;
+        }
+        if (display === container) container.replaceChildren(control);
+        else display.replaceWith(control);
+      }
+      control.dataset.requiredField = label;
+      control.setAttribute("aria-label", label);
+      if (control.matches("input, select, textarea")) control.required = true;
+      if (label === "Biz Code") control.dataset.rejectOthers = "";
+      if (label === "SLA") { control.type = "number"; control.min = "1"; control.step = "1"; }
+      if (!control.closest(".validation-field")) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "validation-field";
+        control.before(wrapper);
+        wrapper.append(control);
+      }
+    }
+
+    function prepareOperationFields(pageId) {
+      const page = document.getElementById(pageId);
+      if (!page?.querySelector(".operation-page-shell")) return;
+      page.querySelectorAll("table").forEach(table => {
+        const headers = [...(table.tHead?.rows[0]?.cells || [])];
+        [...table.tBodies].forEach(body => [...body.rows].forEach(row => [...row.cells].forEach((cell, index) => {
+          const header = headers[index];
+          if (!header || cell.dataset.notApplicable === "true") return;
+          const label = operationLabel(header);
+          const required = alwaysRequiredOperationFields.has(label) || header.textContent.includes("*") || Boolean(cell.querySelector("[required], [data-required-field]"));
+          prepareOperationField(cell, label, required);
+        })));
+      });
+      page.querySelectorAll(".notes-row, .upload-claim-discrepancy-row, .summary-grid > div").forEach(row => {
+        const labelNode = row.querySelector(":scope > strong, :scope > label, :scope > span");
+        if (!labelNode) return;
+        const label = operationLabel(labelNode);
+        if (!label) return;
+        prepareOperationField(row, label, labelNode.textContent.includes("*") || alwaysRequiredOperationFields.has(label));
+      });
+      page.querySelectorAll("[required]").forEach(control => {
+        if (!control.dataset.requiredField) prepareOperationField(control.parentElement, control.getAttribute("aria-label") || control.placeholder || "Required field", true);
+      });
+      page.querySelectorAll(".manual-refund-top .btn.primary").forEach(button => { button.disabled = false; });
+      prepareOperationUpload(page);
+    }
+
+    const operationUploads = new Map();
+    let operationWorkbookLibrary;
+    function loadOperationWorkbookLibrary() {
+      if (window.XLSX) return Promise.resolve(window.XLSX);
+      if (!operationWorkbookLibrary) operationWorkbookLibrary = new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
+        script.onload = () => resolve(window.XLSX);
+        script.onerror = () => { operationWorkbookLibrary = null; script.remove(); reject(new Error("File parser could not load. Please try again.")); };
+        document.head.append(script);
+      });
+      return operationWorkbookLibrary;
+    }
+
+    function resetOperationUpload(pageId) {
+      operationUploads.delete(pageId);
+      const page = document.getElementById(pageId);
+      const input = page?.querySelector("[data-operation-upload]");
+      if (input) input.value = "";
+      const name = page?.querySelector(".operation-upload-filename");
+      if (name) name.textContent = "";
+    }
+
+    function uploadFieldKey(label) { return String(label).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+
+    function requiredUploadFields(title, type) {
+      const name = title.toLowerCase();
+      const base = ["Discrepancy Order ID", "Discrepancy Type"];
+      if (/manual write.?off|confirm fund (loss|revenue)/.test(name)) return base.concat(type === "Over TXN" ? ["Clearing Date", "Writeoff Reason"] : ["Transaction Date", "Biz Code", "Business Entity", "Writeoff Reason"]);
+      if (name.includes("update to success")) return base.concat("Remark");
+      if (name.includes("manual supplement")) return base.concat("Source Payment ID", "System Code", "Source Status", "Biz Code", "Business Entity", "Supplement Reason");
+      if (name.includes("statement recon")) return base.concat("Agreement Item", "Biz Code");
+      if (name.includes("clear diff")) return base.concat("Fund Direction", "Clearing Path", "Clearing Date", "Writeoff Reason");
+      if (name.includes("export") || name.includes("invalidate")) return base;
+      if (name.includes("claim fund from bank")) return base.concat("Claim Reason");
+      if (name.includes("deduction")) return base.concat("Deduct Status", "Deduct Destination", "Destination Name", "Destination No", "Reason", "Deduction Date", "Biz Code", "Deduction Reason");
+      if (name.includes("online refund") && name.includes("wallet")) return base.concat("ShopeePay User ID", "Biz Code", "Clearing Date", "Remark");
+      if (name.includes("completed refund")) return base.concat("Refund Date", "Clearing Date", "Biz Code");
+      if (name.includes("external refund")) return base.concat("Refund Status", "Refund Destination", "Refund Date", "Biz Code", "Deduction Reason");
+      if (name.includes("refund") || name.includes("payout")) {
+        if (name.includes("bank detail available")) return base.concat("Refund Status", "Refund Destination", "Clearing Date", "SLA");
+        if (type === "Less TXN" && name.includes("bank account") && name.includes("confirm offline result") && !name.includes("bank detail unavailable")) return base.concat("Refund Status", "Refund Destination", "Biz Code");
+        return base.concat("Refund Status", "Refund Destination", type === "Over TXN" ? "Clearing Date" : "Refund Date", "Biz Code");
+      }
+      return base;
+    }
+
+    function prepareOperationUpload(page) {
+      page.querySelectorAll(".upload-result-actions").forEach(actions => {
+        if (actions.dataset.validationReady) return;
+        actions.dataset.validationReady = "true";
+        const button = actions.querySelector("button");
+        button.dataset.uploadTrigger = "";
+        const wrapper = document.createElement("div");
+        wrapper.className = "validation-field";
+        button.before(wrapper);
+        wrapper.append(button);
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".csv,.xlsx,.xls";
+        input.className = "operation-upload-input";
+        input.dataset.operationUpload = "";
+        input.setAttribute("aria-label", "Upload File");
+        const filename = document.createElement("span");
+        filename.className = "operation-upload-filename";
+        actions.append(input, filename);
+        button.addEventListener("click", () => input.click());
+        input.addEventListener("change", async () => {
+          const file = input.files[0];
+          const upload = { pending: Boolean(file), records: [], error: "" };
+          operationUploads.set(page.id, upload);
+          filename.textContent = file?.name || "";
+          try {
+            if (file) {
+              if (!/\.(csv|xlsx|xls)$/i.test(file.name)) throw new Error("Upload a CSV or Excel file.");
+              const XLSX = await loadOperationWorkbookLibrary();
+              const workbook = XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: true });
+              workbook.SheetNames.forEach(sheetName => {
+                const matrix = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, raw: true, defval: "", blankrows: true });
+                if (!matrix.length) return;
+                const headers = matrix[0].map(label => String(label).trim());
+                const keys = headers.map(uploadFieldKey);
+                if (new Set(keys.filter(Boolean)).size !== keys.filter(Boolean).length) throw new Error(`Duplicate column headers in ${sheetName}.`);
+                matrix.slice(1).forEach((row, index) => {
+                  if (!row.some(value => String(value).trim())) return;
+                  const values = Object.fromEntries(keys.map((key, column) => {
+                    const value = row[column];
+                    return [key, value instanceof Date ? value.toISOString().slice(0, 10) : String(value ?? "").trim()];
+                  }));
+                  upload.records.push({ values, headers, location: `${sheetName}, row ${index + 2}` });
+                });
+              });
+              if (!upload.records.length) throw new Error("The uploaded file contains no data rows.");
+            }
+          } catch (error) { upload.error = error.message || "The uploaded file could not be read."; }
+          upload.pending = false;
+          if (operationUploads.get(page.id) === upload && page.querySelector("[data-validation-submitted]")) validateOperationPage(page.id);
+        });
+        const template = actions.querySelector(".upload-template-link");
+        if (template) {
+          template.setAttribute("role", "button");
+          template.tabIndex = 0;
+          template.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); template.click(); } });
+          template.addEventListener("click", async () => {
+            try {
+              const XLSX = await loadOperationWorkbookLibrary();
+              const title = page.querySelector(".manual-refund-title").textContent;
+              const columns = [...new Set([...requiredUploadFields(title, "Less TXN"), ...requiredUploadFields(title, "Over TXN")])];
+              const workbook = XLSX.utils.book_new();
+              XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([columns]), "Operations");
+              XLSX.writeFile(workbook, "operation-template.xlsx");
+            } catch (error) { showToast(error.message, "warn"); }
+          });
+        }
+      });
+    }
+
+    function operationUploadErrors(page) {
+      const errors = [];
+      const button = [...page.querySelectorAll("[data-upload-trigger]")].find(item => item.getClientRects().length);
+      if (!button) return errors;
+      const upload = operationUploads.get(page.id);
+      const add = message => errors.push({ field: button, message });
+      if (!upload) add("Upload File is required.");
+      else if (upload.pending) add("Upload File is still being checked. Please wait before submitting.");
+      else if (upload.error) add(upload.error);
+      else if (!upload.records.length) add("Upload File is required.");
+      else {
+        const title = page.querySelector(".manual-refund-title").textContent;
+        const formValues = Object.fromEntries([...page.querySelectorAll("[data-required-field]")].filter(field => field.getClientRects().length).map(field => [uploadFieldKey(field.dataset.requiredField), field.value]));
+        upload.records.forEach(record => {
+          const values = { ...record.values };
+          Object.entries(formValues).forEach(([key, value]) => { if (!values[key]) values[key] = value; });
+          const type = values.discrepancytype;
+          if (!["Less TXN", "Over TXN", "Diff TXN"].includes(type)) add(`${record.location}: Discrepancy Type must be Less TXN, Over TXN, or Diff TXN.`);
+          const required = new Map(requiredUploadFields(title, type).map(label => [uploadFieldKey(label), label]));
+          record.headers.forEach(label => {
+            const key = uploadFieldKey(label);
+            if (["bizcode", "refunddate", "clearingdate"].includes(key) && !required.has(key)) required.set(key, label);
+          });
+          // Empty columns for the other discrepancy type are not fields of this operation.
+          if (/manual write.?off|confirm fund (loss|revenue)/i.test(title)) {
+            (type === "Over TXN" ? ["Transaction Date", "Biz Code", "Business Entity"] : ["Clearing Date"]).forEach(label => {
+              if (!values[uploadFieldKey(label)]) required.delete(uploadFieldKey(label));
+            });
+          }
+          required.forEach(label => {
+            const value = String(values[uploadFieldKey(label)] || "").trim();
+            if (!value || value === "-") add(`${record.location}: ${label} is required.`);
+            else if (uploadFieldKey(label) === "bizcode" && /(^|[>/|])\s*others\s*($|[>/|])/i.test(value)) add(`${record.location}: Biz Code cannot be Others. Please select a specific Biz Code.`);
+            else if (/date$/i.test(label) && (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(Date.parse(value)) || new Date(value).toISOString().slice(0, 10) !== value)) add(`${record.location}: ${label} must be a valid date in YYYY-MM-DD format.`);
+          });
+          if (/manual supplement/i.test(title) && values.sourcepaymentid && !isSourcePaymentStatusAllowed({systemCode:values.systemcode,status:values.sourcestatus})) add(`${record.location}: Source Payment status is not eligible.`);
+        });
+      }
+      button.closest(".validation-field").classList.toggle("invalid", errors.length > 0);
+      button.setAttribute("aria-invalid", String(errors.length > 0));
+      return errors;
+    }
+
     function clearOperationValidation() {
       const banner = document.getElementById("operationValidationBanner");
       const message = document.getElementById("operationValidationMessage");
@@ -10286,7 +10545,7 @@ ${lines}
         delete shell.dataset.validationSubmitted;
       });
       document.querySelectorAll(".validation-field.invalid").forEach(field => field.classList.remove("invalid"));
-      document.querySelectorAll("[data-required-field][aria-invalid]").forEach(field => field.removeAttribute("aria-invalid"));
+      document.querySelectorAll(".operation-page-shell [aria-invalid]").forEach(field => field.removeAttribute("aria-invalid"));
     }
 
     function operationFieldError(field) {
@@ -10298,14 +10557,16 @@ ${lines}
         return "";
       }
       const value = String(field.value || "").trim();
-      if (!value) return `${label} is required.`;
-      if (field.hasAttribute("data-reject-others") && value.toLowerCase() === "others") {
-        return `${label} cannot be Others.`;
+      if (!value || value === "-") return `${label} is required.`;
+      if ((label === "Biz Code" || field.hasAttribute("data-reject-others")) && /(^|[>/|])\s*others\s*($|[>/|])/i.test(value)) {
+        return "Biz Code cannot be Others. Please select a specific Biz Code.";
       }
+      if (field.validity && !field.validity.valid) return `${label} is invalid. Please enter a valid value.`;
       return "";
     }
 
     function validateOperationPage(pageId, focusFirst = false) {
+      prepareOperationFields(pageId);
       const page = document.getElementById(pageId);
       if (!page) return false;
       const shell = page.querySelector(".operation-page-shell");
@@ -10321,6 +10582,7 @@ ${lines}
         field.setAttribute("aria-invalid", error ? "true" : "false");
         if (error) errors.push({ field, message: error });
       });
+      errors.push(...operationUploadErrors(page));
 
       const uniqueMessages = [...new Set(errors.map(error => error.message))];
       const banner = document.getElementById("operationValidationBanner");
@@ -10328,7 +10590,8 @@ ${lines}
       const hasErrors = uniqueMessages.length > 0;
       banner?.classList.toggle("hidden", !hasErrors);
       shell?.classList.toggle("validation-banner-visible", hasErrors);
-      if (message) message.textContent = uniqueMessages.join(" ");
+      if (message) message.textContent = uniqueMessages.join("\n");
+      if (hasErrors) shell?.style.setProperty("--validation-offset", `${banner.offsetHeight + 16}px`);
 
       if (focusFirst && errors[0]?.field?.focus) {
         errors[0].field.focus({ preventScroll: true });
@@ -10342,11 +10605,27 @@ ${lines}
       if (shell) shell.dataset.validationSubmitted = "true";
       if (!validateOperationPage(pageId, true)) return;
       clearOperationValidation();
+      if (pageId === "manualRefundPage") {
+        completeExportOperation(operationTitle);
+        closeOperationPage();
+        return;
+      }
+      const upload = operationUploads.get(pageId);
+      if (upload?.records.length && page.querySelector("[data-upload-trigger]")?.getClientRects().length) {
+        state.lastValidatedUpload = { operation: operationTitle, records: upload.records };
+        closeOperationPage();
+        showToast(`${upload.records.length} uploaded records validated for ${operationTitle}.`, "success");
+        return;
+      }
       completeActiveOperation(operationTitle);
     }
 
     function showOperationPage(pageId, title) {
       clearOperationValidation();
+      resetOperationUpload(pageId);
+      queueMicrotask(() => {
+        if (!document.getElementById(pageId)?.classList.contains("hidden")) prepareOperationFields(pageId);
+      });
       getOperationPageIds().forEach(id => {
         document.getElementById(id)?.classList.add("hidden");
       });
@@ -10505,18 +10784,18 @@ ${lines}
       document.getElementById("walletRefundDirection").textContent = row.direction || "IN";
       document.getElementById("walletRefundAmount").textContent = `RM${totalAmount.toFixed(2)}`;
       document.getElementById("walletRefundDiscrepancyType").textContent = row.type || "Less TXN";
-      document.getElementById("walletRefundTableBody").innerHTML = `
+      document.getElementById("walletRefundTableBody").innerHTML = (selectedRows.length ? selectedRows : [row]).map(item => `
         <tr>
           <td><span class="muted-input-cell"></span></td>
           <td>
             <span class="refund-tag">PG SPM 2C2P CIMB Installment 0005</span>
             <span class="refund-tag">PG SPM 2C2P CIMB Installment 0005 Gross amount</span>
           </td>
-          <td>${escapeHtml(row.agreement || "CIMB-2C2P Installmentx6-SHOPEE-PAYMENT-0005-VM")}</td>
+          <td>${escapeHtml(item.agreement || "CIMB-2C2P Installmentx6-SHOPEE-PAYMENT-0005-VM")}</td>
           <td>-</td>
           <td>${escapeHtml(currentIsoDate())}</td>
         </tr>
-      `;
+      `).join("");
     }
 
     // Prototype fallback. Production options should be populated from the
@@ -10706,21 +10985,28 @@ ${lines}
         ? 'Clearing Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span>'
         : 'Transaction Date <span class="table-info-icon">i</span><span class="table-edit-icon">✎</span>';
       const confirmRows = selectedRows.length ? selectedRows : [row];
+      const mixedTypes = new Set(confirmRows.map(item => item.type)).size > 1;
+      if (mixedTypes) {
+        document.getElementById("confirmRefundDateHeader").textContent = "Operation Date";
+        document.getElementById("confirmRefundDiscrepancyType").textContent = "Less TXN / Over TXN";
+      }
       const confirmRefundTableBody = document.getElementById("confirmRefundTableBody");
-      confirmRefundTableBody.innerHTML = confirmRows.map(item => `
+      confirmRefundTableBody.innerHTML = confirmRows.map(item => {
+        const dateLabel = item.type === "Over TXN" ? "Clearing Date" : (normalizedTitle.includes("refund to wallet") || normalizedTitle.includes("bank detail unavailable")) ? "Refund Date" : "Transaction Date";
+        return `
         <tr>
           ${refundOutcomeFieldsHtml({ isPayout: false })}
           <td>${escapeHtml(item.id)}</td>
           <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
           <td>${escapeHtml(item.reconId)}</td>
           <td>${escapeHtml(item.source)}</td>
-          <td><span class="inline-field compact">${escapeHtml(currentIsoDate())}<span class="field-caret">□</span></span></td>
+          <td>${mixedTypes ? `<div>${dateLabel}</div>` : ""}<input class="inline-field-input compact" type="date" aria-label="${dateLabel}" ${dateLabel !== "Transaction Date" ? `data-required-field="${dateLabel}"` : ""} value="${currentIsoDate()}" /></td>
           <td><span class="inline-field compact"><span class="refund-tag">Others</span></span></td>
           <td><span class="inline-field compact">SHOPEE-MY <span class="field-caret">⌄</span></span></td>
           <td>${escapeHtml(item.sourceStatus || "-")}</td>
           <td>${escapeHtml(item.amount)}</td>
         </tr>
-      `).join("");
+      `; }).join("");
     }
 
     function openBankDetailReportPage(title = "Refund/Payout to bank account – Confirm Offline Result - Bank Detail Available") {
@@ -10752,18 +11038,18 @@ ${lines}
           : "After submission, the status of selected details will change from Unprocessed to On-hold. Please upload the new bank details in time to facilitate auto-recon. SPR will create the offline refund transaction and refund account statement using the selected Bank Account.")
         : "After submission, the discrepancy will remain On-hold until the new bank detail is received and matched.";
       const bankDetailReportTableBody = document.getElementById("bankDetailReportTableBody");
-      bankDetailReportTableBody.innerHTML = `
+      bankDetailReportTableBody.innerHTML = (selectedRows.length ? selectedRows : [row]).map(item => `
         <tr>
           ${refundOutcomeFieldsHtml({ isPayout: false })}
-          <td>${escapeHtml(row.id)}</td>
-          <td>${escapeHtml(cleanReferenceId(row.referenceId))}</td>
-          <td>${escapeHtml(row.reconId)}</td>
-          <td>${escapeHtml(row.source)}</td>
-          <td><span class="green">${escapeHtml(row.direction || "IN")}</span></td>
-          <td>${escapeHtml(amountText)}</td>
-          <td>${escapeHtml(row.clearingDate || currentIsoDate())}</td>
+          <td>${escapeHtml(item.id)}</td>
+          <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
+          <td>${escapeHtml(item.reconId)}</td>
+          <td>${escapeHtml(item.source)}</td>
+          <td><span class="green">${escapeHtml(item.direction || "IN")}</span></td>
+          <td>${escapeHtml(item.amount)}</td>
+          <td>${escapeHtml(item.clearingDate || "")}</td>
         </tr>
-      `;
+      `).join("");
     }
 
     function openUploadRefundResultPage(mode = "bank-without") {
@@ -10899,7 +11185,7 @@ ${lines}
         return "Please confirm the completed wallet deduction result and ensure Deduction Date and Biz Code are correct before submission.";
       };
 
-      const claimMeta = {
+      const claimMeta = row => ({
         user: {
           title: "Confirm External Refund",
           path: "Claim Fund",
@@ -11048,8 +11334,8 @@ ${lines}
           nextStatus: "Processing",
           impact: "System will recover the case without new bank detail according to the configured reconciliation logic."
         }
-      };
-      const meta = claimMeta[action] || claimMeta.user;
+      });
+      const meta = claimMeta(row)[action] || claimMeta(row).user;
 
       showOperationPage("claimFundPage", meta.title);
       document.getElementById("claimFundPageTitle").textContent = meta.title;
@@ -11074,14 +11360,16 @@ ${lines}
       } else {
         promptWrap.classList.add("hidden");
       }
-      document.getElementById("claimFundTableHeadRow").innerHTML = (meta.tableHead || []).map(col => `<th>${col}</th>`).join("");
-      document.getElementById("claimFundTableBody").innerHTML = `
+      document.getElementById("claimFundTableHeadRow").innerHTML = (meta.tableHead || ["Discrepancy Order ID", "Reference ID", "System Code", "Amount"]).map(col => `<th>${col}</th>`).join("");
+      document.getElementById("claimFundTableBody").innerHTML = (selectedRows.length ? selectedRows : [row]).map(item => {
+        const itemMeta = claimMeta(item)[action] || claimMeta(item).user;
+        return `
         <tr>
-          ${(meta.rowCells || []).map(cell => cell && typeof cell === "object" && "html" in cell
+          ${(itemMeta.rowCells || [item.id, cleanReferenceId(item.referenceId), item.source, item.amount]).map(cell => cell && typeof cell === "object" && "html" in cell
             ? `<td>${cell.html}</td>`
             : `<td>${escapeHtml(String(cell ?? "-"))}</td>`).join("")}
         </tr>
-      `;
+      `; }).join("");
     }
 
     function openGeneralOperationPage(operationTitle, disposition = "") {
@@ -11190,10 +11478,10 @@ ${lines}
           return `
             <tr>
               ${commonCells}
-              <td>${itemIsOverTxn ? "-" : transactionDate}</td>
-              <td>${itemIsOverTxn ? clearingDate : "-"}</td>
-              <td>${itemIsOverTxn ? "-" : bizCode}</td>
-              <td>${itemIsOverTxn ? "-" : businessEntity}</td>
+              <td data-not-applicable="${itemIsOverTxn}">${itemIsOverTxn ? "-" : transactionDate}</td>
+              <td data-not-applicable="${!itemIsOverTxn}">${itemIsOverTxn ? clearingDate : "-"}</td>
+              <td data-not-applicable="${itemIsOverTxn}">${itemIsOverTxn ? "-" : bizCode}</td>
+              <td data-not-applicable="${itemIsOverTxn}">${itemIsOverTxn ? "-" : businessEntity}</td>
               <td>${writeoffReason}</td>
             </tr>
           `;
@@ -11889,19 +12177,12 @@ ${lines}
 
     document.getElementById("exportBtn").addEventListener("click", () => showToast("Export task created. File will be generated shortly.", "success"));
     document.getElementById("holdBtn").addEventListener("click", () => showToast(`Moved ${state.selectedRowIds.size} rows to hold queue`, "warn"));
-    document.getElementById("supplementTransactionSubmitBtn")?.addEventListener("click", () => submitValidatedOperation("supplementTransactionPage", "Manual Supplement"));
-    document.getElementById("generalOperationSubmitBtn")?.addEventListener("click", () => submitValidatedOperation("generalOperationPage", state.activeGeneralOperationTitle || "Discrepancy Handling Operation"));
-    document.getElementById("switchStatementReconSubmitBtn")?.addEventListener("click", () => completeActiveOperation("Switch to Statement Recon"));
-    document.getElementById("uploadRefundResultSubmitBtn")?.addEventListener("click", () => completeActiveOperation(document.getElementById("uploadRefundResultTitle")?.textContent || "Refund Operation"));
-    document.getElementById("manualClearDiffSubmitBtn")?.addEventListener("click", () => completeActiveOperation("Manual Clear Diff"));
-    document.getElementById("uploadClaimFundResultSubmitBtn")?.addEventListener("click", () => completeActiveOperation(document.getElementById("uploadClaimFundResultTitle")?.textContent || "Recover Fund Operation"));
-    document.getElementById("claimFundPageActionBtn")?.addEventListener("click", () => completeActiveOperation(document.getElementById("claimFundPageTitle")?.textContent || "Recover Fund Operation"));
     document.addEventListener("click", (event) => {
       const button = event.target.closest(".operation-page-shell .manual-refund-top .btn.primary");
-      if (!button || button.id || button.textContent.trim() !== "Submit") return;
-      const page = button.closest(".operation-page-shell");
+      if (!button || !["Submit", "Export"].includes(button.textContent.trim())) return;
+      const page = button.closest("section[id]");
       const title = page?.querySelector(".manual-refund-title")?.textContent.replace(/\s+/g, " ").trim() || "Discrepancy Handling Operation";
-      completeActiveOperation(title);
+      submitValidatedOperation(page.id, title);
     });
     document.querySelectorAll("[data-portal-tab]").forEach(tab => {
       tab.addEventListener("click", () => {
@@ -11981,7 +12262,6 @@ ${lines}
       closeModal("#invalidateModal");
       showToast(`${title} confirmed.`, "success");
     });
-    document.getElementById("cotSubmitBtn").addEventListener("click", () => completeActiveOperation("Confirm Completed Refund"));
     document.getElementById("cotSearchBtn").addEventListener("click", searchCotPayments);
     document.getElementById("cotModalClose").addEventListener("click", () => closeModal("#cotPaymentModal"));
     document.getElementById("cotCancelBtn").addEventListener("click", () => closeModal("#cotPaymentModal"));
@@ -11989,7 +12269,15 @@ ${lines}
       if (!cotPendingPaymentId || !cotActiveRowId) return;
       state.cotMatches[cotActiveRowId] = cotPendingPaymentId;
       closeModal("#cotPaymentModal");
-      renderCotList();
+      const row = state.rows.find(item => item.id === cotActiveRowId);
+      const matchButton = [...document.querySelectorAll("[data-cot-row]")].find(button => button.dataset.cotRow === cotActiveRowId);
+      if (row && matchButton) {
+        const cells = matchButton.closest("tr").cells;
+        cells[0].innerHTML = cotMatchCell(row);
+        cells[0].querySelector("[data-cot-row]").addEventListener("click", () => openCotPaymentModal(row.id));
+        cells[1].textContent = cotOriginalPayment(row);
+        cells[2].textContent = cotOriginalReference(row);
+      }
     });
     document.getElementById("claimFundConfirmBtn").addEventListener("click", () => {
       const selectedAction = operationFlowState.recovery.selectedAction;
