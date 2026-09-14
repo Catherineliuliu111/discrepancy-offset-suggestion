@@ -4335,6 +4335,10 @@
       width: 420px;
     }
 
+    .upload-claim-fund-result-page .claim-fund-bank-table {
+      min-width: 1180px !important;
+    }
+
     .upload-template-link {
       display: inline-flex;
       align-items: center;
@@ -7695,7 +7699,7 @@
               <div class="manual-refund-title">
                 <span class="operation-title-line">
                   <span id="uploadClaimFundResultTitle">Upload Claim Fund Result</span>
-                  <span class="operation-title-tag with-bank-detail hidden" id="uploadClaimFundResultTag"></span>
+                  <span class="operation-title-tag without-bank-detail hidden" id="uploadClaimFundResultTag"></span>
                 </span>
               </div>
               <button class="btn primary" id="uploadClaimFundResultSubmitBtn" disabled>Submit</button>
@@ -7720,10 +7724,55 @@
               </div>
             </div>
 
+            <div class="info-card hidden" id="uploadClaimFundResultSelectCard">
+              <div class="info-card-head">Select</div>
+              <div class="info-card-body">
+                <div class="summary-grid wide-summary-grid">
+                  <div><strong>Discrepancy Type :</strong> <span id="uploadClaimFundDiscrepancyType">Less TXN</span></div>
+                  <div><strong>Fund Direction :</strong> <span class="green" id="uploadClaimFundDirection">OUT</span></div>
+                  <div><strong>Counts :</strong> <span id="uploadClaimFundCount">1</span></div>
+                  <div><strong>Amount :</strong> <span id="uploadClaimFundAmount">RM0.00</span></div>
+                </div>
+                <div class="operation-note hidden" id="uploadClaimFundPromptWrap">
+                  <span class="operation-note-icon">i</span>
+                  <span id="uploadClaimFundPromptText"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-card hidden" id="uploadClaimFundResultSelectListCard">
+              <div class="info-card-head" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+                <span id="uploadClaimFundResultListTitle">Selects List</span>
+                <button class="btn">↔</button>
+              </div>
+              <div class="manual-table-wrap">
+                <table class="manual-table claim-fund-bank-table">
+                  <thead><tr id="uploadClaimFundResultTableHeadRow"></tr></thead>
+                  <tbody id="uploadClaimFundResultTableBody"></tbody>
+                </table>
+              </div>
+              <div class="manual-table-footer">
+                <span>‹</span>
+                <div class="pager-chip">1</div>
+                <span>›</span>
+                <select class="btn" name="uploadClaimFundResultPageSize">
+                  <option>20 / page</option>
+                </select>
+              </div>
+            </div>
+
             <div class="info-card" id="uploadClaimFundResultNotesCard">
-              <div class="info-card-head">Notes</div>
+              <div class="info-card-head" id="uploadClaimFundResultNotesTitle">Notes</div>
               <div class="info-card-body confirm-notes-grid">
-                <div class="notes-row">
+                <div class="notes-row hidden" id="uploadClaimFundSlaRow">
+                  <span><span class="required-mark">*</span> SLA :</span>
+                  <div class="sla-inline">
+                    <input class="sla-input" type="number" min="1" step="1" id="uploadClaimFundSla" value="14" required />
+                    <span>days</span>
+                    <span id="uploadClaimFundSlaDue">Bank should settle money to us before 2026-09-28 00:00.</span>
+                  </div>
+                </div>
+                <div class="notes-row" id="uploadClaimFundClaimReasonRow">
                   <span><span class="required-mark">*</span> Claim Reason :</span>
                   <select class="operation-select-control operation-note-select">
                     <option value="">Select claim reason</option>
@@ -7733,7 +7782,7 @@
                 </div>
                 <div class="notes-row">
                   <span>Remark :</span>
-                  <input class="remark-input operation-wide-input" id="uploadClaimFundResultRemark" />
+                  <input class="remark-input operation-wide-input" id="uploadClaimFundResultRemark" name="uploadClaimFundResultRemark" />
                 </div>
               </div>
             </div>
@@ -11316,23 +11365,94 @@ ${lines}
     }
 
     function openUploadClaimFundResultPage(kind = "user") {
-      const title = kind === "bank"
-        ? "Claim Fund From Bank"
-        : "Upload Confirm External Refund Result";
+      const isBankClaim = kind === "bank";
+      const { selectedRows, row, totalAmount } = getSelectedRefundRows();
+      const rows = selectedRows.length ? selectedRows : (row ? [row] : []);
+      const claimRow = rows[0] || row || {};
+      const isOverTxn = String(claimRow.type || "").trim().toLowerCase() === "over txn";
 
-      showOperationPage("uploadClaimFundResultPage", title);
-      document.getElementById("uploadClaimFundResultTitle").textContent = title;
+      showOperationPage("uploadClaimFundResultPage", isBankClaim ? "Claim Fund From Bank" : "Upload Confirm External Refund Result");
+      document.getElementById("uploadClaimFundResultTitle").textContent = isBankClaim ? "Claim Fund From Bank" : "Upload Confirm External Refund Result";
       const tag = document.getElementById("uploadClaimFundResultTag");
       if (tag) {
-        tag.textContent = kind === "bank" ? "Bank Not Provide New Detail Report" : "";
-        tag.classList.toggle("hidden", kind !== "bank");
+        tag.textContent = isBankClaim ? "Bank Not Provide New Detail Report" : "";
+        tag.classList.toggle("hidden", !isBankClaim);
+        tag.classList.toggle("without-bank-detail", isBankClaim);
+        tag.classList.toggle("with-bank-detail", false);
       }
-      document.getElementById("uploadClaimFundDiscrepancyRow")?.classList.toggle("hidden", kind !== "bank");
-      document.getElementById("uploadClaimFundResultNotesCard")?.classList.toggle("hidden", kind !== "bank");
-      document.getElementById("uploadClaimFundResultActions")?.classList.toggle("hidden", kind === "bank");
-      const remark = document.getElementById("uploadClaimFundResultRemark");
-      if (remark) remark.value = kind === "bank" ? "Claim Fund From Bank-Bank Not Provide New Bank detail" : "";
-      document.getElementById("uploadClaimFundResultSubmitBtn").disabled = true;
+
+      const uploadCard = document.getElementById("uploadClaimFundResultUploadCard");
+      uploadCard?.classList.toggle("hidden", isBankClaim);
+      document.getElementById("uploadClaimFundResultSelectCard")?.classList.toggle("hidden", !isBankClaim);
+      document.getElementById("uploadClaimFundResultSelectListCard")?.classList.toggle("hidden", !isBankClaim);
+      document.getElementById("uploadClaimFundResultNotesCard")?.classList.remove("hidden");
+      document.getElementById("uploadClaimFundResultNotesTitle").textContent = isBankClaim ? "Note" : "Notes";
+      document.getElementById("uploadClaimFundResultActions")?.classList.toggle("hidden", isBankClaim);
+      document.getElementById("uploadClaimFundDiscrepancyRow")?.classList.toggle("hidden", isBankClaim);
+      document.getElementById("uploadClaimFundClaimReasonRow")?.classList.toggle("hidden", isBankClaim);
+      document.getElementById("uploadClaimFundSlaRow")?.classList.toggle("hidden", !isBankClaim);
+
+      if (isBankClaim) {
+        const direction = claimRow.direction || (isOverTxn ? "IN" : "OUT");
+        document.getElementById("uploadClaimFundDiscrepancyType").textContent = claimRow.type || (isOverTxn ? "Over TXN" : "Less TXN");
+        document.getElementById("uploadClaimFundDirection").textContent = direction;
+        document.getElementById("uploadClaimFundDirection").classList.toggle("fund-direction-out", String(direction).toUpperCase() === "OUT");
+        document.getElementById("uploadClaimFundDirection").classList.toggle("green", String(direction).toUpperCase() !== "OUT");
+        document.getElementById("uploadClaimFundCount").textContent = rows.length || 1;
+        document.getElementById("uploadClaimFundAmount").textContent = selectedAmountText(selectedRows, claimRow, totalAmount);
+
+        const prompt = isOverTxn
+          ? "Please double confirm with the Clearing Date. SPR system will auto generate account statement based on this clearing date and will affect the payment incurring and Over TXN write-off date in DFR."
+          : "Please double confirm Claim Date and Biz Code is correct. After complete claim fund from bank operation, SPR will create transaction detail with this Claim Date and Biz Code, and it would affect payment incurring and Less TXN write-off date in DFR.";
+        document.getElementById("uploadClaimFundPromptText").textContent = prompt;
+        document.getElementById("uploadClaimFundPromptWrap")?.classList.remove("hidden");
+        document.getElementById("uploadClaimFundResultListTitle").textContent = "Selects List";
+
+        const dateLabel = isOverTxn ? "Clearing Date" : "Claim Date";
+        const dateTooltip = isOverTxn ? "" : ' title="Claim Date is the date when the claim fund from bank operation occurred. When this discrepancy is resolved, the system will generate an account statement. This date will be used for comparison, with whichever is later set as the clearing/accounting date." aria-label="Claim Date information"';
+        const headers = isOverTxn
+          ? ["Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Transaction Fund Direction", "Transaction Amount", dateLabel]
+          : ["Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Channel Fund Direction", "Channel Amount", dateLabel];
+        document.getElementById("uploadClaimFundResultTableHeadRow").innerHTML = headers.map((header, index) => {
+          if (index === headers.length - 1) return `<th>${header} <span class="table-info-icon"${dateTooltip}>i</span><span class="table-edit-icon">✎</span></th>`;
+          return `<th>${header}</th>`;
+        }).join("");
+        document.getElementById("uploadClaimFundResultTableBody").innerHTML = rows.map(item => {
+          const itemIsOverTxn = String(item.type || "").trim().toLowerCase() === "over txn";
+          const itemDateLabel = itemIsOverTxn ? "Clearing Date" : "Claim Date";
+          const itemDirection = itemIsOverTxn ? (item.direction || "IN") : (item.channelDirection || item.direction || "OUT");
+          const itemAmount = itemIsOverTxn ? (item.amount || "-") : (item.channelAmount || item.amount || "-");
+          const itemTooltip = itemIsOverTxn ? "" : dateTooltip;
+          return `<tr>
+            <td>${escapeHtml(item.id)}</td>
+            <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
+            <td>${escapeHtml(item.reconId || "-")}</td>
+            <td>${escapeHtml(item.source || "-")}</td>
+            <td class="${String(itemDirection).toUpperCase() === "OUT" ? "fund-direction-out" : "green"}">${escapeHtml(itemDirection)}</td>
+            <td>${escapeHtml(itemAmount)}</td>
+            <td><input class="inline-field-input compact" type="date" aria-label="${itemDateLabel}" data-required-field="${itemDateLabel}" value="${escapeHtml(currentIsoDate())}" /><span class="table-info-icon hidden"${itemTooltip}>i</span></td>
+          </tr>`;
+        }).join("");
+
+        const sla = document.getElementById("uploadClaimFundSla");
+        const slaDue = document.getElementById("uploadClaimFundSlaDue");
+        const updateSlaDue = () => {
+          const days = Math.max(1, Number(sla?.value) || 14);
+          if (slaDue) slaDue.textContent = `Bank should settle money to us before ${datePlusDaysAtMidnight(days)}.`;
+        };
+        if (sla && !sla.dataset.dueBound) {
+          sla.dataset.dueBound = "true";
+          sla.addEventListener("input", updateSlaDue);
+        }
+        updateSlaDue();
+      } else {
+        document.getElementById("uploadClaimFundPromptWrap")?.classList.add("hidden");
+        document.getElementById("uploadClaimFundResultRemark").value = "";
+      }
+      document.getElementById("uploadClaimFundResultSubmitBtn").disabled = !isBankClaim;
+      queueMicrotask(() => {
+        document.getElementById("uploadClaimFundResultSubmitBtn").disabled = !isBankClaim;
+      });
     }
 
     function openClaimFundPage(action) {
