@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>Confirm Offline Refund Warning — UI Options</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #1f2a3a;
+      --muted: #6d7b90;
+      --line: #dce5f0;
+      --blue: #1677ff;
+      --blue-soft: #edf6ff;
+      --amber: #c97a14;
+      --amber-soft: #fff7e8;
+      --green: #13875d;
+      --green-soft: #edf9f3;
+      --shadow: 0 18px 42px rgba(23, 48, 83, .14);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    .page { width: min(1240px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 52px; }
+    .intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+    .eyebrow { color: var(--blue); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 5px 0 0; font-size: 27px; line-height: 1.2; letter-spacing: -.02em; }
+    .intro p { max-width: 700px; margin: 8px 0 0; color: var(--muted); }
+    .locked { flex: 0 0 auto; padding: 7px 10px; border: 1px solid #c9dcf5; border-radius: 6px; background: var(--blue-soft); color: #1764c8; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+    .option { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 0 8px 24px rgba(27, 54, 92, .05); }
+    .option.selected { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(22, 119, 255, .14), 0 12px 28px rgba(22, 119, 255, .12); }
+    .option-head { min-height: 96px; padding: 15px 16px 13px; border-bottom: 1px solid var(--line); background: linear-gradient(135deg, #fbfdff, #f5f8fc); }
+    .option-head-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .option-code { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 6px; background: #e6f1ff; color: var(--blue); font-size: 12px; font-weight: 800; }
+    .option h2 { margin: 0; font-size: 15px; line-height: 1.25; }
+    .option-head p { min-height: 34px; margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .preview { position: relative; min-height: 400px; padding: 18px 14px 20px; background: #eef2f7; }
+    .app-shell { position: relative; min-height: 360px; overflow: hidden; border: 1px solid #d9e2ed; border-radius: 8px; background: #f9fbfd; }
+    .app-top { display: flex; align-items: center; justify-content: space-between; min-height: 46px; padding: 0 12px; border-bottom: 1px solid #e4ebf3; background: #fff; }
+    .app-title { font-size: 11px; font-weight: 700; }
+    .app-submit { padding: 6px 10px; border: 0; border-radius: 5px; background: var(--blue); color: #fff; font-size: 10px; font-weight: 700; }
+    .fake-content { display: grid; gap: 9px; padding: 13px; opacity: .72; }
+    .fake-card { padding: 11px; border: 1px solid #e1e8f1; border-radius: 6px; background: #fff; }
+    .fake-card strong { display: block; margin-bottom: 9px; font-size: 10px; }
+    .fake-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .fake-field { height: 28px; border: 1px solid #e8edf3; border-radius: 4px; background: #f7f9fc; }
+    .fake-table { height: 116px; border: 1px solid #e3eaf3; border-radius: 6px; background: linear-gradient(#f4f7fb 25px, transparent 25px), repeating-linear-gradient(to bottom, #fff 0 32px, #edf1f6 32px 33px); }
+    .scrim { position: absolute; inset: 0; background: rgba(25, 37, 54, .34); }
+    .dialog { position: absolute; top: 50%; left: 50%; width: calc(100% - 28px); transform: translate(-50%, -50%); border: 1px solid #dfe7f0; border-radius: 9px; background: #fff; box-shadow: var(--shadow); }
+    .dialog-title { font-size: 14px; font-weight: 750; line-height: 1.25; }
+    .dialog-copy { color: #536276; font-size: 12px; line-height: 1.55; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 7px; }
+    .dialog-actions button { min-height: 30px; padding: 0 10px; border-radius: 5px; font: 650 11px inherit; cursor: pointer; }
+    .cancel { border: 1px solid #d6e0eb; background: #fff; color: #536276; }
+    .confirm { border: 1px solid var(--blue); background: var(--blue); color: #fff; }
+    .info-icon, .warning-icon, .check-icon { display: grid; place-items: center; flex: 0 0 auto; font-style: normal; font-weight: 800; }
+    .info-icon { width: 25px; height: 25px; border-radius: 50%; background: var(--blue-soft); color: var(--blue); font-size: 14px; }
+    .warning-icon { width: 28px; height: 28px; border-radius: 7px; background: var(--amber-soft); color: var(--amber); font-size: 16px; }
+    .check-icon { width: 22px; height: 22px; border-radius: 50%; background: var(--green-soft); color: var(--green); font-size: 12px; }
+    .option-a .dialog-head { display: flex; align-items: flex-start; gap: 10px; padding: 16px 16px 11px; }
+    .option-a .dialog-copy { padding: 0 16px 14px 51px; }
+    .option-a .dialog-actions { padding: 11px 16px 15px; border-top: 1px solid #edf1f5; }
+    .option-b .dialog { border-top: 3px solid var(--amber); }
+    .option-b .dialog-head { display: flex; align-items: flex-start; gap: 10px; padding: 14px 16px 10px; }
+    .option-b .dialog-title { padding-top: 2px; }
+    .option-b .dialog-copy { margin: 0 16px 14px; padding: 11px 12px; border: 1px solid #f2ddb6; border-radius: 6px; background: var(--amber-soft); color: #6b4a1b; }
+    .option-b .dialog-actions { padding: 11px 16px 15px; background: #fbfcfe; }
+    .option-c .dialog { padding: 17px 16px 15px; }
+    .option-c .dialog-head { display: flex; align-items: center; gap: 9px; margin-bottom: 13px; }
+    .option-c .dialog-title { flex: 1; }
+    .progress { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 13px; }
+    .progress-step { display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 5px; background: #f3f6fa; color: #7a8799; font-size: 10px; font-weight: 650; }
+    .progress-step.active { background: var(--blue-soft); color: #1764c8; }
+    .option-c .dialog-copy { margin-bottom: 12px; }
+    .acknowledge { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 15px; padding: 9px 10px; border: 1px solid #cfe9dc; border-radius: 6px; background: var(--green-soft); color: #326d55; font-size: 11px; line-height: 1.4; }
+    .option-c .dialog-actions { justify-content: stretch; }
+    .option-c .dialog-actions button { flex: 1; }
+    .choice-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line); background: #fbfcfe; }
+    .choice-note { color: var(--muted); font-size: 11px; }
+    .choose { min-height: 31px; padding: 0 11px; border: 1px solid #a9c9f1; border-radius: 5px; background: #fff; color: #1764c8; font: 700 11px inherit; cursor: pointer; }
+    .choose[aria-pressed="true"] { border-color: var(--blue); background: var(--blue); color: #fff; }
+    .selection { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 49px; margin-top: 16px; padding: 11px 14px; border: 1px solid #cfe0f5; border-radius: 7px; background: #f3f8ff; color: #37628e; font-size: 12px; }
+    .selection strong { color: #1c4f87; }
+    @media (max-width: 980px) { .options { grid-template-columns: 1fr; } .preview { min-height: 370px; } .app-shell { max-width: 560px; margin: 0 auto; } }
+    @media (max-width: 560px) { .page { width: calc(100% - 24px); padding-top: 24px; } .intro { display: block; } .locked { display: inline-block; margin-top: 12px; } .dialog-copy { font-size: 11px; } }
+  </style>
+</head>
+<body>
+  <main class="page" id="warning-options">
+    <header class="intro">
+      <div>
+        <div class="eyebrow">Confirm Completed Refund</div>
+        <h1>Choose a warning treatment</h1>
+        <p>Three visual directions for the confirmation warning shown before the user submits a completed offline refund.</p>
+      </div>
+      <div class="locked">Copy locked · visual comparison only</div>
+    </header>
+
+    <section class="options" aria-label="Warning dialog design options">
+      <article class="option option-a" data-option="A">
+        <header class="option-head">
+          <div class="option-head-row"><span class="option-code">A</span><h2>Clean information alert</h2></div>
+          <p>Calm and familiar. The blue information icon keeps the warning clear without making it feel like an error.</p>
+        </header>
+        <div class="preview">
+          <div class="app-shell">
+            <div class="app-top"><span class="app-title">Confirm Offline Result</span><button class="app-submit">Submit</button></div>
+            <div class="fake-content"><div class="fake-card"><strong>Select List</strong><div class="fake-grid"><div class="fake-field"></div><div class="fake-field"></div><div class="fake-field"></div><div class="fake-field"></div></div></div><div class="fake-card"><strong>Notes</strong><div class="fake-table"></div></div></div>
+            <div class="scrim"></div>
+            <section class="dialog" role="dialog" aria-label="Option A warning preview">
+              <div class="dialog-head"><i class="info-icon" aria-hidden="true">i</i><div class="dialog-title">Confirm Offline Refund Result First</div></div>
+              <div class="dialog-copy">Please confirm the Offline Refund result before proceeding with Confirm Completed Refund. If you are not sure about the refund result yet, please confirm the result first.</div>
+              <div class="dialog-actions"><button class="cancel">Cancel</button><button class="confirm">Confirm</button></div>
+            </section>
+          </div>
+        </div>
+        <footer class="choice-bar"><span class="choice-note">Compact, low-friction</span><button class="choose" type="button" aria-pressed="false">Choose A</button></footer>
+      </article>
+
+      <article class="option option-b" data-option="B">
+        <header class="option-head">
+          <div class="option-head-row"><span class="option-code">B</span><h2>Action-required warning</h2></div>
+          <p>Stronger attention hierarchy. The amber treatment signals a prerequisite without looking like a system failure.</p>
+        </header>
+        <div class="preview">
+          <div class="app-shell">
+            <div class="app-top"><span class="app-title">Confirm Offline Result</span><button class="app-submit">Submit</button></div>
+            <div class="fake-content"><div class="fake-card"><strong>Select List</strong><div class="fake-grid"><div class="fake-field"></div><div class="fake-field"></div><div class="fake-field"></div><div class="fake-field"></div></div></div><div class="fake-card"><strong>Notes</strong><div class="fake-table"></div></div></div>
+            <div class="scrim"></div>
+            <section class="dialog" role="dialog" aria-label="Option B warning preview">
+              <div class="dialog-head"><i class="warning-icon" aria-hidden="true">!</i><div class="dialog-title">Confirm Offline Refund Result First</div></div>
+              <div class="dialog-copy">Please confirm the Offline Refund result before proceeding with Confirm Completed Refund. If you are not sure about the refund result yet, please confirm the result first.</div>
+              <div class="dialog-actions"><button class="cancel">Cancel</button><button class="confirm">Confirm</button></div>
+            </section>
+          </div>
+        </div>
+        <footer class="choice-bar"><span class="choice-note">Highest visibility</span><button class="choose" type="button" aria-pressed="false">Choose B</button></footer>
+      </article>
+
+      <article class="option option-c" data-option="C">
+        <header class="option-head">
+          <div class="option-head-row"><span class="option-code">C</span><h2>Guided acknowledgement</h2></div>
+          <p>Explains where the user is in the flow. The acknowledgement row makes the required confirmation feel explicit.</p>
+        </header>
+        <div class="preview">
+          <div class="app-shell">
+            <div class="app-top"><span class="app-title">Confirm Offline Result</span><button class="app-submit">Submit</button></div>
+            <div class="fake-content"><div class="fake-card"><strong>Select List</strong><div class="fake-grid"><div class="fake-field"></div><div class="fake-field"></div><div class="fake-field"></div><div class="fake-field"></div></div></div><div class="fake-card"><strong>Notes</strong><div class="fake-table"></div></div></div>
+            <div class="scrim"></div>
+            <section class="dialog" role="dialog" aria-label="Option C warning preview">
+              <div class="dialog-head"><i class="check-icon" aria-hidden="true">✓</i><div class="dialog-title">Confirm Offline Refund Result First</div></div>
+              <div class="progress"><div class="progress-step active">1&nbsp; Offline Refund result</div><div class="progress-step">2&nbsp; Confirm Completed Refund</div></div>
+              <div class="dialog-copy">Please confirm the Offline Refund result before proceeding with Confirm Completed Refund. If you are not sure about the refund result yet, please confirm the result first.</div>
+              <div class="acknowledge"><i class="check-icon" aria-hidden="true">✓</i><span>The Offline Refund result must be confirmed before continuing.</span></div>
+              <div class="dialog-actions"><button class="cancel">Cancel</button><button class="confirm">Confirm</button></div>
+            </section>
+          </div>
+        </div>
+        <footer class="choice-bar"><span class="choice-note">Best for guided flow</span><button class="choose" type="button" aria-pressed="false">Choose C</button></footer>
+      </article>
+    </section>
+
+    <div class="selection" id="selection" aria-live="polite"><span>Select a direction to mark your preferred design.</span><strong id="selectionValue">No option selected</strong></div>
+  </main>
+  <script>
+    document.querySelectorAll('.choose').forEach(button => button.addEventListener('click', () => {
+      const option = button.closest('[data-option]');
+      const code = option.dataset.option;
+      document.querySelectorAll('.option').forEach(item => item.classList.toggle('selected', item === option));
+      document.querySelectorAll('.choose').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      document.getElementById('selectionValue').textContent = `Option ${code} selected`;
+    }));
+  </script>
+</body>
+</html>

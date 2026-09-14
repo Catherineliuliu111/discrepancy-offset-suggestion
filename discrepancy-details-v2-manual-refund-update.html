@@ -3329,7 +3329,7 @@
       width: 190px;
     }
 
-    #generalOperationPage [data-required-field="Writeoff Reason"] {
+    #generalOperationPage .manual-table [data-required-field="Writeoff Reason"] {
       width: 210px;
     }
 
@@ -6252,6 +6252,35 @@
       padding: 0 10px 10px;
     }
 
+    .flow-status-callout {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      padding: 12px 14px;
+      border-left: 4px solid #2f80ed;
+      background: #fff;
+      color: #26384f;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .flow-status-callout-label {
+      flex: 0 0 auto;
+      padding: 5px 9px;
+      border-radius: 6px;
+      color: #1e62b7;
+      background: #d8eaff;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .flow-status-callout strong {
+      color: #26384f;
+      font-weight: 800;
+    }
+
     .flow-impact-title {
       margin: 7px 0 5px;
       color: #292e37;
@@ -6897,6 +6926,70 @@
       .operation-dialog .column-m-impact-list { padding: 6px 10px; }
       .operation-dialog .column-m-impact-row { font-size: 14px; }
     }
+
+    /* Confirm Completed Refund precondition warning — selected Option B treatment. */
+    #confirmedOfflineRefundPreconditionModal .modal {
+      width: min(440px, calc(100vw - 32px));
+      border-top: 3px solid #cf7b16;
+      border-radius: 8px;
+    }
+    #confirmedOfflineRefundPreconditionModal .modal-head {
+      min-height: 0;
+      padding: 14px 16px 10px;
+      align-items: flex-start;
+    }
+    #confirmedOfflineRefundPreconditionModal .precondition-title-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+    }
+    #confirmedOfflineRefundPreconditionModal .precondition-warning-icon {
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      display: grid;
+      place-items: center;
+      margin-top: 1px;
+      border-radius: 7px;
+      background: #fff7e8;
+      color: #c97a14;
+      font-size: 16px;
+      font-weight: 800;
+    }
+    #confirmedOfflineRefundPreconditionModal .modal-head strong {
+      padding-top: 3px;
+      font-size: 15px !important;
+      line-height: 1.35;
+    }
+    #confirmedOfflineRefundPreconditionModal .modal-body {
+      padding: 0 16px 14px;
+      background: #fff;
+    }
+    #confirmedOfflineRefundPreconditionModal .flow-info {
+      display: block;
+      margin: 0;
+      padding: 11px 12px;
+      border: 1px solid #f2ddb6;
+      border-radius: 6px;
+      background: #fff7e8;
+      color: #6b4a1b;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    #confirmedOfflineRefundPreconditionModal .flow-info-icon { display: none; }
+    #confirmedOfflineRefundPreconditionModal .modal-foot {
+      min-height: 0;
+      padding: 11px 16px 14px;
+      background: #fbfcfe;
+    }
+    #confirmedOfflineRefundPreconditionModal .modal-foot .btn {
+      min-height: 32px;
+      padding: 0 14px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    #confirmedOfflineRefundPreconditionModal .modal-foot .btn.primary { min-width: 170px; }
   </style>
 </head>
 <body>
@@ -8128,18 +8221,18 @@
   <div class="modal-backdrop operation-dialog" id="confirmedOfflineRefundPreconditionModal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmedOfflineRefundPreconditionTitle">
       <div class="modal-head">
-        <strong id="confirmedOfflineRefundPreconditionTitle">Confirm Offline Refund Result First</strong>
+        <div class="precondition-title-row">
+          <span class="precondition-warning-icon" aria-hidden="true">!</span>
+          <strong id="confirmedOfflineRefundPreconditionTitle">Confirm Offline Refund Result First</strong>
+        </div>
         <button class="ghost-icon" data-close="#confirmedOfflineRefundPreconditionModal" aria-label="Close">✕</button>
       </div>
       <div class="modal-body">
-        <div class="flow-info">
-          <span class="flow-info-icon">i</span>
-          <span>Please confirm the Offline Refund result before proceeding with Confirm Completed Refund. If you are not sure about the refund result yet, please confirm the result first.</span>
-        </div>
+        <div class="flow-info">Please confirm the Offline Refund result before proceeding with Confirm Completed Refund. If you are not sure about the refund result yet, please confirm the result first.</div>
       </div>
       <div class="modal-foot">
         <button class="btn" data-close="#confirmedOfflineRefundPreconditionModal">Cancel</button>
-        <button class="btn primary" id="confirmedOfflineRefundPreconditionConfirmBtn">I Have Confirmed the Result</button>
+        <button class="btn primary" id="confirmedOfflineRefundPreconditionConfirmBtn">Confirm</button>
       </div>
     </div>
   </div>
@@ -9868,15 +9961,17 @@ ${lines}
       oppositeBankLess: "Statement Recon: Create an Account Statement with the opposite amount.\nDFR Incurring Amount: the Bank Incurring Amount decreases.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
       paymentOver: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Payment Incurring Amount decreases.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
       paymentOverIncrease: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Payment Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
-      bankConfirmLess: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: Account Statement already exists.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
-      createSelectedPaymentOver: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: Payment Incurring Amount increases. Biz Code is updated if changed during discrepancy handling.\nDiscrepancy: Write off Over TXN Detail after discrepancy handling.",
+      bankConfirmLess: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: No change.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
+      createSelectedPaymentOver: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: the Payment Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling",
       bankLess: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
-      bankOver: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
+      bankOver: "N/A",
       createPayoutLess: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Create the offline payout transaction detail based on selected bank account and Less TXN Detail will be written off after discrepancy handling.",
-      createPayoutOver: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Reverse the original transaction detail and create new offline payout transaction detail if payout bank account changed and Over TXN Detail will be written off after discrepancy handling.",
-      exportStatusOnly: "Processing Status: changes from Unprocessed to Processing.\nNext Step: confirm the refund result after offline processing is completed.",
-      processingStatusOnly: "Processing Status: changes from Unprocessed to Processing.",
-      onHoldStatusOnly: "Processing Status: changes from Unprocessed to On-Hold.",
+      fundLossOverIn: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
+      fundLossLessOut: "Statement Recon: Create a new Account Statement.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
+      confirmedPayoutOver: "Statement Recon: Create a new Account Statement.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
+      exportStatusOnly: "N/A",
+      processingStatusOnly: "N/A",
+      onHoldStatusOnly: "N/A",
       blank: "",
       switchRecon: "Statement Recon: Create an opposite Account Statement and a new Bank Statement for reconciliation.\nDFR Incurring Amount: the Bank Incurring Amount decreases.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling."
     });
@@ -9900,13 +9995,15 @@ ${lines}
       set("refund_over", "bank-no-detail", "createSelectedPaymentOver");
 
       set("confirmed_offline_transaction_less", "confirmed-offline-refund", "paymentLess");
+      set("confirmed_offline_transaction_over", "payout-detail-available", "onHold");
+      set("confirmed_offline_transaction_over", "payout-detail-unavailable", "confirmedPayoutOver");
       set("invalidate", "invalidate-channel-detail", "oppositeBankLess");
       set("invalidate", "invalidate-transaction-detail", "paymentOver");
 
       set("recovery_less", "recover-detail", "onHoldStatusOnly");
       set("recovery_over", "recover-detail", "onHoldStatusOnly");
       set("recovery_less", "recover-no-detail", "bankLess");
-      set("recovery_over", "recover-no-detail", "bankOver");
+      set("recovery_over", "recover-no-detail", "onHold");
       set("recovery_less", "recover-user-export", "processingStatusOnly");
       set("recovery_over", "recover-user-export", "processingStatusOnly");
       set("recovery_less", "recover-user-confirm", "paymentLess");
@@ -9921,8 +10018,13 @@ ${lines}
           return isOver ? "paymentOverIncrease" : "paymentLess";
         }
         if (node.id === "bank-detail-available") return "processingStatusOnly";
+        if (node.id === "bank-confirm") {
+          const handlingType = String(getSelectedRefundRows().row?.handlingType || "").toLowerCase();
+          return handlingType.includes("bank detail available") ? "blank" : "bankConfirmLess";
+        }
         if (node.id === "bank-no-detail") {
-          return isOver ? "createSelectedPaymentOver" : "bankConfirmLess";
+          const handlingType = String(getSelectedRefundRows().row?.handlingType || "").toLowerCase();
+          return handlingType.includes("bank detail available") ? "blank" : "createSelectedPaymentOver";
         }
       }
       if (scenarioKey === "confirmed_offline_transaction_less") {
@@ -10009,8 +10111,8 @@ ${lines}
       const { row } = getSelectedRefundRows();
       const type = String(row?.type || "").trim().toLowerCase();
       const direction = String(row?.direction || "").trim().toLowerCase();
-      if (disposition === "loss" && type === "over txn" && direction === "in") return columnMImpactCopy.bankOver;
-      if (disposition === "loss" && type === "less txn" && direction === "out") return columnMImpactCopy.paymentLess;
+      if (disposition === "loss" && type === "over txn" && direction === "in") return columnMImpactCopy.fundLossOverIn;
+      if (disposition === "loss" && type === "less txn" && direction === "out") return columnMImpactCopy.fundLossLessOut;
       if (disposition === "revenue" && type === "over txn" && direction === "out") return columnMImpactCopy.blank;
       if (disposition === "revenue" && type === "less txn" && direction === "in") return columnMImpactCopy.paymentLess;
       return "";
@@ -10086,10 +10188,20 @@ ${lines}
       const isOpen = flowState.openPath.includes(node.id);
       const eligible = isOperationNodeEligible(node);
       const isSelected = isLeaf && flowState.selectedLeaf === node.id;
+      const isBankDetailAvailable = /bank detail available/i.test(String(node.title || ""));
+      const isRefundExport = /export(?: offline)? refund list/i.test(String(node.title || ""));
       const visibleChildren = (node.children || []).filter(isOperationNodeVisible);
+      const statusUpdateText = isBankDetailAvailable
+        ? "Processing status will change from 'Unprocessed' to 'On-hold'."
+        : isRefundExport
+          ? "Processing status will change from 'Unprocessed' to 'Processing'."
+          : "";
+      const statusUpdateHtml = isLeaf && isSelected && statusUpdateText
+        ? `<div class="flow-status-callout"><span class="flow-status-callout-label">Status update</span><strong>${statusUpdateText}</strong></div>`
+        : "";
       const impactKey = getOperationFlowImpactKey(node, flowState.scenarioKey);
-      const impactHtml = isLeaf && isSelected ? operationFlowImpactHtml(node.groups, impactKey) : "";
-      return `<article class="flow-node ${isLeaf ? "leaf" : ""} ${isOpen ? "open" : ""} ${isSelected ? "selected" : ""} ${eligible ? "" : "ineligible"}" data-flow-node-id="${escapeHtml(node.id)}"><div class="flow-summary" role="button" tabindex="${eligible ? "0" : "-1"}" aria-disabled="${!eligible}" ${isLeaf ? `aria-pressed="${isSelected}"` : `aria-expanded="${isOpen}"`}><div class="flow-title-row"><div class="flow-icon flow-icon-${escapeHtml(node.icon)}">${operationFlowIcons[node.icon] || operationFlowIcons.confirm}</div><div><div class="flow-title">${escapeHtml(node.title)}</div><div class="flow-description">${escapeHtml(node.desc)}</div></div><div class="flow-indicator">✓</div></div></div>${impactHtml ? `<div class="flow-leaf-content">${impactHtml}</div>` : ""}${visibleChildren.length && isOpen ? `<div class="flow-children-wrap"><div class="flow-children">${visibleChildren.map(child => renderOperationFlowNode(child, flowState)).join("")}</div></div>` : ""}</article>`;
+      const impactHtml = isLeaf && isSelected && !isBankDetailAvailable && !isRefundExport ? operationFlowImpactHtml(node.groups, impactKey) : "";
+      return `<article class="flow-node ${isLeaf ? "leaf" : ""} ${isBankDetailAvailable ? "bank-detail-available-node" : isRefundExport ? "refund-export-node" : ""} ${isOpen ? "open" : ""} ${isSelected ? "selected" : ""} ${eligible ? "" : "ineligible"}" data-flow-node-id="${escapeHtml(node.id)}"><div class="flow-summary" role="button" tabindex="${eligible ? "0" : "-1"}" aria-disabled="${!eligible}" ${isLeaf ? `aria-pressed="${isSelected}"` : `aria-expanded="${isOpen}"`}><div class="flow-title-row"><div class="flow-icon flow-icon-${escapeHtml(node.icon)}">${operationFlowIcons[node.icon] || operationFlowIcons.confirm}</div><div><div class="flow-title">${escapeHtml(node.title)}</div><div class="flow-description">${escapeHtml(node.desc)}</div></div><div class="flow-indicator">✓</div></div></div>${statusUpdateHtml || impactHtml ? `<div class="flow-leaf-content">${statusUpdateHtml || impactHtml}</div>` : ""}${visibleChildren.length && isOpen ? `<div class="flow-children-wrap"><div class="flow-children">${visibleChildren.map(child => renderOperationFlowNode(child, flowState)).join("")}</div></div>` : ""}</article>`;
     }
 
     function renderOperationFlow(kind) {
@@ -10487,7 +10599,8 @@ ${lines}
     function requiredUploadFields(title, type) {
       const name = title.toLowerCase();
       const base = ["Discrepancy Order ID", "Discrepancy Type"];
-      if (/manual write.?off|confirm fund (loss|revenue)/.test(name)) return base.concat(type === "Over TXN" ? ["Clearing Date", "Writeoff Reason"] : ["Transaction Date", "Biz Code", "Business Entity", "Writeoff Reason"]);
+      if (/confirm fund (loss|revenue)/.test(name)) return base.concat(type === "Over TXN" ? ["Clearing Date", "Writeoff Reason", "Remarks"] : ["Biz Code", "Writeoff Reason", "Remarks"]);
+      if (/manual write.?off/.test(name)) return base.concat(type === "Over TXN" ? ["Clearing Date", "Writeoff Reason"] : ["Transaction Date", "Biz Code", "Business Entity", "Writeoff Reason"]);
       if (name.includes("update to success")) return base.concat("Remark");
       if (name.includes("manual supplement")) return base.concat("Source Payment ID", "System Code", "Source Status", "Biz Code", "Business Entity", "Supplement Reason");
       if (name.includes("statement recon")) return base.concat("Agreement Item", "Biz Code");
@@ -10906,17 +11019,17 @@ ${lines}
       if (options.includeRefundPayoutType) {
         return `
           <td>
-            <select class="operation-select-control compact refund-payout-type-control" aria-label="Refund/Payout Type" required>
-              <option value="">Select</option>
-              <option value="Bank Account">Bank Account</option>
-              <option value="SOF">SOF</option>
-            </select>
-          </td>
-          <td>
             <select class="operation-select-control compact" aria-label="Refund/Payout Status" required>
               <option value="">Select</option>
               <option>Success</option>
               <option>Failed</option>
+            </select>
+          </td>
+          <td>
+            <select class="operation-select-control compact refund-payout-type-control" aria-label="Refund/Payout Type" required>
+              <option value="">Select</option>
+              <option value="Bank Account">Bank Account</option>
+              <option value="SOF">SOF</option>
             </select>
           </td>
           <td>
@@ -11151,7 +11264,7 @@ ${lines}
         const typeHeader = document.createElement("th");
         typeHeader.id = "confirmRefundTypeHeader";
         typeHeader.innerHTML = '<span class="required-mark">*</span>Refund/Payout Type';
-        document.getElementById("confirmRefundStatusHeader").before(typeHeader);
+        document.getElementById("confirmRefundStatusHeader").after(typeHeader);
       }
       if (includeRefundBankAccount) {
         const bankAccountHeader = document.createElement("th");
@@ -11414,7 +11527,7 @@ ${lines}
           ? ["Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Transaction Fund Direction", "Transaction Amount", dateLabel]
           : ["Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Channel Fund Direction", "Channel Amount", dateLabel];
         document.getElementById("uploadClaimFundResultTableHeadRow").innerHTML = headers.map((header, index) => {
-          if (index === headers.length - 1) return `<th>${header} <span class="table-info-icon"${dateTooltip}>i</span><span class="table-edit-icon">✎</span></th>`;
+          if (index === headers.length - 1) return `<th>${header} <span class="table-info-icon refund-date-info"${dateTooltip}>i</span><span class="table-edit-icon">✎</span></th>`;
           return `<th>${header}</th>`;
         }).join("");
         document.getElementById("uploadClaimFundResultTableBody").innerHTML = rows.map(item => {
@@ -11616,6 +11729,20 @@ ${lines}
         }
       });
       const meta = claimMeta(row)[action] || claimMeta(row).user;
+      const isBankClaimAction = action === "bank-provide-detail" || action === "bank-no-detail";
+      const claimRows = selectedRows.length ? selectedRows : (row ? [row] : []);
+      const claimRow = claimRows[0] || row || {};
+      const isOverBankClaim = String(claimRow.type || "").trim().toLowerCase() === "over txn";
+      if (isBankClaimAction) {
+        const claimDateLabel = isOverBankClaim ? "Clearing Date" : "Claim Date";
+        const claimDateTooltip = isOverBankClaim ? "" : ' title="Claim Date is the date when the claim fund from bank operation occurred. When this discrepancy is resolved, the system will generate an account statement. This date will be used for comparison, with whichever is later set as the clearing/accounting date." aria-label="Claim Date information"';
+        meta.prompt = isOverBankClaim
+          ? "Please double confirm with the Clearing Date. SPR system will auto generate account statement based on this clearing date and will affect the payment incurring and Over TXN write-off date in DFR."
+          : "Please double confirm Claim Date and Biz Code is correct. After complete claim fund from bank operation, SPR will create transaction detail with this Claim Date and Biz Code, and it would affect payment incurring and Less TXN write-off date in DFR.";
+        meta.tableHead = isOverBankClaim
+          ? ["Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Transaction Fund Direction", "Transaction Amount", `${claimDateLabel} <span class="table-info-icon refund-date-info"${claimDateTooltip}>i</span><span class="table-edit-icon">✎</span>`]
+          : ["Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Channel Fund Direction", "Channel Amount", `${claimDateLabel} <span class="table-info-icon refund-date-info"${claimDateTooltip}>i</span><span class="table-edit-icon">✎</span>`];
+      }
 
       showOperationPage("claimFundPage", meta.title);
       document.getElementById("claimFundPageTitle").textContent = meta.title;
@@ -11641,11 +11768,27 @@ ${lines}
         promptWrap.classList.add("hidden");
       }
       document.getElementById("claimFundTableHeadRow").innerHTML = (meta.tableHead || ["Discrepancy Order ID", "Reference ID", "System Code", "Amount"]).map(col => `<th>${col}</th>`).join("");
-      document.getElementById("claimFundTableBody").innerHTML = (selectedRows.length ? selectedRows : [row]).map(item => {
+      document.getElementById("claimFundTableBody").innerHTML = claimRows.map(item => {
         const itemMeta = claimMeta(item)[action] || claimMeta(item).user;
+        const itemIsOverTxn = String(item.type || "").trim().toLowerCase() === "over txn";
+        const itemDateLabel = itemIsOverTxn ? "Clearing Date" : "Claim Date";
+        const itemDirection = itemIsOverTxn ? (item.direction || "IN") : (item.channelDirection || item.direction || "OUT");
+        const itemAmount = itemIsOverTxn ? (item.amount || "-") : (item.channelAmount || item.amount || "-");
+        const itemDateTooltip = itemIsOverTxn ? "" : ' title="Claim Date is the date when the claim fund from bank operation occurred. When this discrepancy is resolved, the system will generate an account statement. This date will be used for comparison, with whichever is later set as the clearing/accounting date." aria-label="Claim Date information"';
+        const rowCells = isBankClaimAction
+          ? [
+              item.id,
+              cleanReferenceId(item.referenceId),
+              item.reconId || "-",
+              item.source || "-",
+              itemDirection,
+              itemAmount,
+              { html: `<input class="inline-field-input compact" type="date" aria-label="${itemDateLabel}" data-required-field="${itemDateLabel}" value="${escapeHtml(currentIsoDate())}" /><span class="table-info-icon hidden"${itemDateTooltip}>i</span>` }
+            ]
+          : (itemMeta.rowCells || [item.id, cleanReferenceId(item.referenceId), item.source, item.amount]);
         return `
         <tr>
-          ${(itemMeta.rowCells || [item.id, cleanReferenceId(item.referenceId), item.source, item.amount]).map(cell => cell && typeof cell === "object" && "html" in cell
+          ${rowCells.map(cell => cell && typeof cell === "object" && "html" in cell
             ? `<td>${cell.html}</td>`
             : `<td>${escapeHtml(String(cell ?? "-"))}</td>`).join("")}
         </tr>
@@ -11657,6 +11800,7 @@ ${lines}
       const rows = selectedRows.length ? selectedRows : [row];
       const normalizedTitle = String(operationTitle || "").trim().toLowerCase();
       const isUpdateToSuccess = normalizedTitle.includes("update to success");
+      const isFundDisposition = /^confirm fund (loss|revenue)/.test(normalizedTitle);
       const hasLessTxn = rows.some(item => String(item?.type || "").trim().toLowerCase() === "less txn");
       const hasOverTxn = rows.some(item => String(item?.type || "").trim().toLowerCase() === "over txn");
       const isMixedTxn = hasLessTxn && hasOverTxn;
@@ -11665,6 +11809,8 @@ ${lines}
         : operationTitle;
       const prompt = isUpdateToSuccess
         ? "Confirm the payment status update and provide a remark before submitting."
+        : isFundDisposition
+          ? "Please choose this operation with caution. Once executed, it is irreversible and this discrepancy amount will be confirmed as fund loss or revenue in DFR."
         : isMixedTxn
           ? "Less TXN requires Transaction Date, Biz Code, Business Entity, and Writeoff Reason. Over TXN requires Clearing Date and Writeoff Reason."
           : hasOverTxn
@@ -11690,6 +11836,12 @@ ${lines}
       ];
       const operationHeaders = isUpdateToSuccess
         ? ["Source Status"]
+        : isFundDisposition
+          ? isMixedTxn
+            ? ["Transaction Date", "*Clearing Date", "*Biz Code", "Business Entity"]
+            : hasOverTxn
+              ? ["*Clearing Date"]
+              : ["Transaction Date", "*Biz Code", "Business Entity"]
         : isMixedTxn
           ? ["*Transaction Date", "*Clearing Date", "*Biz Code", "*Business Entity", "*Writeoff Reason"]
           : hasOverTxn
@@ -11726,7 +11878,7 @@ ${lines}
         `;
         const transactionDate = `
           <div class="validation-field">
-            <input class="inline-field-input compact" type="date" value="${escapeHtml(currentIsoDate())}" data-required-field="Transaction Date" />
+            <input class="inline-field-input compact" type="date" value="${escapeHtml(currentIsoDate())}" aria-label="Transaction Date" ${isFundDisposition ? "" : 'data-required-field="Transaction Date"'} />
           </div>
         `;
         const clearingDate = `
@@ -11747,7 +11899,7 @@ ${lines}
         `;
         const businessEntity = `
           <div class="validation-field">
-            <select class="operation-select-control compact" data-required-field="Business Entity">
+            <select class="operation-select-control compact" aria-label="Business Entity" ${isFundDisposition ? "" : 'data-required-field="Business Entity"'}>
               <option value="">Select Business Entity</option>
               <option>SHOPEE-MY</option>
               <option>SPP-MY</option>
@@ -11762,12 +11914,12 @@ ${lines}
               <td data-not-applicable="${!itemIsOverTxn}">${itemIsOverTxn ? clearingDate : "-"}</td>
               <td data-not-applicable="${itemIsOverTxn}">${itemIsOverTxn ? "-" : bizCode}</td>
               <td data-not-applicable="${itemIsOverTxn}">${itemIsOverTxn ? "-" : businessEntity}</td>
-              <td>${writeoffReason}</td>
+              ${isFundDisposition ? "" : `<td>${writeoffReason}</td>`}
             </tr>
           `;
         }
         if (itemIsOverTxn) {
-          return `<tr>${commonCells}<td>${clearingDate}</td><td>${writeoffReason}</td></tr>`;
+          return `<tr>${commonCells}<td>${clearingDate}</td>${isFundDisposition ? "" : `<td>${writeoffReason}</td>`}</tr>`;
         }
         return `
           <tr>
@@ -11775,7 +11927,7 @@ ${lines}
             <td>${transactionDate}</td>
             <td>${bizCode}</td>
             <td>${businessEntity}</td>
-            <td>${writeoffReason}</td>
+            ${isFundDisposition ? "" : `<td>${writeoffReason}</td>`}
           </tr>
         `;
       }).join("");
@@ -11787,6 +11939,23 @@ ${lines}
             <span><span class="required-mark">*</span> Remark :</span>
             <div class="validation-field operation-wide-validation-field">
               <input class="remark-input operation-wide-input" name="updateToSuccessRemark" placeholder="Enter remark" data-required-field="Remark" />
+            </div>
+          </div>
+        `
+        : isFundDisposition ? `
+          <div class="notes-row">
+            <span><span class="required-mark">*</span> Writeoff Reason :</span>
+            <div class="validation-field operation-wide-validation-field">
+              <select class="operation-select-control operation-wide-input" name="fundDispositionWriteoffReason" data-required-field="Writeoff Reason">
+                <option value="">Select writeoff reason</option>
+                <option selected>Fund loss/Extra income</option>
+              </select>
+            </div>
+          </div>
+          <div class="notes-row">
+            <span><span class="required-mark">*</span> Remarks :</span>
+            <div class="validation-field operation-wide-validation-field">
+              <input class="remark-input operation-wide-input" name="fundDispositionRemarks" placeholder="Enter remarks" data-required-field="Remarks" />
             </div>
           </div>
         `
