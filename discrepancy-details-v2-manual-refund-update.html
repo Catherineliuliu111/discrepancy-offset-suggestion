@@ -7161,7 +7161,7 @@
         <section class="hidden" id="manualRefundPage">
           <div class="manual-refund-shell operation-page-shell">
             <div class="manual-refund-top">
-              <div class="manual-refund-title" id="manualRefundPageTitle">Refund/Payout to bank account - Export Offline Refund List</div>
+              <div class="manual-refund-title" id="manualRefundPageTitle">Refund &amp; Payout to Bank Account /SOF - Export Offline List</div>
               <button class="btn primary">Export</button>
               <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
             </div>
@@ -7173,7 +7173,7 @@
                   <div><strong>Counts :</strong> <span id="manualRefundCount">1</span></div>
                   <div><strong>Fund Direction :</strong> <span class="green" id="manualRefundDirection">IN</span></div>
                   <div><strong>Amount :</strong> <span id="manualRefundAmount">RM67.30</span></div>
-                  <div class="hidden"><strong>Refund Path :</strong> <span id="manualRefundPath">Refund/Payout to bank account</span></div>
+                  <div class="hidden"><strong>Refund Path :</strong> <span id="manualRefundPath">Refund &amp; Payout to Bank Account /SOF</span></div>
                 </div>
               </div>
             </div>
@@ -7407,7 +7407,7 @@
             <div class="info-card">
               <div class="info-card-head">Select</div>
               <div class="cot-summary"><div>Discrepancy Type : <strong id="cotType">Less TXN</strong></div><div>Fund Direction : <strong class="cot-out" id="cotDirection">OUT</strong></div><div>Counts : <strong id="cotCount">1</strong></div><div>Amount : <strong id="cotAmount">RM0.00</strong></div></div>
-              <div class="operation-note cot-note"><span class="operation-note-icon">i</span><span>Confirm a completed external refund and create or match the corresponding Offline Transaction in Offline Payment. This operation does not initiate another refund.</span></div>
+              <div class="operation-note cot-note"><span class="operation-note-icon">i</span><span>Confirm a completed external refund. This operation does not initiate another refund.</span></div>
             </div>
             <div class="info-card">
               <div class="info-card-head">Select List</div>
@@ -7425,7 +7425,7 @@
             <div class="manual-refund-top">
               <div class="manual-refund-title">
                 <span class="operation-title-line">
-                  <span id="bankDetailReportTitle">Refund/Payout to bank account – Confirm Offline Result</span>
+                  <span id="bankDetailReportTitle">Refund &amp; Payout to Bank Account /SOF – Confirm Offline Result</span>
                   <span class="operation-title-tag with-bank-detail" id="bankDetailReportTag">Bank Detail Available</span>
                 </span>
               </div>
@@ -8207,7 +8207,7 @@
               <div class="refund-option-head">
                 <div class="refund-option-title">
                   <div class="refund-option-icon bank-icon"></div>
-                  <span class="refund-step-line"><span>Refund/Payout to bank account</span><span class="refund-flow-badge confirm-directly">Confirm Directly</span></span>
+                  <span class="refund-step-line"><span>Refund &amp; Payout to Bank Account /SOF</span><span class="refund-flow-badge confirm-directly">Confirm Directly</span></span>
                 </div>
                 <div class="refund-option-check">✓</div>
               </div>
@@ -8495,7 +8495,7 @@
         aging: "0 day",
         ticket: "-",
         approval: "-",
-        handlingType: "Refund/Payout to bank account – Confirm Offline Result - Bank Detail Available",
+        handlingType: "Refund & Payout to Bank Account /SOF – Confirm Offline Result - Bank Detail Available",
         source: "SPM_INBOUND",
         sourceStatus: "",
         sourcePaymentId: "",
@@ -8841,8 +8841,8 @@
 
     const demoRows = [
       // Put payout fixtures first so they are immediately visible on page 1.
-      makeDemoRow(1, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Refund", reason: "Completed offline transaction requires confirmation" }),
-      makeDemoRow(2, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Refund", reason: "Completed offline transaction requires confirmation" }),
+      makeDemoRow(1, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Transaction - Confirm Completed Payout - Bank Detail Available", reason: "Completed offline payout requires confirmation" }),
+      makeDemoRow(2, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Transaction - Confirm Completed Payout - Bank Detail Unavailable", reason: "Completed offline payout requires confirmation" }),
       makeDemoRow(3, { type: "Less TXN", direction: "IN", handlingType: "Update to Success", sourceStatus: "Pending", reason: "Bank settlement successful; internal payment remains Pending" }),
       makeDemoRow(4, { type: "Diff TXN", direction: "IN", channelDirection: "OUT", handlingType: "On-Hold", reason: "Final accounting treatment is pending external confirmation" }),
       makeDemoRow(5, { type: "Over TXN", direction: "IN", handlingType: "Offset", reason: "Payment and refund exist internally without bank movement" }),
@@ -8857,11 +8857,11 @@
       makeDemoRow(14, { type: "Less TXN", direction: "IN", handlingType: "Refund/Payout Fund - Refund to Wallet - Export Offline Refund List", reason: "Offline wallet refund requires export" }),
       makeDemoRow(15, { type: "Less TXN", direction: "IN", handlingType: "Refund/Payout Fund - Refund to Wallet - Confirm Offline Refund", reason: "Offline wallet adjustment completed" }),
       makeDemoRow(16, { type: "Over TXN", direction: "OUT", handlingType: "Refund/Payout Fund - Refund to Wallet - Confirm Offline Refund", reason: "User compensated for wallet refund without bank settlement" }),
-      makeDemoRow(17, { type: "Less TXN", direction: "IN", handlingType: "Refund/Payout Fund - Refund/Payout to bank account - Export Offline Refund List", reason: "Offline bank account refund requires export" }),
-      makeDemoRow(18, { type: "Less TXN", direction: "IN", handlingType: "Refund/Payout Fund - Refund/Payout to bank account - Confirm Offline Result - Bank Detail Available", reason: "Offline refund completed; bank detail will be provided" }),
-      makeDemoRow(19, { type: "Less TXN", direction: "IN", handlingType: "Refund/Payout Fund - Refund/Payout to bank account - Confirm Offline Result - Bank Detail Unavailable", reason: "Offline refund completed; bank detail unavailable" }),
-      makeDemoRow(20, { type: "Over TXN", direction: "OUT", handlingType: "Refund/Payout Fund - Refund/Payout to bank account - Confirm Offline Result - Bank Detail Available", reason: "Bank refund detail is available for matching" }),
-      makeDemoRow(21, { type: "Over TXN", direction: "OUT", handlingType: "Refund/Payout Fund - Refund/Payout to bank account - Confirm Offline Result - Bank Detail Unavailable", reason: "Bank confirms refund but detail is unavailable" }),
+      makeDemoRow(17, { type: "Less TXN", direction: "IN", handlingType: "Refund/Payout Fund - Refund & Payout to Bank Account /SOF - Export Offline List", reason: "Offline bank account refund requires export" }),
+      makeDemoRow(18, { type: "Less TXN", direction: "IN", handlingType: "Refund/Payout Fund - Refund & Payout to Bank Account /SOF - Confirm Offline Result - Bank Detail Available", reason: "Offline refund completed; bank detail will be provided" }),
+      makeDemoRow(19, { type: "Less TXN", direction: "IN", handlingType: "Refund/Payout Fund - Refund & Payout to Bank Account /SOF - Confirm Offline Result - Bank Detail Unavailable", reason: "Offline refund completed; bank detail unavailable" }),
+      makeDemoRow(20, { type: "Over TXN", direction: "OUT", handlingType: "Refund/Payout Fund - Refund & Payout to Bank Account /SOF - Confirm Offline Result - Bank Detail Available", reason: "Bank refund detail is available for matching" }),
+      makeDemoRow(21, { type: "Over TXN", direction: "OUT", handlingType: "Refund/Payout Fund - Refund & Payout to Bank Account /SOF - Confirm Offline Result - Bank Detail Unavailable", reason: "Bank confirms refund but detail is unavailable" }),
       makeDemoRow(22, { type: "Less TXN", direction: "OUT", handlingType: "Claim Fund - Claim Fund from Bank - Bank Detail Available", reason: "Less OUT recovery detail will be provided" }),
       makeDemoRow(23, { type: "Over TXN", direction: "IN", handlingType: "Claim Fund - Claim Fund from Bank - Bank Detail Available", reason: "Missing incoming settlement detail will be provided" }),
       makeDemoRow(24, { type: "Less TXN", direction: "OUT", handlingType: "Claim Fund - Claim Fund from Bank - Bank Detail Unavailable", reason: "Bank recovery confirmed without detail" }),
@@ -9339,7 +9339,7 @@ ${lines}
         document.querySelectorAll("[data-upload-refund-mode]").forEach(node => node.classList.remove("selected"));
         document.querySelectorAll("[data-upload-offline-actions]").forEach(node => node.classList.remove("open"));
         document.querySelectorAll("[data-upload-bank-report-option]").forEach(node => node.classList.remove("selected"));
-        if (uploadTitle === "Refund/Payout to bank account – Confirm Offline Result - Bank Detail Available") {
+        if (uploadTitle === "Refund & Payout to Bank Account /SOF – Confirm Offline Result - Bank Detail Available") {
           document.querySelector('[data-upload-refund-path="bank"]')?.classList.add("selected");
           document.querySelector('[data-upload-bank-report-option="without"]')?.classList.add("selected");
           document.getElementById("uploadManualRefundConfirmBtn").disabled = false;
@@ -9581,8 +9581,8 @@ ${lines}
               { id: "wallet-confirm", action: "wallet-confirm", icon: "confirm", title: "Confirm Refund Result", desc: "Confirm the completed offline wallet refund result directly in SPR.", groups: { DFR: [["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "Increases; the refund result is recorded for the offline transaction."], ["Less TXN Detail", "Decreases."]] } }
             ] }
           ] },
-          { id: "bank", icon: "bank", title: "Refund/Payout to bank account", desc: "Return funds to the user’s Bank Account.", childrenLabel: "Refund Result", children: [
-            { id: "bank-export", action: "bank-export", icon: "export", title: "Export Offline Refund List", desc: "Export discrepancy details for offline refund to the user’s bank account.", groups: { DFR: [["Processing Status", "Processing."]] } },
+          { id: "bank", icon: "bank", title: "Refund & Payout to Bank Account /SOF", desc: "refund & payout funds to user or merchant‘s bank account/ SOF", childrenLabel: "Refund Result", children: [
+            { id: "bank-export", action: "bank-export", icon: "export", title: "Export Offline List", desc: "Export discrepancy details for offline refund to the user’s bank account.", groups: { DFR: [["Processing Status", "Processing."]] } },
             { id: "bank-confirm", action: "bank-confirm", icon: "confirm", title: "Confirm Offline Result", desc: "Record the offline refund transaction and status in SPR.", groups: { DFR: [["Bank Incurring Amount", "Total amount unchanged; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total amount unchanged; the refund amount equals the payment."], ["Transaction Detail", "Both offline payment and refund transaction details are created."], ["Less TXN Detail", "Decreases."]] } }
           ] }
         ]
@@ -9598,8 +9598,8 @@ ${lines}
               { id: "wallet-confirm", action: "wallet-confirm", icon: "confirm", title: "Confirm Refund Result", desc: "Confirm the completed offline wallet refund result directly in SPR.", groups: { DFR: [["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "Increases; the refund result is recorded for the offline transaction."], ["Over TXN Detail", "Decreases."]] } }
             ] }
           ] },
-          { id: "bank", icon: "bank", title: "Refund/Payout to bank account", desc: "Return funds to the user’s Bank Account.", childrenLabel: "Offline Refund Action", children: [
-              { id: "bank-export", action: "bank-export", icon: "export", title: "Export Offline Refund List", desc: "Export discrepancy details for offline refund to the user’s bank account.", groups: { DFR: [["Processing Status", "Processing."]] } },
+          { id: "bank", icon: "bank", title: "Refund & Payout to Bank Account /SOF", desc: "refund & payout funds to user or merchant‘s bank account/ SOF", childrenLabel: "Offline Refund Action", children: [
+              { id: "bank-export", action: "bank-export", icon: "export", title: "Export Offline List", desc: "Export discrepancy details for offline refund to the user’s bank account.", groups: { DFR: [["Processing Status", "Processing."]] } },
               { id: "bank-confirm", icon: "confirm", title: "Confirm Offline Result", desc: "Record the offline refund transaction and status in SPR.", childrenLabel: "Bank Detail Availability", children: [
               { id: "bank-detail-available", action: "bank-confirm-with", icon: "detail", title: "Bank Detail Available", desc: "Confirm the refund status and wait for bank details for reconciliation.", groups: { DFR: [["Processing Status", "Processing."]] } },
             { id: "bank-no-detail", action: "bank-confirm-without", icon: "noDetail", title: "Bank Detail Unavailable", desc: "Confirm the refund status and create an Account Statement when bank details are unavailable.", groups: { "Statement Recon": [["Account Statement", "A new Account Statement is created based on the confirmed refund result and selected Bank Account."]], DFR: [["Bank Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Channel Detail", "Unchanged; no Channel Detail exists."], ["Transaction Detail", "The original refund transaction exists; if the actual Bank Account differs, it is reversed and an offline transaction is created."], ["Over TXN Detail", "Decreases."]] } }
@@ -9609,14 +9609,7 @@ ${lines}
       },
       confirmed_offline_transaction_less: {
         title: "Confirm Completed Refund",
-        info: "Confirm the completed external refund and create the missing Offline Transaction in SPR. No additional refund is initiated.",
-        nodes: [
-          { id: "confirmed-offline-refund", action: "external-refund-confirm", icon: "refund", title: "Confirm Completed Refund", desc: "Confirm the completed external refund and create the missing Offline Transaction in SPR. No additional refund is initiated.", groups: { DFR: [["Bank Incurring Amount", "Total amount unchanged; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "A new Offline Transaction is created."], ["Less TXN Detail", "Decreases after reconciliation."]] } }
-        ]
-      },
-      confirmed_offline_transaction_over: {
-        title: "Confirm Completed Refund",
-        info: "Confirm the completed external refund and create the missing Offline Transaction in SPR. No additional refund is initiated.",
+        info: "Confirm a completed external refund. This operation does not initiate another refund.",
         nodes: [
           { id: "confirmed-offline-refund", action: "external-refund-confirm", icon: "refund", title: "Confirm Completed Refund", desc: "Confirm the completed external refund and create the missing Offline Transaction in SPR. No additional refund is initiated.", groups: { DFR: [["Bank Incurring Amount", "Total amount unchanged; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total Amount Increased; Biz Code is updated if changed after discrepancy handling."], ["Transaction Detail", "A new Offline Transaction is created."], ["Less TXN Detail", "Decreases after reconciliation."]] } }
         ]
@@ -9826,7 +9819,6 @@ ${lines}
       set("refund_over", "bank-no-detail", "createSelectedPaymentOver");
 
       set("confirmed_offline_transaction_less", "confirmed-offline-refund", "paymentLess");
-      set("confirmed_offline_transaction_over", "confirmed-offline-refund", "paymentOverIncrease");
       set("invalidate", "invalidate-channel-detail", "oppositeBankLess");
       set("invalidate", "invalidate-transaction-detail", "paymentOver");
 
@@ -9852,9 +9844,9 @@ ${lines}
           return isOver ? "createSelectedPaymentOver" : "bankConfirmLess";
         }
       }
-      if (scenarioKey === "confirmed_offline_transaction_less" || scenarioKey === "confirmed_offline_transaction_over") {
+      if (scenarioKey === "confirmed_offline_transaction_less") {
         if (node.id === "confirmed-offline-refund") {
-          return isOver ? "paymentOverIncrease" : "paymentLess";
+          return "paymentLess";
         }
       }
       if (scenarioKey === "recovery_less" || scenarioKey === "recovery_over") {
@@ -10072,7 +10064,7 @@ ${lines}
       const { isOver, type, direction } = getSelectedCaseContext();
       const flowState = operationFlowState[kind];
       flowState.scenarioKey = kind === "confirmed"
-        ? `confirmed_offline_transaction_${isOver ? "over" : "less"}`
+        ? "confirmed_offline_transaction_less"
         : kind === "invalidate"
           ? "invalidate"
         : `${kind === "refund" ? "refund" : "recovery"}_${isOver ? "over" : "less"}`;
@@ -10108,9 +10100,6 @@ ${lines}
     }
 
     function isConfirmedOfflineTransactionEligible(row) {
-      const discrepancyType = String(row?.type || "").trim().toLowerCase();
-      const direction = String(row?.direction || "").trim().toLowerCase();
-      if (discrepancyType === "over txn" && direction === "out") return true;
       return isConfirmedOfflineRefundEligible(row);
     }
 
@@ -10757,9 +10746,9 @@ ${lines}
       }
     }
 
-    function openManualRefundPage(refundPath = "bank", title = "Refund/Payout to bank account - Export Offline Refund List") {
+    function openManualRefundPage(refundPath = "bank", title = "Refund & Payout to Bank Account /SOF - Export Offline List") {
       const { selectedRows, row, totalAmount } = getSelectedRefundRows();
-      const refundPathLabel = refundPath === "wallet" ? "Refund to Wallet" : "Refund/Payout to bank account";
+      const refundPathLabel = refundPath === "wallet" ? "Refund to Wallet" : "Refund & Payout to Bank Account /SOF";
 
       showOperationPage("manualRefundPage", title);
       document.getElementById("manualRefundPageTitle").textContent = title;
@@ -10894,11 +10883,11 @@ ${lines}
       const rows = getCotRows();
       const isLess = String(rows[0]?.type || "Less TXN").toLowerCase() === "less txn";
       const fields = isLess
-        ? ["Offline Transaction Match", "Original Payment ID", "Original Reference ID", "Refund Date", "Biz Code", "Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Clearing Date", "Channel Fund Direction", "Channel Amount", "Extra Info"]
-        : ["Offline Transaction Match", "Original Payment ID", "Original Reference ID", "Refund Date", "Biz Code", "Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Clearing Date", "Transaction Fund Direction", "Transaction Amount", "Channel Fund Direction", "Extra Info"];
+        ? ["Refund Date", "Biz Code", "Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Channel Fund Direction", "Channel Amount", "Extra Info"]
+        : ["Refund Date", "Biz Code", "Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Transaction Fund Direction", "Transaction Amount", "Channel Fund Direction", "Extra Info"];
       document.getElementById("cotListHead").innerHTML = `<tr>${fields.map(field => `<th>${field}</th>`).join("")}</tr>`;
       document.getElementById("cotListBody").innerHTML = rows.map(row => {
-        const common = `<td>${cotMatchCell(row)}</td><td>${escapeHtml(cotOriginalPayment(row))}</td><td>${escapeHtml(cotOriginalReference(row))}</td><td><input class="cot-input" type="date" value="${escapeHtml(row.clearingDate || currentIsoDate())}"></td><td><select class="cot-select"><option>Refund – Merchant Funding</option><option>Refund – User Payment</option></select></td><td>${escapeHtml(row.id)}</td><td>${escapeHtml(cleanReferenceId(row.referenceId))}</td><td>${escapeHtml(row.reconId || "-")}</td><td>${escapeHtml(row.source || "-")}</td><td>${escapeHtml(row.clearingDate || "-")}</td>`;
+        const common = `<td><input class="cot-input" type="date" value="${escapeHtml(row.clearingDate || currentIsoDate())}"></td><td><select class="cot-select"><option>Refund – Merchant Funding</option><option>Refund – User Payment</option></select></td><td>${escapeHtml(row.id)}</td><td>${escapeHtml(cleanReferenceId(row.referenceId))}</td><td>${escapeHtml(row.reconId || "-")}</td><td>${escapeHtml(row.source || "-")}</td>`;
         return `<tr>${common}${isLess ? `<td>${escapeHtml(row.channelDirection || row.direction || "-")}</td><td>${escapeHtml(row.channelAmount || row.amount || "-")}</td>` : `<td>${escapeHtml(row.direction || "-")}</td><td>${escapeHtml(row.amount || "-")}</td><td>${escapeHtml(row.channelDirection || row.direction || "-")}</td>`}<td><span class="cot-extra" title="${escapeHtml(row.extraInfo || "-")}">${escapeHtml(row.extraInfo || "-")}</span></td></tr>`;
       }).join("");
       document.querySelectorAll("[data-cot-row]").forEach(node => node.addEventListener("click", () => openCotPaymentModal(node.dataset.cotRow)));
@@ -10984,7 +10973,7 @@ ${lines}
         : isOverTxn
         ? "Confirm the final bank refund result and clearing date."
         : title.toLowerCase().includes("external refund")
-          ? "Confirm an external refund already completed outside PPS/SPR. SPR will create the missing Offline Refund Transaction and will not initiate another refund."
+          ? "Confirm a completed external refund. This operation does not initiate another refund."
         : title.toLowerCase().includes("unavail")
           ? "After conducting an offline refund, you can confirm the offline refund result directly. SPR will create the offline refund transaction and refund account statement using the selected Bank Account."
           : "Confirm the offline refund result, transaction date, and Biz Code.";
@@ -11045,7 +11034,7 @@ ${lines}
       `; }).join("");
     }
 
-    function openBankDetailReportPage(title = "Refund/Payout to bank account – Confirm Offline Result - Bank Detail Available") {
+    function openBankDetailReportPage(title = "Refund & Payout to Bank Account /SOF – Confirm Offline Result - Bank Detail Available") {
       const { selectedRows, row, totalAmount } = getSelectedRefundRows();
       const amountText = selectedAmountText(selectedRows, row, totalAmount);
       const detailStatus = title.endsWith(" - Bank Detail Available")
@@ -11115,7 +11104,7 @@ ${lines}
           submitDisabled: false
         },
         "bank-without": {
-          title: "Refund/Payout to bank account – Confirm Offline Result - Bank Detail Unavailable",
+          title: "Refund & Payout to Bank Account /SOF – Confirm Offline Result - Bank Detail Unavailable",
           tag: "",
           note: "",
           showNotes: true,
@@ -11127,7 +11116,7 @@ ${lines}
           submitDisabled: false
         },
         "bank-with": {
-          title: "Refund/Payout to bank account – Confirm Offline Result - Bank Detail Available",
+          title: "Refund & Payout to Bank Account /SOF – Confirm Offline Result - Bank Detail Available",
           tag: "With bank detail report",
           tagTone: "with-bank-detail",
           note: "After submission, the status of these discrepancy details will change from unprocessed to On-hold. Please upload the new bank details in time to facilitate auto-recon.",
@@ -12119,7 +12108,7 @@ ${lines}
       } else if (title === "Confirm Completed Refund") {
         const selectedRows = state.rows.filter(row => state.selectedRowIds.has(row.id));
         if (requireEligibleSelection && (!selectedRows.length || !selectedRows.every(isConfirmedOfflineTransactionEligible))) {
-          showToast("Confirm Completed Refund is available for Less OUT with Failed or blank Source Status, or Over OUT cases.", "warn");
+          showToast("Confirm Completed Refund is available only for Less TXN + Fund OUT with Failed or blank Source Status.", "warn");
         } else {
           openModal("#confirmedOfflineRefundModal");
         }
@@ -12257,10 +12246,10 @@ ${lines}
         "wallet-online": "Refund/Payout Fund - Refund to Wallet - Online Refund",
         "wallet-export": "Refund/Payout Fund - Refund to Wallet – Export Offline Refund List",
         "wallet-confirm": "Refund/Payout Fund - Refund to Wallet – Confirm Refund Result",
-        "bank-export": "Refund/Payout Fund - Refund/Payout to bank account – Export Offline Refund List",
-        "bank-confirm": "Refund/Payout Fund - Refund/Payout to bank account – Confirm Offline Result",
-        "bank-confirm-with": "Refund/Payout Fund - Refund/Payout to bank account – Confirm Offline Result - Bank Detail Available",
-        "bank-confirm-without": "Refund/Payout Fund - Refund/Payout to bank account – Confirm Offline Result - Bank Detail Unavailable"
+        "bank-export": "Refund/Payout Fund - Refund & Payout to Bank Account /SOF – Export Offline List",
+        "bank-confirm": "Refund/Payout Fund - Refund & Payout to Bank Account /SOF – Confirm Offline Result",
+        "bank-confirm-with": "Refund/Payout Fund - Refund & Payout to Bank Account /SOF – Confirm Offline Result - Bank Detail Available",
+        "bank-confirm-without": "Refund/Payout Fund - Refund & Payout to Bank Account /SOF – Confirm Offline Result - Bank Detail Unavailable"
       };
       const title = actionTitles[resolvedAction];
       if (resolvedAction === "wallet-export" || resolvedAction === "bank-export") {
