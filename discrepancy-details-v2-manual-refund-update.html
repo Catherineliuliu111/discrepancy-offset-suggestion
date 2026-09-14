@@ -4134,6 +4134,9 @@
       box-shadow: none;
     }
 
+    #manualRefundPage .sla-inline .validation-field { width: 100px; min-width: 100px; }
+    #manualRefundPage .sla-inline .sla-input { width: 100%; }
+
     .operation-select-input {
       width: 100%;
       min-height: 38px;
@@ -7269,6 +7272,7 @@
               <div class="info-card-head">Select</div>
               <div class="info-card-body">
                 <div class="summary-grid">
+                  <div><strong>Discrepancy Type :</strong> <span id="manualRefundDiscrepancyType">Over TXN</span></div>
                   <div><strong>Counts :</strong> <span id="manualRefundCount">1</span></div>
                   <div><strong>Fund Direction :</strong> <span class="green" id="manualRefundDirection">IN</span></div>
                   <div><strong>Amount :</strong> <span id="manualRefundAmount">RM67.30</span></div>
@@ -7319,9 +7323,9 @@
                 <div class="notes-row">
                   <span><span style="color:#ef4444;">*</span> SLA :</span>
                   <span class="sla-inline">
-                    <input class="sla-input" name="manualRefundSlaDays" value="14" />
+                    <input class="sla-input" name="manualRefundSlaDays" type="number" min="1" step="1" value="14" required data-required-field="SLA" aria-label="SLA" />
                     <span>days</span>
-                    <span>Refund result has to be uploaded before <span id="manualRefundDueDate">2026-05-22 00:00</span></span>
+                    <span>Refund result has to be uploaded before <span id="manualRefundDueDate">-</span></span>
                   </span>
                 </div>
                 <div class="notes-row" style="margin-bottom:0;">
@@ -9961,7 +9965,7 @@ ${lines}
       oppositeBankLess: "Statement Recon: Create an Account Statement with the opposite amount.\nDFR Incurring Amount: the Bank Incurring Amount decreases.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
       paymentOver: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Payment Incurring Amount decreases.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
       paymentOverIncrease: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Payment Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
-      bankConfirmLess: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: No change.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
+      bankConfirmLess: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: For refund to bank account - both payment & refund offline transaction will be generate with biz code updated.; For refund to SOF, the Payment Incurring Amount increases with biz code updated.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
       createSelectedPaymentOver: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: the Payment Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling",
       bankLess: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Less TXN Detail will be written off after discrepancy handling.",
       bankOver: "N/A",
@@ -10189,7 +10193,7 @@ ${lines}
       const eligible = isOperationNodeEligible(node);
       const isSelected = isLeaf && flowState.selectedLeaf === node.id;
       const isBankDetailAvailable = /bank detail available/i.test(String(node.title || ""));
-      const isRefundExport = /export(?: offline)? refund list/i.test(String(node.title || ""));
+      const isRefundExport = /export(?: offline)?(?: refund)? list/i.test(String(node.title || ""));
       const visibleChildren = (node.children || []).filter(isOperationNodeVisible);
       const statusUpdateText = isBankDetailAvailable
         ? "Processing status will change from 'Unprocessed' to 'On-hold'."
@@ -10950,6 +10954,15 @@ ${lines}
       }
     }
 
+    function updateManualRefundDueDate() {
+      const sla = document.querySelector('[name="manualRefundSlaDays"]');
+      const days = sla.valueAsNumber;
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      document.getElementById("manualRefundDueDate").textContent = sla.validity.valid && Number.isFinite(date.getTime())
+        ? datePlusDaysAtMidnight(days) : "-";
+    }
+
     function openManualRefundPage(refundPath = "bank", title = "Refund & Payout to Bank Account /SOF - Export Offline List") {
       const { selectedRows, row, totalAmount } = getSelectedRefundRows();
       const refundPathLabel = refundPath === "wallet" ? "Refund to Wallet" : "Refund & Payout to Bank Account /SOF";
@@ -10958,22 +10971,28 @@ ${lines}
       document.getElementById("manualRefundPageTitle").textContent = title;
 
       document.getElementById("manualRefundCount").textContent = selectedRows.length || 1;
+      document.getElementById("manualRefundDiscrepancyType").textContent = [...new Set((selectedRows.length ? selectedRows : [row]).map(item => item.type))].join(" / ");
       document.getElementById("manualRefundDirection").textContent = row.direction || "IN";
-      document.getElementById("manualRefundAmount").textContent = `RM${totalAmount.toFixed(2)}`;
+      document.getElementById("manualRefundAmount").textContent = selectedAmountText(selectedRows, row, totalAmount);
       document.getElementById("manualRefundPath").textContent = refundPathLabel;
-      document.getElementById("manualRefundTableBody").innerHTML = `
+      const sla = document.querySelector('[name="manualRefundSlaDays"]');
+      sla.value = "14";
+      sla.oninput = updateManualRefundDueDate;
+      document.querySelector('[name="manualRefundRemark"]').value = "";
+      updateManualRefundDueDate();
+      document.getElementById("manualRefundTableBody").innerHTML = (selectedRows.length ? selectedRows : [row]).map(item => `
         <tr>
-          <td>${escapeHtml(row.id)}</td>
-          <td>${escapeHtml(cleanReferenceId(row.referenceId))}</td>
-          <td>${escapeHtml(row.reconId)}</td>
-          <td>${escapeHtml(row.source)}</td>
-          <td>-</td>
-          <td>-</td>
-          <td>MYR</td>
-          <td>${escapeHtml(row.amount)}</td>
-          <td>-</td>
+          <td>${escapeHtml(item.id)}</td>
+          <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
+          <td>${escapeHtml(item.reconId || "-")}</td>
+          <td>${escapeHtml(item.source || "-")}</td>
+          <td>${escapeHtml(item.sourceStatus || "-")}</td>
+          <td>${escapeHtml(item.userId || "-")}</td>
+          <td>${escapeHtml(item.currency || "MYR")}</td>
+          <td>${escapeHtml(item.amount)}</td>
+          <td>${escapeHtml(item.refundDestination || "-")}</td>
         </tr>
-      `;
+      `).join("");
     }
 
     function openWalletRefundPage(title = "Refund to Wallet - Online Refund") {
@@ -12668,7 +12687,7 @@ ${lines}
       if (!resolvedAction) return;
       const actionTitles = {
         "wallet-online": "Refund/Payout Fund - Refund to Wallet - Online Refund",
-        "wallet-export": "Refund/Payout Fund - Refund to Wallet – Export Offline Refund List",
+        "wallet-export": "Refund to Wallet - Offline Refund - Export Refund List",
         "wallet-confirm": "Refund/Payout Fund - Refund to Wallet – Confirm Refund Result",
         "bank-export": "Refund/Payout Fund - Refund & Payout to Bank Account /SOF – Export Offline List",
         "bank-confirm": "Refund/Payout Fund - Refund & Payout to Bank Account /SOF – Confirm Offline Result",
@@ -12676,7 +12695,7 @@ ${lines}
         "bank-confirm-without": "Refund/Payout Fund - Refund & Payout to Bank Account /SOF – Confirm Offline Result - Bank Detail Unavailable"
       };
       const title = actionTitles[resolvedAction];
-      if (resolvedAction === "wallet-export" || resolvedAction === "bank-export") {
+      if (resolvedAction === "bank-export") {
         completeExportOperation(title);
         return;
       }
