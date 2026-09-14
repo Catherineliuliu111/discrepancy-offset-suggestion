@@ -9105,7 +9105,9 @@
       operationEntryPoint: "handling",
       lastMixedProcessingStatusWarning: false,
       activeOperationRowId: null,
-      processingHistory: {}
+      processingHistory: {},
+      pendingRefundPayoutOutcomes: {},
+      transactionDetails: {}
     };
 
 	    const sourcePaymentOptions = [
@@ -10814,12 +10816,34 @@ ${lines}
       return !hasErrors;
     }
 
+    function captureRefundPayoutOutcomes(pageId) {
+      const page = document.getElementById(pageId);
+      if (!page) return {};
+      const { selectedRows, row } = getSelectedRefundRows();
+      const rows = selectedRows.length ? selectedRows : (row ? [row] : []);
+      const formRows = [...page.querySelectorAll("#confirmRefundTableBody tr")];
+      return rows.reduce((outcomes, item, index) => {
+        const formRow = formRows[index];
+        const typeControl = formRow?.querySelector(".refund-payout-type-control");
+        if (!typeControl) return outcomes;
+        outcomes[item.id] = {
+          status: formRow.querySelector('select[aria-label="Refund/Payout Status"]')?.value || "",
+          type: typeControl.value,
+          bankAccount: formRow.querySelector(".refund-payout-bank-account-control")?.value || ""
+        };
+        return outcomes;
+      }, {});
+    }
+
     function submitValidatedOperation(pageId, operationTitle) {
       const page = document.getElementById(pageId);
       const shell = page?.querySelector(".operation-page-shell");
       if (shell) shell.dataset.validationSubmitted = "true";
       if (!validateOperationPage(pageId, true)) return;
       clearOperationValidation();
+      if (pageId === "confirmRefundResultPage") {
+        state.pendingRefundPayoutOutcomes = captureRefundPayoutOutcomes(pageId);
+      }
       if (pageId === "manualRefundPage") {
         completeExportOperation(operationTitle);
         closeOperationPage();
@@ -12359,6 +12383,26 @@ ${lines}
       row.latestComment = "-";
       const normalizedOperation = String(operationTitle).toLowerCase();
       const isLessTxn = String(row.type || "").toLowerCase() === "less txn";
+      const refundPayoutOutcome = state.pendingRefundPayoutOutcomes?.[row.id];
+      const isDirectOfflineRefundConfirmation = normalizedOperation.includes("confirm offline result")
+        && !normalizedOperation.includes("bank detail available")
+        && !normalizedOperation.includes("bank detail unavailable");
+      const isBankAccountRefund = isDirectOfflineRefundConfirmation
+        && refundPayoutOutcome?.type === "Bank Account";
+      const bankAccountTransactionDetail = isBankAccountRefund
+        ? {
+            transactionId: `TXN-BA-${String(row.id).replace(/[^A-Za-z0-9]/g, "")}`,
+            type: "Bank Account",
+            bankAccount: refundPayoutOutcome.bankAccount,
+            amount: row.amount,
+            status: refundPayoutOutcome.status || "-",
+            createTime: now
+          }
+        : null;
+      if (isDirectOfflineRefundConfirmation) {
+        if (bankAccountTransactionDetail) state.transactionDetails[row.id] = bankAccountTransactionDetail;
+        else delete state.transactionDetails[row.id];
+      }
       const beLogic = normalizedOperation.includes("bank detail available")
         ? (isLessTxn
           ? "Later bank detail is matched with the existing Offline Refund Transaction using Amount, Bank Account, and Reference ID when available."
@@ -12367,6 +12411,10 @@ ${lines}
           ? (isLessTxn
             ? "Offline Refund transaction and refund Account Statement created from the selected Bank Account."
             : "Create an Account Statement from payout evidence without a Channel Detail; reverse and replace the original payout transaction only when the actual Payout Bank Account differs.")
+          : isBankAccountRefund
+            ? `Bank Account Transaction Detail ${bankAccountTransactionDetail.transactionId} created for ${bankAccountTransactionDetail.bankAccount}.`
+            : isDirectOfflineRefundConfirmation && refundPayoutOutcome?.type === "SOF"
+              ? "SOF destination confirmed; no Bank Account Transaction Detail is created."
           : "-";
       state.processingHistory[row.id] = {
         operation: operationTitle,
@@ -12376,13 +12424,14 @@ ${lines}
         actionStatus: "Completed",
         actionConfirmed: "Yes",
         remarks: beLogic,
-        transactionId: row.sourcePaymentId || "-",
+        transactionId: bankAccountTransactionDetail?.transactionId || row.sourcePaymentId || "-",
         approvalTicket: row.ticket || "-",
         attachment: "-"
       };
       renderTable();
       closeOperationPage();
       openDiscrepancyInfo(row.id);
+      delete state.pendingRefundPayoutOutcomes[row.id];
       showToast(`${operationTitle} completed.`, "success");
     }
 
@@ -12416,6 +12465,7 @@ ${lines}
     function openDiscrepancyInfo(rowId) {
       const row = state.rows.find(item => item.id === rowId);
       if (!row) return;
+      const transactionDetail = state.transactionDetails[row.id];
       getOperationPageIds().forEach(id => document.getElementById(id)?.classList.add("hidden"));
       document.getElementById("detailsPage").classList.add("hidden");
       document.getElementById("discrepancyInfoPage").classList.remove("hidden");
@@ -12438,8 +12488,11 @@ ${lines}
         portalField("Extra Info", row.rawData || "-"), portalField("Biz Info", row.referenceId || "-"), portalField("Source Key Info", "-")
       ].join("");
       document.getElementById("portalTransactionFields").innerHTML = [
-        "Payment ID", "Reference ID", "Identify ID", "Fund Direction", "Amount", "Sys Code", "Biz Code", "Extra Info", "Clearing Date", "Status", "Client Order ID", "Payment Transaction Time", "Payment Complete Time", "Link", "Biz Info", "Create Time", "Update Time"
-      ].map(label => portalField(label, "-")).join("");
+        ["Transaction ID", transactionDetail?.transactionId || "-"],
+        ["Transaction Type", transactionDetail?.type || "-"],
+        ["Bank Account", transactionDetail?.bankAccount || "-"],
+        ["Payment ID", "-"], ["Reference ID", "-"], ["Identify ID", "-"], ["Fund Direction", "-"], ["Amount", transactionDetail?.amount || "-"], ["Sys Code", "-"], ["Biz Code", "-"], ["Extra Info", "-"], ["Clearing Date", "-"], ["Status", transactionDetail?.status || "-"], ["Client Order ID", "-"], ["Payment Transaction Time", "-"], ["Payment Complete Time", "-"], ["Link", "-"], ["Biz Info", "-"], ["Create Time", transactionDetail?.createTime || "-"], ["Update Time", "-"]
+      ].map(([label, value]) => portalField(label, value)).join("");
       renderPortalProcessingHistory(row);
       document.querySelectorAll("[data-portal-tab]").forEach(tab => tab.classList.toggle("active", tab.dataset.portalTab === "recon"));
       ["portalReconPanel", "portalHandlingPanel", "portalAgreementPanel", "portalResultPanel"].forEach(id => document.getElementById(id)?.classList.toggle("hidden", id !== "portalReconPanel"));
