@@ -9926,7 +9926,10 @@ ${lines}
       };
       const claimBankUnavailableOver = {
         desc: "Applies to discrepancies where the bank settlement is missing and no bank detail will be provided. Resolves the discrepancy upon confirming the bank's recovery.",
-        groups: { DFR: [["Bank Recovery", "Records the bank-confirmed recovery when no bank detail will be provided."]] }
+        groups: {
+          "Statement Recon": [["Account Statement", "A new Account Statement is automatically generated."]],
+          DFR: [["Bank Incurring Amount", "Increased after user manually adds an Account Statement."], ["Over TXN Detail", "Decreases."]]
+        }
       };
       set("recovery_less", "recover-detail", claimBankAvailable);
       set("recovery_over", "recover-detail", claimBankAvailable);
@@ -9937,14 +9940,17 @@ ${lines}
         groups: { DFR: [["Offline Wallet Deduction", "Records the completed wallet deduction result."]] }
       };
       const claimUserConfirmOver = {
-        groups: { DFR: [["Offline Wallet Deduction", "Records the completed wallet deduction result."]] }
+        groups: {
+          "Statement Recon": [["Account Statement", "Unchanged."]],
+          DFR: [["Bank Incurring Amount", "Total amount unchanged; Biz Code is updated if changed after discrepancy handling."], ["Payment Incurring Amount", "Total amount increased; Biz Code is updated if changed after discrepancy handling."], ["Channel Detail", "Unchanged."], ["Transaction Detail", "Create offline payout transaction."], ["Over TXN Detail", "Decreases."], ["Less TXN Detail", "Unchanged."]]
+        }
       };
       set("recovery_less", "recover-user-confirm", claimUserConfirmLess);
       set("recovery_over", "recover-user-confirm", claimUserConfirmOver);
 
       const deductionExport = {
         desc: "Export discrepancy details for offline wallet deduction processing.",
-        groups: { DFR: [["Deduction List", "Exports the selected discrepancies for offline wallet deduction processing."]] }
+        groups: { DFR: [["Processing Status", "On-hold."]] }
       };
       set("recovery_less", "recover-user-export", deductionExport);
       set("recovery_over", "recover-user-export", deductionExport);
@@ -10011,7 +10017,8 @@ ${lines}
       set("recovery_less", "recover-user-export", "processingStatusOnly");
       set("recovery_over", "recover-user-export", "processingStatusOnly");
       set("recovery_less", "recover-user-confirm", "paymentLess");
-      set("recovery_over", "recover-user-confirm", "paymentOverIncrease");
+      set("recovery_over", "recover-user-confirm", "blank");
+      set("recovery_over", "recover-user-export", "blank");
     }
     applyColumnMImpactCopy();
 
@@ -10027,8 +10034,7 @@ ${lines}
           return handlingType.includes("bank detail available") ? "blank" : "bankConfirmLess";
         }
         if (node.id === "bank-no-detail") {
-          const handlingType = String(getSelectedRefundRows().row?.handlingType || "").toLowerCase();
-          return handlingType.includes("bank detail available") ? "blank" : "createSelectedPaymentOver";
+          return "createSelectedPaymentOver";
         }
       }
       if (scenarioKey === "confirmed_offline_transaction_less") {
@@ -10038,7 +10044,7 @@ ${lines}
       }
       if (scenarioKey === "recovery_less" || scenarioKey === "recovery_over") {
         if (node.id === "recover-no-detail") return isOver ? "bankOver" : "bankLess";
-        if (node.id === "recover-user-confirm") return isOver ? "paymentOverIncrease" : "paymentLess";
+        if (node.id === "recover-user-confirm") return isOver ? "blank" : "paymentLess";
       }
       if (scenarioKey === "invalidate") {
         if (node.id === "invalidate-channel-detail") return "oppositeBankLess";
@@ -10064,6 +10070,8 @@ ${lines}
         "Bank Incurring Amount decreases",
         "Payment Incurring Amount",
         "Bank Incurring Amount",
+        "bank account",
+        "refund to SOF",
         "Over TXN",
         "Less TXN",
         "original transaction detail",
@@ -10178,7 +10186,10 @@ ${lines}
 
     function operationFlowImpactHtml(groups, impactKey = "") {
       if (state.operationEntryPoint === "upload") return "";
-      if (impactKey) return columnMImpactHtml(columnMImpactCopy[impactKey]);
+      if (impactKey) {
+        const impactHtml = columnMImpactHtml(columnMImpactCopy[impactKey]);
+        if (impactHtml) return impactHtml;
+      }
       const isUnchangedImpact = (result) => /^(?:unchanged\b|total amount unchange\b|total amount unchanged\b)/i.test(String(result || "").trim());
       const changedGroups = Object.entries(groups || {})
         .map(([report, rows]) => [report, rows.filter(([, result]) => !isUnchangedImpact(result))])
@@ -10194,17 +10205,20 @@ ${lines}
       const isSelected = isLeaf && flowState.selectedLeaf === node.id;
       const isBankDetailAvailable = /bank detail available/i.test(String(node.title || ""));
       const isRefundExport = /export(?: offline)?(?: refund)? list/i.test(String(node.title || ""));
+      const isDeductionExport = /export deduction list/i.test(String(node.title || ""));
       const visibleChildren = (node.children || []).filter(isOperationNodeVisible);
       const statusUpdateText = isBankDetailAvailable
         ? "Processing status will change from 'Unprocessed' to 'On-hold'."
         : isRefundExport
           ? "Processing status will change from 'Unprocessed' to 'Processing'."
+          : isDeductionExport
+            ? "Processing status will change from 'Unprocessed' to 'On-hold'."
           : "";
       const statusUpdateHtml = isLeaf && isSelected && statusUpdateText
         ? `<div class="flow-status-callout"><span class="flow-status-callout-label">Status update</span><strong>${statusUpdateText}</strong></div>`
         : "";
       const impactKey = getOperationFlowImpactKey(node, flowState.scenarioKey);
-      const impactHtml = isLeaf && isSelected && !isBankDetailAvailable && !isRefundExport ? operationFlowImpactHtml(node.groups, impactKey) : "";
+      const impactHtml = isLeaf && isSelected && !isBankDetailAvailable && !isRefundExport && !isDeductionExport ? operationFlowImpactHtml(node.groups, impactKey) : "";
       return `<article class="flow-node ${isLeaf ? "leaf" : ""} ${isBankDetailAvailable ? "bank-detail-available-node" : isRefundExport ? "refund-export-node" : ""} ${isOpen ? "open" : ""} ${isSelected ? "selected" : ""} ${eligible ? "" : "ineligible"}" data-flow-node-id="${escapeHtml(node.id)}"><div class="flow-summary" role="button" tabindex="${eligible ? "0" : "-1"}" aria-disabled="${!eligible}" ${isLeaf ? `aria-pressed="${isSelected}"` : `aria-expanded="${isOpen}"`}><div class="flow-title-row"><div class="flow-icon flow-icon-${escapeHtml(node.icon)}">${operationFlowIcons[node.icon] || operationFlowIcons.confirm}</div><div><div class="flow-title">${escapeHtml(node.title)}</div><div class="flow-description">${escapeHtml(node.desc)}</div></div><div class="flow-indicator">✓</div></div></div>${statusUpdateHtml || impactHtml ? `<div class="flow-leaf-content">${statusUpdateHtml || impactHtml}</div>` : ""}${visibleChildren.length && isOpen ? `<div class="flow-children-wrap"><div class="flow-children">${visibleChildren.map(child => renderOperationFlowNode(child, flowState)).join("")}</div></div>` : ""}</article>`;
     }
 
