@@ -4036,7 +4036,9 @@
 	    }
 
     #confirmRefundResultPage .refund-bank-account-control,
-    #confirmRefundResultPage input[aria-label="Refund Destination"] {
+    #confirmRefundResultPage .refund-payout-bank-account-control,
+    #confirmRefundResultPage input[aria-label="Refund Destination"],
+    #confirmRefundResultPage input[aria-label="Refund/Payout Destination"] {
       width: 204px;
       min-width: 204px;
     }
@@ -10389,7 +10391,8 @@ ${lines}
           const header = headers[index];
           if (!header || cell.dataset.notApplicable === "true") return;
           const label = operationLabel(header);
-          const required = alwaysRequiredOperationFields.has(label) || header.textContent.includes("*") || Boolean(cell.querySelector("[required], [data-required-field]"));
+          const hasDisabledConditionalField = Boolean(cell.querySelector("[data-conditional-required]:disabled"));
+          const required = !hasDisabledConditionalField && (alwaysRequiredOperationFields.has(label) || header.textContent.includes("*") || Boolean(cell.querySelector("[required], [data-required-field]")));
           prepareOperationField(cell, label, required);
         })));
       });
@@ -10851,6 +10854,36 @@ ${lines}
     }
 
     function refundOutcomeFieldsHtml(options = {}) {
+      if (options.includeRefundPayoutType) {
+        return `
+          <td>
+            <select class="operation-select-control compact refund-payout-type-control" aria-label="Refund/Payout Type" required>
+              <option value="">Select</option>
+              <option value="Bank Account">Bank Account</option>
+              <option value="SOF">SOF</option>
+            </select>
+          </td>
+          <td>
+            <select class="operation-select-control compact" aria-label="Refund/Payout Status" required>
+              <option value="">Select</option>
+              <option>Success</option>
+              <option>Failed</option>
+            </select>
+          </td>
+          <td>
+            <select class="operation-select-control compact refund-payout-bank-account-control" aria-label="Refund/Payout Bank Account" data-conditional-required="refund-payout-bank-account" disabled>
+              <option value="">Select Bank Account</option>
+              ${refundBankAccountOptions()}
+            </select>
+          </td>
+          <td>
+            <input class="inline-field-input compact refund-payout-destination-control" type="text" aria-label="Refund/Payout Destination" placeholder="Enter refund/payout destination" required />
+          </td>
+          <td><input class="inline-field-input compact" aria-label="Destination Name" placeholder="Enter account name" /></td>
+          <td><input class="inline-field-input compact" aria-label="Destination No" placeholder="Enter account number" /></td>
+          <td><input class="inline-field-input compact" aria-label="Reason" placeholder="Enter reason" /></td>
+        `;
+      }
       if (options.isPayout) {
         return `
           <td>
@@ -11033,6 +11066,7 @@ ${lines}
         || (normalizedTitle.includes("bank account") && normalizedTitle.includes("confirm offline result"));
       const includeRefundBankAccount = normalizedTitle.includes("bank account")
         && normalizedTitle.includes("confirm offline result") && !detailStatus;
+      const includeRefundPayoutType = includeRefundBankAccount;
       const useRefundPayoutDate = isLessTxn && isRefundPayoutPath;
       const useRefundDate = isLessTxn
         && (normalizedTitle.includes("refund to wallet") || normalizedTitle.includes("bank detail unavailable"));
@@ -11061,15 +11095,22 @@ ${lines}
       document.getElementById("confirmRefundDirection").textContent = row.direction || "IN";
       document.getElementById("confirmRefundAmount").textContent = `RM${totalAmount.toFixed(2)}`;
       document.getElementById("confirmRefundPromptText").textContent = confirmRefundPromptText;
-      document.getElementById("confirmRefundStatusHeader").innerHTML = '<span class="required-mark">*</span>Refund Status';
+      document.getElementById("confirmRefundStatusHeader").innerHTML = `<span class="required-mark">*</span>${includeRefundPayoutType ? "Refund/Payout Status" : "Refund Status"}`;
+      document.getElementById("confirmRefundTypeHeader")?.remove();
       document.getElementById("confirmRefundBankAccountHeader")?.remove();
+      if (includeRefundPayoutType) {
+        const typeHeader = document.createElement("th");
+        typeHeader.id = "confirmRefundTypeHeader";
+        typeHeader.innerHTML = '<span class="required-mark">*</span>Refund/Payout Type';
+        document.getElementById("confirmRefundStatusHeader").before(typeHeader);
+      }
       if (includeRefundBankAccount) {
         const bankAccountHeader = document.createElement("th");
         bankAccountHeader.id = "confirmRefundBankAccountHeader";
-        bankAccountHeader.innerHTML = '<span class="required-mark">*</span>Refund Bank Account';
+        bankAccountHeader.innerHTML = '<span class="required-mark">*</span>Refund/Payout Bank Account';
         document.getElementById("confirmRefundDestinationHeader").before(bankAccountHeader);
       }
-      document.getElementById("confirmRefundDestinationHeader").innerHTML = '<span class="required-mark">*</span>Refund Destination';
+      document.getElementById("confirmRefundDestinationHeader").innerHTML = `<span class="required-mark">*</span>${includeRefundPayoutType ? "Refund/Payout Destination" : "Refund Destination"}`;
       document.getElementById("confirmRefundNameHeader").textContent = "Destination Name";
       document.getElementById("confirmRefundNumberHeader").textContent = "Destination No";
       document.getElementById("confirmRefundDateHeader").innerHTML = useRefundPayoutDate
@@ -11091,7 +11132,7 @@ ${lines}
         const displayDateLabel = item.type === "Less TXN" && isRefundPayoutPath ? "Refund/Payout Date" : dateLabel;
         return `
         <tr>
-          ${refundOutcomeFieldsHtml({ isPayout: false, includeRefundBankAccount })}
+          ${refundOutcomeFieldsHtml({ isPayout: false, includeRefundBankAccount, includeRefundPayoutType })}
           <td>${escapeHtml(item.id)}</td>
           <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
           <td>${escapeHtml(item.reconId)}</td>
@@ -11103,6 +11144,29 @@ ${lines}
           <td>${escapeHtml(item.amount)}</td>
         </tr>
       `; }).join("");
+      const syncRefundPayoutTypeControls = () => {
+        if (!includeRefundPayoutType) return;
+        confirmRefundTableBody.querySelectorAll(".refund-payout-type-control").forEach(typeControl => {
+          const bankAccountControl = typeControl.closest("tr")?.querySelector(".refund-payout-bank-account-control");
+          if (!bankAccountControl) return;
+          const bankAccountSelected = typeControl.value === "Bank Account";
+          bankAccountControl.disabled = !bankAccountSelected;
+          bankAccountControl.toggleAttribute("required", bankAccountSelected);
+          bankAccountControl.setAttribute("aria-disabled", String(!bankAccountSelected));
+          const bankAccountHeader = document.getElementById("confirmRefundBankAccountHeader");
+          if (bankAccountHeader) bankAccountHeader.innerHTML = `${bankAccountSelected ? '<span class="required-mark">*</span>' : ''}Refund/Payout Bank Account`;
+          if (bankAccountSelected) bankAccountControl.dataset.requiredField = "Refund/Payout Bank Account";
+          else {
+            bankAccountControl.value = "";
+            delete bankAccountControl.dataset.requiredField;
+            bankAccountControl.removeAttribute("aria-invalid");
+            bankAccountControl.closest(".validation-field")?.classList.remove("invalid");
+          }
+        });
+      };
+      confirmRefundTableBody.querySelectorAll(".refund-payout-type-control").forEach(control => control.addEventListener("change", syncRefundPayoutTypeControls));
+      syncRefundPayoutTypeControls();
+      if (includeRefundPayoutType) queueMicrotask(syncRefundPayoutTypeControls);
     }
 
     function openBankDetailReportPage(title = "Refund & Payout to Bank Account /SOF – Confirm Offline Result - Bank Detail Available") {
