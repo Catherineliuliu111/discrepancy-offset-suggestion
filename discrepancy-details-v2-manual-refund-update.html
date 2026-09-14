@@ -10881,20 +10881,54 @@ ${lines}
     function cotOriginalReference(row) { return getCotCandidate(state.cotMatches?.[row.id])?.referenceId || "-"; }
     function renderCotList() {
       const rows = getCotRows();
-      const isLess = String(rows[0]?.type || "Less TXN").toLowerCase() === "less txn";
-      const fields = isLess
-        ? ["Refund Date", "Biz Code", "Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Channel Fund Direction", "Channel Amount", "Extra Info"]
-        : ["Refund Date", "Biz Code", "Discrepancy Order ID", "Reference ID", "Voucher ID", "System Code", "Transaction Fund Direction", "Transaction Amount", "Channel Fund Direction", "Extra Info"];
-      document.getElementById("cotListHead").innerHTML = `<tr>${fields.map(field => `<th>${field}</th>`).join("")}</tr>`;
+      const fields = [
+        "Refund Status",
+        "Refund Bank Account",
+        "Refund Destination",
+        "Destination Name",
+        "Destination No",
+        "Reason",
+        "Discrepancy Order ID",
+        "Refund Date",
+        "Biz Code",
+        "Reference ID",
+        "Voucher ID",
+        "System Code",
+        "Channel Fund Direction",
+        "Channel Amount",
+        "Extra Info"
+      ];
+      const requiredFields = new Set(["Refund Status", "Refund Bank Account", "Refund Destination"]);
+      document.getElementById("cotListHead").innerHTML = `<tr>${fields.map(field => `<th>${requiredFields.has(field) ? '<span class="required-mark">*</span>' : ''}${field}</th>`).join("")}</tr>`;
       document.getElementById("cotListBody").innerHTML = rows.map(row => {
-        const common = `<td><input class="cot-input" type="date" value="${escapeHtml(row.clearingDate || currentIsoDate())}"></td><td><select class="cot-select"><option>Refund – Merchant Funding</option><option>Refund – User Payment</option></select></td><td>${escapeHtml(row.id)}</td><td>${escapeHtml(cleanReferenceId(row.referenceId))}</td><td>${escapeHtml(row.reconId || "-")}</td><td>${escapeHtml(row.source || "-")}</td>`;
-        return `<tr>${common}${isLess ? `<td>${escapeHtml(row.channelDirection || row.direction || "-")}</td><td>${escapeHtml(row.channelAmount || row.amount || "-")}</td>` : `<td>${escapeHtml(row.direction || "-")}</td><td>${escapeHtml(row.amount || "-")}</td><td>${escapeHtml(row.channelDirection || row.direction || "-")}</td>`}<td><span class="cot-extra" title="${escapeHtml(row.extraInfo || "-")}">${escapeHtml(row.extraInfo || "-")}</span></td></tr>`;
+        const refundDate = row.refundDate || row.clearingDate || currentIsoDate();
+        return `<tr>
+          <td><select class="cot-select" data-required-field="Refund Status" aria-label="Refund Status" required><option value="">Select</option><option value="Success">Success</option><option value="Failed">Failed</option></select></td>
+          <td><select class="cot-select refund-bank-account-control" data-required-field="Refund Bank Account" aria-label="Refund Bank Account" required><option value="">Select Bank Account</option>${refundBankAccountOptions()}</select></td>
+          <td><input class="cot-input" type="text" data-required-field="Refund Destination" aria-label="Refund Destination" placeholder="Enter refund destination" required></td>
+          <td><input class="cot-input" type="text" aria-label="Destination Name" placeholder="Enter destination name"></td>
+          <td><input class="cot-input" type="text" aria-label="Destination No" placeholder="Enter destination no"></td>
+          <td><input class="cot-input" type="text" aria-label="Reason" placeholder="Enter reason"></td>
+          <td>${escapeHtml(row.id)}</td>
+          <td><input class="cot-input" type="date" data-required-field="Refund Date" aria-label="Refund Date" value="${escapeHtml(refundDate)}" required></td>
+          <td><select class="cot-select" data-required-field="Biz Code" aria-label="Biz Code" required><option value="Refund – Merchant Funding">Refund – Merchant Funding</option><option value="Refund – User Payment">Refund – User Payment</option></select></td>
+          <td>${escapeHtml(cleanReferenceId(row.referenceId))}</td>
+          <td>${escapeHtml(row.reconId || "-")}</td>
+          <td>${escapeHtml(row.source || "-")}</td>
+          <td>${escapeHtml(row.channelDirection || row.direction || "-")}</td>
+          <td>${escapeHtml(row.channelAmount || row.amount || "-")}</td>
+          <td><span class="cot-extra" title="${escapeHtml(row.extraInfo || "-")}">${escapeHtml(row.extraInfo || "-")}</span></td>
+        </tr>`;
       }).join("");
       document.querySelectorAll("[data-cot-row]").forEach(node => node.addEventListener("click", () => openCotPaymentModal(node.dataset.cotRow)));
     }
     function openConfirmedOfflineRefundPage() {
       const { selectedRows, row, totalAmount } = getSelectedRefundRows();
       const rows = selectedRows.length ? selectedRows : (row ? [row] : []);
+      if (!rows.length || !rows.every(isConfirmedOfflineTransactionEligible)) {
+        showToast("Confirm Completed Refund is available only for Less TXN + Fund OUT with Failed or blank Source Status.", "warn");
+        return;
+      }
       state.cotMatches ||= {};
       rows.forEach((item, index) => { if (!(item.id in state.cotMatches)) state.cotMatches[item.id] = index === 0 ? cotPaymentCandidates[0].id : ""; });
       showOperationPage("confirmedOfflineRefundPage", "Confirm Completed Refund");
