@@ -8074,6 +8074,25 @@
     </div>
   </div>
 
+  <div class="modal-backdrop operation-dialog" id="confirmedOfflineRefundPreconditionModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmedOfflineRefundPreconditionTitle">
+      <div class="modal-head">
+        <strong id="confirmedOfflineRefundPreconditionTitle">Confirm Offline Refund Result First</strong>
+        <button class="ghost-icon" data-close="#confirmedOfflineRefundPreconditionModal" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="flow-info">
+          <span class="flow-info-icon">i</span>
+          <span>Please confirm the Offline Refund result before proceeding with Confirm Completed Refund. If you are not sure about the refund result yet, please confirm the result first.</span>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" data-close="#confirmedOfflineRefundPreconditionModal">Cancel</button>
+        <button class="btn primary" id="confirmedOfflineRefundPreconditionConfirmBtn">I Have Confirmed the Result</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-backdrop operation-dialog" id="uploadConfirmedOfflineTransactionModal">
     <div class="modal">
       <div class="modal-head">
@@ -9317,7 +9336,18 @@ ${lines}
       const supplementAllowed = selectedRows.length > 0 && selectedRows.every(isSupplementTransactionEligible);
       document.querySelector('[data-handle-title="Manual Supplement"]')?.classList.toggle("disabled", !supplementAllowed);
       const confirmedOfflineTransactionAllowed = selectedRows.length > 0 && selectedRows.every(isConfirmedOfflineTransactionEligible);
-      document.querySelector('[data-handle-title="Confirm Completed Refund"]')?.classList.toggle("disabled", !confirmedOfflineTransactionAllowed);
+      const confirmedOfflineTransactionItem = document.querySelector('[data-handle-title="Confirm Completed Refund"]');
+      confirmedOfflineTransactionItem?.classList.toggle("disabled", !confirmedOfflineTransactionAllowed);
+      confirmedOfflineTransactionItem?.setAttribute("aria-disabled", String(!confirmedOfflineTransactionAllowed));
+      const confirmedOfflineTransactionTip = confirmedOfflineTransactionItem?.querySelector(".info-dot");
+      if (confirmedOfflineTransactionTip) {
+        const hasSourcePaymentId = selectedRows.some(row => hasFieldValue(row.sourcePaymentId));
+        confirmedOfflineTransactionTip.dataset.tip = confirmedOfflineTransactionAllowed
+          ? "Confirm a completed offline refund transaction."
+          : hasSourcePaymentId
+            ? "Source Payment ID is present. Please use Update to Success."
+            : "Available only for Less TXN + Fund OUT with an empty Source Payment ID and a blank or Failed Source Status.";
+      }
       const switchStatementReconAllowed = selectedRows.length > 0 && selectedRows.every(isSwitchStatementReconEligible);
       document.querySelector('[data-handle-title="Switch To Statement Recon"]')?.classList.toggle("disabled", !switchStatementReconAllowed);
     }
@@ -10096,11 +10126,16 @@ ${lines}
       const sourceStatus = String(row?.sourceStatus || "").trim().toLowerCase();
       return discrepancyType === "less txn"
         && direction === "out"
+        && !hasFieldValue(row?.sourcePaymentId)
         && (sourceStatus === "" || sourceStatus === "failed");
     }
 
     function isConfirmedOfflineTransactionEligible(row) {
       return isConfirmedOfflineRefundEligible(row);
+    }
+
+    function confirmedOfflineRefundEligibilityMessage() {
+      return "Confirm Completed Refund is available only for Less TXN + Fund OUT records with an empty Source Payment ID and a blank or Failed Source Status. If Source Payment ID is present, please use Update to Success.";
     }
 
     function getDefaultSupplementRows() {
@@ -10607,6 +10642,10 @@ ${lines}
         closeOperationPage();
         return;
       }
+      if (pageId === "confirmedOfflineRefundPage") {
+        openModal("#confirmedOfflineRefundPreconditionModal");
+        return;
+      }
       const upload = operationUploads.get(pageId);
       if (upload?.records.length && page.querySelector("[data-upload-trigger]")?.getClientRects().length) {
         state.lastValidatedUpload = { operation: operationTitle, records: upload.records };
@@ -10875,19 +10914,17 @@ ${lines}
     function getCotRows() { const { selectedRows, row } = getSelectedRefundRows(); return selectedRows.length ? selectedRows : (row ? [row] : []); }
     function cotMatchCell(row) {
       const match = getCotCandidate(state.cotMatches?.[row.id]);
-      return match ? `<button class="cot-link" data-cot-row="${escapeHtml(row.id)}">${escapeHtml(match.id)}</button><span class="cot-matched-tag">Matched</span>` : `<button class="cot-empty" data-cot-row="${escapeHtml(row.id)}">+ Select Offline Payment</button>`;
+      return match ? `<button class="cot-link" data-cot-row="${escapeHtml(row.id)}">${escapeHtml(match.id)}</button><span class="cot-matched-tag">Matched</span>` : `<button class="cot-empty" data-cot-row="${escapeHtml(row.id)}">+ Select Offline Transaction</button>`;
     }
-    function cotOriginalPayment(row) { return getCotCandidate(state.cotMatches?.[row.id])?.paymentId || "-"; }
-    function cotOriginalReference(row) { return getCotCandidate(state.cotMatches?.[row.id])?.referenceId || "-"; }
     function renderCotList() {
       const rows = getCotRows();
       const fields = [
         "Refund Status",
-        "Refund Bank Account",
         "Refund Destination",
         "Destination Name",
         "Destination No",
         "Reason",
+        "Offline Transaction Match",
         "Discrepancy Order ID",
         "Refund Date",
         "Biz Code",
@@ -10898,17 +10935,17 @@ ${lines}
         "Channel Amount",
         "Extra Info"
       ];
-      const requiredFields = new Set(["Refund Status", "Refund Bank Account", "Refund Destination"]);
+      const requiredFields = new Set(["Refund Status", "Refund Destination"]);
       document.getElementById("cotListHead").innerHTML = `<tr>${fields.map(field => `<th>${requiredFields.has(field) ? '<span class="required-mark">*</span>' : ''}${field}</th>`).join("")}</tr>`;
       document.getElementById("cotListBody").innerHTML = rows.map(row => {
         const refundDate = row.refundDate || row.clearingDate || currentIsoDate();
         return `<tr>
           <td><select class="cot-select" data-required-field="Refund Status" aria-label="Refund Status" required><option value="">Select</option><option value="Success">Success</option><option value="Failed">Failed</option></select></td>
-          <td><select class="cot-select refund-bank-account-control" data-required-field="Refund Bank Account" aria-label="Refund Bank Account" required><option value="">Select Bank Account</option>${refundBankAccountOptions()}</select></td>
           <td><input class="cot-input" type="text" data-required-field="Refund Destination" aria-label="Refund Destination" placeholder="Enter refund destination" required></td>
           <td><input class="cot-input" type="text" aria-label="Destination Name" placeholder="Enter destination name"></td>
           <td><input class="cot-input" type="text" aria-label="Destination No" placeholder="Enter destination no"></td>
           <td><input class="cot-input" type="text" aria-label="Reason" placeholder="Enter reason"></td>
+          <td class="cot-match-cell">${cotMatchCell(row)}</td>
           <td>${escapeHtml(row.id)}</td>
           <td><input class="cot-input" type="date" data-required-field="Refund Date" aria-label="Refund Date" value="${escapeHtml(refundDate)}" required></td>
           <td><select class="cot-select" data-required-field="Biz Code" aria-label="Biz Code" required><option value="Refund – Merchant Funding">Refund – Merchant Funding</option><option value="Refund – User Payment">Refund – User Payment</option></select></td>
@@ -10926,7 +10963,7 @@ ${lines}
       const { selectedRows, row, totalAmount } = getSelectedRefundRows();
       const rows = selectedRows.length ? selectedRows : (row ? [row] : []);
       if (!rows.length || !rows.every(isConfirmedOfflineTransactionEligible)) {
-        showToast("Confirm Completed Refund is available only for Less TXN + Fund OUT with Failed or blank Source Status.", "warn");
+        showToast(confirmedOfflineRefundEligibilityMessage(), "warn");
         return;
       }
       state.cotMatches ||= {};
@@ -12142,7 +12179,7 @@ ${lines}
       } else if (title === "Confirm Completed Refund") {
         const selectedRows = state.rows.filter(row => state.selectedRowIds.has(row.id));
         if (requireEligibleSelection && (!selectedRows.length || !selectedRows.every(isConfirmedOfflineTransactionEligible))) {
-          showToast("Confirm Completed Refund is available only for Less TXN + Fund OUT with Failed or blank Source Status.", "warn");
+          showToast(confirmedOfflineRefundEligibilityMessage(), "warn");
         } else {
           openModal("#confirmedOfflineRefundModal");
         }
@@ -12311,6 +12348,10 @@ ${lines}
         openConfirmedOfflineRefundPage();
       }
     });
+    document.getElementById("confirmedOfflineRefundPreconditionConfirmBtn").addEventListener("click", () => {
+      closeModal("#confirmedOfflineRefundPreconditionModal");
+      completeActiveOperation("Confirm Completed Refund");
+    });
     document.getElementById("invalidateConfirmBtn").addEventListener("click", () => {
       const actionTitles = {
         "invalidate-channel-detail": "Invalidate - Channel Detail",
@@ -12332,10 +12373,11 @@ ${lines}
       const matchButton = [...document.querySelectorAll("[data-cot-row]")].find(button => button.dataset.cotRow === cotActiveRowId);
       if (row && matchButton) {
         const cells = matchButton.closest("tr").cells;
-        cells[0].innerHTML = cotMatchCell(row);
-        cells[0].querySelector("[data-cot-row]").addEventListener("click", () => openCotPaymentModal(row.id));
-        cells[1].textContent = cotOriginalPayment(row);
-        cells[2].textContent = cotOriginalReference(row);
+        const matchCell = [...cells].find(cell => cell.classList.contains("cot-match-cell"));
+        if (matchCell) {
+          matchCell.innerHTML = cotMatchCell(row);
+          matchCell.querySelector("[data-cot-row]").addEventListener("click", () => openCotPaymentModal(row.id));
+        }
       }
     });
     document.getElementById("claimFundConfirmBtn").addEventListener("click", () => {
