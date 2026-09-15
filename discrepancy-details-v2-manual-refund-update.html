@@ -9959,6 +9959,43 @@ ${lines}
     }
     applyLatestOperationSheetCopy();
 
+    function createLessInRefundScenario() {
+      const baseScenario = operationFlowData.refund_less;
+      operationFlowData.refund_less_in = {
+        ...baseScenario,
+        nodes: baseScenario.nodes.map(node => node.id !== "bank" ? node : {
+          ...node,
+          children: node.children.map(child => child.id !== "bank-confirm" ? child : {
+            ...child,
+            action: undefined,
+            childrenLabel: "Bank Detail Availability",
+            children: [
+              {
+                id: "bank-detail-available",
+                action: "bank-confirm-with",
+                icon: "detail",
+                title: "Bank Detail Available",
+                desc: "Confirm the refund status and wait for bank details for reconciliation.",
+                groups: { DFR: [["Processing Status", "Processing."]] }
+              },
+              {
+                id: "bank-no-detail",
+                action: "bank-confirm-without",
+                icon: "noDetail",
+                title: "Bank Detail Unavailable",
+                desc: "Confirm the refund status and create an Account Statement when bank details are unavailable.",
+                groups: {
+                  "Statement Recon": [["Account Statement", "Generated based on the actual Refund Bank Account."]],
+                  DFR: [["Offline Refund Transaction", "Generated based on the Bank Account entered by the user."]]
+                }
+              }
+            ]
+          })
+        })
+      };
+    }
+    createLessInRefundScenario();
+
     // Col M is the final UI copy source. Each operation flow uses one of these
     // approved three-line summaries instead of the previous field-by-field
     // impact list.
@@ -10003,6 +10040,8 @@ ${lines}
       set("refund_less", "bank-export", "processingStatusOnly");
       set("refund_over", "bank-export", "processingStatusOnly");
       set("refund_less", "bank-confirm", "bankConfirmLess");
+      set("refund_less_in", "bank-detail-available", "processingStatusOnly");
+      set("refund_less_in", "bank-no-detail", "bankLess");
       set("refund_over", "bank-detail-available", "processingStatusOnly");
       set("refund_over", "bank-no-detail", "createSelectedPaymentOver");
 
@@ -10026,7 +10065,7 @@ ${lines}
 
     function getOperationFlowImpactKey(node, scenarioKey) {
       const { isOver } = getSelectedCaseContext();
-      if (scenarioKey === "refund_less" || scenarioKey === "refund_over") {
+      if (["refund_less", "refund_less_in", "refund_over"].includes(scenarioKey)) {
         if (node.id === "wallet-online" || node.id === "wallet-confirm") {
           return isOver ? "paymentOverIncrease" : "paymentLess";
         }
@@ -10036,7 +10075,7 @@ ${lines}
           return handlingType.includes("bank detail available") ? "blank" : "bankConfirmLess";
         }
         if (node.id === "bank-no-detail") {
-          return "createSelectedPaymentOver";
+          return scenarioKey === "refund_less_in" ? "bankLess" : "createSelectedPaymentOver";
         }
       }
       if (scenarioKey === "confirmed_offline_transaction_less") {
@@ -10164,9 +10203,9 @@ ${lines}
 
     function isOperationNodeVisible(node) {
       if (state.operationEntryPoint === "upload") return true;
-      const { isLess, isOver, isOut } = getSelectedCaseContext();
+      const { isLess, isOver, isIn, isOut } = getSelectedCaseContext();
       if (["bank-confirm", "bank-detail-available", "bank-no-detail"].includes(node.id)) {
-        if (isLess) return node.id === "bank-confirm";
+        if (isLess) return isIn || node.id === "bank-confirm";
         return isOver && isOut;
       }
       // External refunds are only applicable to a bank-side Less OUT.
@@ -10274,13 +10313,15 @@ ${lines}
     }
 
     function prepareOperationFlow(kind) {
-      const { isOver, type, direction } = getSelectedCaseContext();
+      const { isOver, isLess, isIn, type, direction } = getSelectedCaseContext();
       const flowState = operationFlowState[kind];
       flowState.scenarioKey = kind === "confirmed"
         ? "confirmed_offline_transaction_less"
         : kind === "invalidate"
           ? "invalidate"
-        : `${kind === "refund" ? "refund" : "recovery"}_${isOver ? "over" : "less"}`;
+        : kind === "refund" && isLess && isIn
+          ? "refund_less_in"
+          : `${kind === "refund" ? "refund" : "recovery"}_${isOver ? "over" : "less"}`;
       flowState.caseSignature = `${type}|${direction}`;
       flowState.openPath = [];
       flowState.selectedLeaf = "";
@@ -11272,6 +11313,7 @@ ${lines}
     function openConfirmRefundResultPage(title) {
       const { selectedRows, row, totalAmount } = getSelectedRefundRows();
       const normalizedType = String(row.type || "").trim().toLowerCase();
+      const normalizedDirection = String(row.direction || "").trim().toLowerCase();
       const normalizedTitle = String(title || "").toLowerCase();
       const detailStatus = title.endsWith(" - Bank Detail Available")
         ? "Bank Detail Available"
@@ -11281,11 +11323,14 @@ ${lines}
       const displayTitle = detailStatus ? title.slice(0, -(detailStatus.length + 3)) : title;
       const isOverTxn = normalizedType.includes("over");
       const isLessTxn = normalizedType.includes("less");
+      const isOverOut = isOverTxn && normalizedDirection === "out";
+      const isLessIn = isLessTxn && normalizedDirection === "in";
       const isRefundPayoutPath = normalizedTitle.includes("refund to wallet")
         || (normalizedTitle.includes("bank account") && normalizedTitle.includes("confirm offline result"));
       const includeRefundBankAccount = normalizedTitle.includes("bank account")
-        && normalizedTitle.includes("confirm offline result") && !detailStatus;
-      const includeRefundPayoutType = includeRefundBankAccount;
+        && normalizedTitle.includes("confirm offline result")
+        && (!detailStatus || isOverOut || isLessIn);
+      const includeRefundPayoutType = includeRefundBankAccount && !detailStatus;
       const useRefundPayoutDate = isLessTxn && isRefundPayoutPath;
       const useRefundDate = isLessTxn
         && (normalizedTitle.includes("refund to wallet") || normalizedTitle.includes("bank detail unavailable"));
@@ -11326,7 +11371,7 @@ ${lines}
       if (includeRefundBankAccount) {
         const bankAccountHeader = document.createElement("th");
         bankAccountHeader.id = "confirmRefundBankAccountHeader";
-        bankAccountHeader.innerHTML = '<span class="required-mark">*</span>Refund/Payout Bank Account';
+        bankAccountHeader.innerHTML = `<span class="required-mark">*</span>${includeRefundPayoutType ? "Refund/Payout Bank Account" : "Refund Bank Account"}`;
         document.getElementById("confirmRefundDestinationHeader").before(bankAccountHeader);
       }
       document.getElementById("confirmRefundDestinationHeader").innerHTML = `<span class="required-mark">*</span>${includeRefundPayoutType ? "Refund/Payout Destination" : "Refund Destination"}`;
