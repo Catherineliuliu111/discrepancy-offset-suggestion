@@ -7559,6 +7559,7 @@
                   <thead>
                     <tr>
                       <th id="bankDetailReportStatusHeader"><span class="required-mark">*</span>Refund Status</th>
+                      <th id="bankDetailReportBankAccountHeader"><span class="required-mark">*</span>Refund Bank Account</th>
                       <th id="bankDetailReportDestinationHeader"><span class="required-mark">*</span>Refund Destination</th>
                       <th>Destination Name</th>
                       <th>Destination No</th>
@@ -11450,6 +11451,7 @@ ${lines}
       reportTag.classList.toggle("with-bank-detail", detailStatus !== "Bank Detail Unavailable");
       reportTag.classList.toggle("without-bank-detail", detailStatus === "Bank Detail Unavailable");
       document.getElementById("bankDetailReportStatusHeader").innerHTML = '<span class="required-mark">*</span>Refund Status';
+      document.getElementById("bankDetailReportBankAccountHeader").innerHTML = '<span class="required-mark">*</span>Refund Bank Account';
       document.getElementById("bankDetailReportDestinationHeader").innerHTML = '<span class="required-mark">*</span>Refund Destination';
       document.getElementById("bankDetailReportDiscrepancyType").textContent = row.type || "Over TXN";
       document.getElementById("bankDetailReportCount").textContent = selectedRows.length || 1;
@@ -11464,7 +11466,7 @@ ${lines}
       const bankDetailReportTableBody = document.getElementById("bankDetailReportTableBody");
       bankDetailReportTableBody.innerHTML = (selectedRows.length ? selectedRows : [row]).map(item => `
         <tr>
-          ${refundOutcomeFieldsHtml({ isPayout: false })}
+          ${refundOutcomeFieldsHtml({ isPayout: false, includeRefundBankAccount: true })}
           <td>${escapeHtml(item.id)}</td>
           <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
           <td>${escapeHtml(item.reconId)}</td>
