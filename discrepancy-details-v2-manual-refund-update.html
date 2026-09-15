@@ -11181,7 +11181,7 @@ ${lines}
           </select>
         </td>` : ""}
         <td>
-          ${options.includeRefundBankAccount ? `
+          ${options.includeRefundBankAccount || options.refundDestinationInput ? `
           <input class="inline-field-input compact" type="text" aria-label="Refund Destination" placeholder="Enter refund destination" required />
           ` : `
           <select class="operation-select-control compact" aria-label="Refund Bank Account" required>
@@ -11326,12 +11326,15 @@ ${lines}
       const isLessTxn = normalizedType.includes("less");
       const isOverOut = isOverTxn && normalizedDirection === "out";
       const isLessIn = isLessTxn && normalizedDirection === "in";
+      const isOverBankDetailAvailable = isOverOut && detailStatus === "Bank Detail Available";
+      const isOverBankDetailUnavailable = isOverOut && detailStatus === "Bank Detail Unavailable";
       const isRefundPayoutPath = normalizedTitle.includes("refund to wallet")
         || (normalizedTitle.includes("bank account") && normalizedTitle.includes("confirm offline result"));
       const includeRefundBankAccount = normalizedTitle.includes("bank account")
         && normalizedTitle.includes("confirm offline result")
-        && (!detailStatus || isOverOut || isLessIn);
+        && (!detailStatus || isOverBankDetailAvailable || isLessIn);
       const includeRefundPayoutType = includeRefundBankAccount && !detailStatus;
+      const refundDestinationIsText = isOverBankDetailUnavailable;
       const useRefundPayoutDate = isLessTxn && isRefundPayoutPath;
       const useRefundDate = isLessTxn
         && (normalizedTitle.includes("refund to wallet") || normalizedTitle.includes("bank detail unavailable"));
@@ -11397,7 +11400,7 @@ ${lines}
         const displayDateLabel = item.type === "Less TXN" && isRefundPayoutPath ? "Refund/Payout Date" : dateLabel;
         return `
         <tr>
-          ${refundOutcomeFieldsHtml({ isPayout: false, includeRefundBankAccount, includeRefundPayoutType })}
+          ${refundOutcomeFieldsHtml({ isPayout: false, includeRefundBankAccount, includeRefundPayoutType, refundDestinationInput: refundDestinationIsText })}
           <td>${escapeHtml(item.id)}</td>
           <td>${escapeHtml(cleanReferenceId(item.referenceId))}</td>
           <td>${escapeHtml(item.reconId)}</td>
