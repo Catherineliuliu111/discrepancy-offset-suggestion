@@ -6585,52 +6585,53 @@
   #confirmedOfflineRefundPage .cot-note{margin:0 18px 18px} #confirmedOfflineRefundPage .cot-link,#confirmedOfflineRefundPage .cot-empty{border:0;background:transparent;color:#1677ff;font:600 13px inherit;cursor:pointer} #confirmedOfflineRefundPage .cot-link{padding:0} #confirmedOfflineRefundPage .cot-empty{padding:5px 8px;border:1px dashed #91caff;border-radius:5px} #confirmedOfflineRefundPage .cot-matched-tag{display:inline-flex;align-items:center;margin-left:7px;padding:2px 6px;border-radius:4px;background:#e6f4ff;color:#1677ff;font-size:10px;font-weight:700;vertical-align:middle}
   #confirmedOfflineRefundPage .cot-input,#confirmedOfflineRefundPage .cot-select{min-width:160px;height:32px;padding:0 8px;border:1px solid #d7e0eb;border-radius:5px;background:#fff;color:#2d3b4e;font:13px inherit} #confirmedOfflineRefundPage .cot-muted{color:#7c899b} #confirmedOfflineRefundPage .cot-extra{display:block;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #confirmedOfflineRefundPage .cot-notes{display:grid;grid-template-columns:minmax(320px,540px);gap:18px} #confirmedOfflineRefundPage .cot-note-row{display:grid;grid-template-columns:max-content minmax(320px,1fr);align-items:center;gap:12px} #confirmedOfflineRefundPage .cot-note-row label{white-space:nowrap} #confirmedOfflineRefundPage .cot-upload{display:grid;place-items:center;min-height:126px;border:1px dashed #cbd5e1;border-radius:7px;background:#fcfdff;color:#3b4758;text-align:center;cursor:pointer} #confirmedOfflineRefundPage .cot-upload b{display:block;margin-bottom:7px;font-size:20px;font-weight:400}
-  #cotPaymentModal.modal-backdrop.open { align-items:center; justify-content:center; padding:18px; background:rgba(17,24,39,.42); }
-  #cotPaymentModal .modal { display:flex; flex-direction:column; width:min(1180px,100%); max-height:calc(100vh - 36px); overflow:hidden; border-radius:16px; }
-  #cotPaymentModal .modal-head { flex:none; align-items:flex-start; padding:20px 24px 17px; }
-  #cotPaymentModal .modal-head strong { display:block; color:#172033; font-size:19px; }
-  #cotPaymentModal .modal-head p { margin:4px 0 0; color:#667085; font-size:12px; }
+  body:has(#cotPaymentModal.modal-backdrop.open) { overflow:hidden; }
+  #cotPaymentModal.modal-backdrop.open { align-items:center; justify-content:center; padding:10px; background:rgba(17,24,39,.42); }
+  #cotPaymentModal .modal { display:flex; flex-direction:column; width:min(1180px,100%); max-height:calc(100vh - 20px); overflow:hidden; border-radius:14px; }
+  #cotPaymentModal .modal-head { flex:none; align-items:flex-start; padding:14px 20px 12px; }
+  #cotPaymentModal .modal-head strong { display:block; color:#172033; font-size:17px; }
+  #cotPaymentModal .modal-head p { margin:2px 0 0; color:#667085; font-size:11px; }
   #cotPaymentModal .modal-close { border:0; background:transparent; color:#748196; font-size:28px; line-height:24px; cursor:pointer; }
-  #cotPaymentModal .cot-modal-body { flex:1; min-height:0; padding:18px 24px 22px; overflow:auto; }
-  #cotPaymentModal .cot-source { margin-bottom:20px; overflow:hidden; border:1px solid #dce3ed; border-radius:11px; background:#f7f9fc; }
-  #cotPaymentModal .cot-source-title { padding:9px 13px; color:#344052; font-size:12px; font-weight:650; }
+  #cotPaymentModal .cot-modal-body { flex:1; min-height:0; padding:10px 20px 12px; overflow:hidden; }
+  #cotPaymentModal .cot-source { margin-bottom:12px; overflow:hidden; border:1px solid #dce3ed; border-radius:9px; background:#f7f9fc; }
+  #cotPaymentModal .cot-source-title { padding:6px 10px; color:#344052; font-size:11px; font-weight:650; }
   #cotPaymentModal .cot-source-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid #dce3ed; background:#fff; }
-  #cotPaymentModal .cot-source-field { min-width:0; padding:12px 14px; }
+  #cotPaymentModal .cot-source-field { min-width:0; padding:8px 10px; }
   #cotPaymentModal .cot-source-field + .cot-source-field { border-left:1px solid #dce3ed; }
-  #cotPaymentModal .cot-field-label { display:block; margin-bottom:5px; color:#758196; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
-  #cotPaymentModal .cot-field-value { display:flex; align-items:center; flex-wrap:wrap; gap:6px; min-width:0; color:#263244; font-size:12px; font-weight:550; line-height:1.35; overflow-wrap:anywhere; }
-  #cotPaymentModal .cot-section-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:13px; }
-  #cotPaymentModal .cot-section-head h3 { margin:0 0 4px; color:#172033; font-size:15px; }
-  #cotPaymentModal .cot-section-head p { margin:0; color:#667085; font-size:12px; }
-  #cotPaymentModal .cot-count { flex:none; padding:5px 9px; border-radius:999px; background:#edf4ff; color:#1756d8; font-size:11px; font-weight:700; }
-  #cotPaymentModal .cot-candidate-list { display:grid; gap:9px; }
-  #cotPaymentModal .cot-candidate { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:13px; min-height:96px; padding:14px; border:1px solid #dce3ed; border-radius:11px; background:#fff; cursor:pointer; }
+  #cotPaymentModal .cot-field-label { display:block; margin-bottom:2px; color:#758196; font-size:9px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+  #cotPaymentModal .cot-field-value { display:flex; align-items:center; flex-wrap:wrap; gap:5px; min-width:0; color:#263244; font-size:11px; font-weight:550; line-height:1.2; overflow-wrap:anywhere; }
+  #cotPaymentModal .cot-section-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:7px; }
+  #cotPaymentModal .cot-section-head h3 { margin:0 0 2px; color:#172033; font-size:14px; }
+  #cotPaymentModal .cot-section-head p { margin:0; color:#667085; font-size:11px; }
+  #cotPaymentModal .cot-count { flex:none; padding:4px 8px; border-radius:999px; background:#edf4ff; color:#1756d8; font-size:10px; font-weight:700; }
+  #cotPaymentModal .cot-candidate-list { display:grid; gap:6px; }
+  #cotPaymentModal .cot-candidate { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:9px; min-height:0; padding:7px 10px; border:1px solid #dce3ed; border-radius:9px; background:#fff; cursor:pointer; }
   #cotPaymentModal .cot-candidate:hover { border-color:#aebbd0; }
   #cotPaymentModal .cot-candidate.selected { border-color:#246bfd; background:#edf4ff; box-shadow:inset 3px 0 0 #246bfd; }
-  #cotPaymentModal .cot-candidate input[type=radio] { width:17px; height:17px; margin:0; accent-color:#246bfd; pointer-events:none; }
-  #cotPaymentModal .cot-candidate-fields { display:grid; grid-template-columns:minmax(180px,1.3fr) minmax(130px,.9fr) minmax(100px,.65fr) minmax(190px,1.25fr); align-items:start; gap:12px; min-width:0; }
-  #cotPaymentModal .cot-match-tag { display:inline-flex; align-items:center; flex:none; padding:3px 6px; border-radius:999px; background:#eaf8f2; color:#0d8a5f; font-size:9px; font-weight:700; }
-  #cotPaymentModal .cot-candidate-badge { display:inline-flex; align-items:center; flex:none; padding:5px 8px; border-radius:999px; background:#f7f9fc; color:#667085; font-size:10px; font-weight:700; white-space:nowrap; }
+  #cotPaymentModal .cot-candidate input[type=radio] { width:15px; height:15px; margin:0; accent-color:#246bfd; pointer-events:none; }
+  #cotPaymentModal .cot-candidate-fields { display:grid; grid-template-columns:minmax(150px,1.35fr) minmax(95px,.85fr) minmax(70px,.55fr) minmax(125px,1.1fr) minmax(85px,.7fr) minmax(70px,.6fr) minmax(150px,1.25fr) minmax(45px,.45fr); align-items:start; gap:8px; min-width:0; }
+  #cotPaymentModal .cot-match-tag { display:inline-flex; align-items:center; flex:none; padding:2px 5px; border-radius:999px; background:#eaf8f2; color:#0d8a5f; font-size:8px; font-weight:700; }
+  #cotPaymentModal .cot-candidate-badge { display:inline-flex; align-items:center; flex:none; padding:4px 7px; border-radius:999px; background:#f7f9fc; color:#667085; font-size:9px; font-weight:700; white-space:nowrap; }
   #cotPaymentModal .cot-candidate-badge.best { background:#eaf8f2; color:#0d8a5f; }
-  #cotPaymentModal .cot-divider { display:flex; align-items:center; gap:12px; margin:20px 0; color:#667085; font-size:11px; white-space:nowrap; }
+  #cotPaymentModal .cot-divider { display:flex; align-items:center; gap:10px; margin:10px 0; color:#667085; font-size:10px; white-space:nowrap; }
   #cotPaymentModal .cot-divider::before, #cotPaymentModal .cot-divider::after { content:""; flex:1; height:1px; background:#dce3ed; }
-  #cotPaymentModal .cot-search-panel { padding:15px; border:1px solid #dce3ed; border-radius:12px; background:#f7f9fc; }
-  #cotPaymentModal .cot-search-panel h3 { margin:0 0 4px; color:#172033; font-size:13px; }
-  #cotPaymentModal .cot-search-panel > p { margin:0; color:#667085; font-size:12px; }
-  #cotPaymentModal .cot-search { display:grid; grid-template-columns:1fr 1fr auto; align-items:end; gap:10px; margin-top:12px; }
-  #cotPaymentModal .cot-search label { display:block; margin-bottom:5px; color:#667085; font-size:11px; font-weight:650; }
-  #cotPaymentModal .cot-search input { width:100%; height:38px; padding:0 10px; border:1px solid #c8d2e1; border-radius:7px; background:#fff; font:12px inherit; }
-  #cotPaymentModal .cot-search .btn { height:38px; min-height:38px; }
-  #cotPaymentModal .cot-search-results { display:none; margin-top:12px; }
+  #cotPaymentModal .cot-search-panel { padding:10px; border:1px solid #dce3ed; border-radius:10px; background:#f7f9fc; }
+  #cotPaymentModal .cot-search-panel h3 { margin:0 0 2px; color:#172033; font-size:12px; }
+  #cotPaymentModal .cot-search-panel > p { margin:0; color:#667085; font-size:10px; }
+  #cotPaymentModal .cot-search { display:grid; grid-template-columns:1fr 1fr auto; align-items:end; gap:8px; margin-top:7px; }
+  #cotPaymentModal .cot-search label { display:block; margin-bottom:3px; color:#667085; font-size:10px; font-weight:650; }
+  #cotPaymentModal .cot-search input { width:100%; height:32px; padding:0 9px; border:1px solid #c8d2e1; border-radius:6px; background:#fff; font:11px inherit; }
+  #cotPaymentModal .cot-search .btn { height:32px; min-height:32px; }
+  #cotPaymentModal .cot-search-results { display:none; margin-top:8px; }
   #cotPaymentModal .cot-search-results.open { display:block; }
   #cotPaymentModal .cot-empty-results { padding:14px; border:1px dashed #c8d2e1; border-radius:9px; color:#667085; font-size:12px; text-align:center; }
-  #cotPaymentModal .cot-footer { display:flex; flex:none; align-items:center; justify-content:space-between; gap:12px; padding:12px 24px; border-top:1px solid #e4eaf2; background:#f7f9fc; }
-  #cotPaymentModal .cot-selection { min-width:0; color:#667085; font-size:10px; }
-  #cotPaymentModal .cot-selection strong { display:block; margin-top:2px; color:#263244; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #cotPaymentModal .cot-footer { display:flex; flex:none; align-items:center; justify-content:space-between; gap:10px; padding:8px 20px; border-top:1px solid #e4eaf2; background:#f7f9fc; }
+  #cotPaymentModal .cot-selection { min-width:0; color:#667085; font-size:9px; }
+  #cotPaymentModal .cot-selection strong { display:block; margin-top:1px; color:#263244; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   #cotPaymentModal .cot-footer-actions { display:flex; gap:8px; }
-  #cotPaymentModal .cot-footer .btn { min-height:34px; height:34px; padding:0 14px; font-size:12px; }
-  @media(max-width:1000px) { #cotPaymentModal .cot-candidate-fields { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-  @media(max-width:800px) { #confirmedOfflineRefundPage .cot-summary{grid-template-columns:repeat(2,1fr)} #confirmedOfflineRefundPage .cot-notes{grid-template-columns:1fr} #confirmedOfflineRefundPage .cot-note-row{grid-template-columns:1fr;gap:6px} #cotPaymentModal .cot-source-grid{grid-template-columns:1fr} #cotPaymentModal .cot-source-field + .cot-source-field{border-left:0;border-top:1px solid #dce3ed} #cotPaymentModal .cot-search{grid-template-columns:1fr} #cotPaymentModal .cot-search .btn{justify-self:start} #cotPaymentModal .cot-candidate-fields{grid-template-columns:1fr} #cotPaymentModal .cot-footer{align-items:stretch;flex-direction:column} #cotPaymentModal .cot-footer-actions{justify-content:flex-end} }
+  #cotPaymentModal .cot-footer .btn { min-height:32px; height:32px; padding:0 13px; font-size:11px; }
+  @media(max-width:1000px) { #cotPaymentModal .cot-candidate-fields { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+  @media(max-width:800px) { #confirmedOfflineRefundPage .cot-summary{grid-template-columns:repeat(2,1fr)} #confirmedOfflineRefundPage .cot-notes{grid-template-columns:1fr} #confirmedOfflineRefundPage .cot-note-row{grid-template-columns:1fr;gap:6px} #cotPaymentModal .cot-source-grid{grid-template-columns:1fr} #cotPaymentModal .cot-source-field + .cot-source-field{border-left:0;border-top:1px solid #dce3ed} #cotPaymentModal .cot-search{grid-template-columns:1fr} #cotPaymentModal .cot-search .btn{justify-self:start} #cotPaymentModal .cot-candidate-fields{grid-template-columns:repeat(2,minmax(0,1fr))} #cotPaymentModal .cot-footer{align-items:stretch;flex-direction:column} #cotPaymentModal .cot-footer-actions{justify-content:flex-end} }
   /* Keep the fixed selection and ID columns stable while the table scrolls horizontally. */
   #detailsPage .table-wrap > table {
     table-layout: auto;
