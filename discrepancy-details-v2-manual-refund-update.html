@@ -6585,10 +6585,52 @@
   #confirmedOfflineRefundPage .cot-note{margin:0 18px 18px} #confirmedOfflineRefundPage .cot-link,#confirmedOfflineRefundPage .cot-empty{border:0;background:transparent;color:#1677ff;font:600 13px inherit;cursor:pointer} #confirmedOfflineRefundPage .cot-link{padding:0} #confirmedOfflineRefundPage .cot-empty{padding:5px 8px;border:1px dashed #91caff;border-radius:5px} #confirmedOfflineRefundPage .cot-matched-tag{display:inline-flex;align-items:center;margin-left:7px;padding:2px 6px;border-radius:4px;background:#e6f4ff;color:#1677ff;font-size:10px;font-weight:700;vertical-align:middle}
   #confirmedOfflineRefundPage .cot-input,#confirmedOfflineRefundPage .cot-select{min-width:160px;height:32px;padding:0 8px;border:1px solid #d7e0eb;border-radius:5px;background:#fff;color:#2d3b4e;font:13px inherit} #confirmedOfflineRefundPage .cot-muted{color:#7c899b} #confirmedOfflineRefundPage .cot-extra{display:block;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #confirmedOfflineRefundPage .cot-notes{display:grid;grid-template-columns:minmax(320px,540px);gap:18px} #confirmedOfflineRefundPage .cot-note-row{display:grid;grid-template-columns:max-content minmax(320px,1fr);align-items:center;gap:12px} #confirmedOfflineRefundPage .cot-note-row label{white-space:nowrap} #confirmedOfflineRefundPage .cot-upload{display:grid;place-items:center;min-height:126px;border:1px dashed #cbd5e1;border-radius:7px;background:#fcfdff;color:#3b4758;text-align:center;cursor:pointer} #confirmedOfflineRefundPage .cot-upload b{display:block;margin-bottom:7px;font-size:20px;font-weight:400}
-  #cotPaymentModal.modal-backdrop.open{align-items:center;justify-content:center;padding:18px;background:rgba(17,24,39,.42)} #cotPaymentModal .modal{width:min(1160px,100%);max-height:calc(100vh - 36px);overflow:hidden} #cotPaymentModal .modal-head{align-items:flex-start} #cotPaymentModal .modal-head strong{display:block;font-size:18px} #cotPaymentModal .modal-head p{margin:4px 0 0;color:#7c899b;font-size:12px} #cotPaymentModal .modal-close{border:0;background:transparent;color:#748196;font-size:28px;line-height:24px;cursor:pointer}
-  #cotPaymentModal .cot-selected{display:none;margin:14px 20px 0;padding:11px 13px;border:1px solid #cce8da;border-radius:7px;background:#f3fbf7} #cotPaymentModal .cot-selected.open{display:block} #cotPaymentModal .cot-selected strong{display:block;font-size:13px} #cotPaymentModal .cot-selected span{display:block;margin-top:3px;color:#668276;font-size:12px} #cotPaymentModal .cot-selected-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 16px;margin-top:10px} #cotPaymentModal .cot-selected-field{min-width:0} #cotPaymentModal .cot-selected-field small{display:block;color:#668276;font-size:10px;font-weight:650;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap} #cotPaymentModal .cot-selected-field div{margin-top:2px;color:#294638;font-size:12px;overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere} #cotPaymentModal .cot-matched-tag{display:inline-flex!important;align-items:center;margin:0 0 0 7px!important;padding:2px 6px;border-radius:4px;background:#e6f4ff;color:#1677ff;font-size:10px;font-weight:700;vertical-align:middle} #cotPaymentModal .cot-field-match{display:inline-flex!important;align-items:center;margin:0 0 0 6px!important;padding:1px 5px;border-radius:4px;background:#e6f4ff;color:#1677ff;font-size:9px;font-weight:700;letter-spacing:0;text-transform:none;vertical-align:middle} #cotPaymentModal .cot-search{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;padding:14px 20px;border-bottom:1px solid #e4eaf2} #cotPaymentModal .cot-search label{display:block;margin-bottom:5px;color:#718096;font-size:11px;font-weight:650} #cotPaymentModal .cot-search input{width:100%;height:34px;padding:0 8px;border:1px solid #d7e0eb;border-radius:5px;font:13px inherit} #cotPaymentModal .cot-search .btn{align-self:end;height:34px;min-height:34px}
-  #cotPaymentModal .cot-result-wrap{max-height:365px;overflow:auto} #cotPaymentModal table{width:100%;min-width:1080px;border-collapse:collapse} #cotPaymentModal th{padding:10px 14px;background:#fafbfd;color:#748196;text-align:left;font-size:11px;font-weight:650;white-space:nowrap} #cotPaymentModal td{padding:11px 14px;border-top:1px solid #edf1f5;color:#38465a;font-size:12px;white-space:nowrap} #cotPaymentModal tbody tr{cursor:pointer} #cotPaymentModal tbody tr:hover td{background:#f6faff} #cotPaymentModal tbody tr.selected td{background:#e6f4ff} #cotPaymentModal input[type=radio]{width:16px;height:16px;margin:0;accent-color:#1677ff;pointer-events:none} #cotPaymentModal .cot-footer{display:flex;justify-content:flex-end;gap:8px;padding:10px 20px;border-top:1px solid #e4eaf2} #cotPaymentModal .cot-footer .btn{min-height:32px;height:32px;padding:0 13px;font-size:13px}
-  @media(max-width:800px){#confirmedOfflineRefundPage .cot-summary{grid-template-columns:repeat(2,1fr)}#confirmedOfflineRefundPage .cot-notes{grid-template-columns:1fr}#confirmedOfflineRefundPage .cot-note-row{grid-template-columns:1fr;gap:6px}#cotPaymentModal .cot-search{grid-template-columns:1fr}#cotPaymentModal .cot-search .btn{justify-self:start}}
+  #cotPaymentModal.modal-backdrop.open { align-items:center; justify-content:center; padding:18px; background:rgba(17,24,39,.42); }
+  #cotPaymentModal .modal { display:flex; flex-direction:column; width:min(1180px,100%); max-height:calc(100vh - 36px); overflow:hidden; border-radius:16px; }
+  #cotPaymentModal .modal-head { flex:none; align-items:flex-start; padding:20px 24px 17px; }
+  #cotPaymentModal .modal-head strong { display:block; color:#172033; font-size:19px; }
+  #cotPaymentModal .modal-head p { margin:4px 0 0; color:#667085; font-size:12px; }
+  #cotPaymentModal .modal-close { border:0; background:transparent; color:#748196; font-size:28px; line-height:24px; cursor:pointer; }
+  #cotPaymentModal .cot-modal-body { flex:1; min-height:0; padding:18px 24px 22px; overflow:auto; }
+  #cotPaymentModal .cot-source { margin-bottom:20px; overflow:hidden; border:1px solid #dce3ed; border-radius:11px; background:#f7f9fc; }
+  #cotPaymentModal .cot-source-title { padding:9px 13px; color:#344052; font-size:12px; font-weight:650; }
+  #cotPaymentModal .cot-source-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid #dce3ed; background:#fff; }
+  #cotPaymentModal .cot-source-field { min-width:0; padding:12px 14px; }
+  #cotPaymentModal .cot-source-field + .cot-source-field { border-left:1px solid #dce3ed; }
+  #cotPaymentModal .cot-field-label { display:block; margin-bottom:5px; color:#758196; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+  #cotPaymentModal .cot-field-value { display:flex; align-items:center; flex-wrap:wrap; gap:6px; min-width:0; color:#263244; font-size:12px; font-weight:550; line-height:1.35; overflow-wrap:anywhere; }
+  #cotPaymentModal .cot-section-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:13px; }
+  #cotPaymentModal .cot-section-head h3 { margin:0 0 4px; color:#172033; font-size:15px; }
+  #cotPaymentModal .cot-section-head p { margin:0; color:#667085; font-size:12px; }
+  #cotPaymentModal .cot-count { flex:none; padding:5px 9px; border-radius:999px; background:#edf4ff; color:#1756d8; font-size:11px; font-weight:700; }
+  #cotPaymentModal .cot-candidate-list { display:grid; gap:9px; }
+  #cotPaymentModal .cot-candidate { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:13px; min-height:96px; padding:14px; border:1px solid #dce3ed; border-radius:11px; background:#fff; cursor:pointer; }
+  #cotPaymentModal .cot-candidate:hover { border-color:#aebbd0; }
+  #cotPaymentModal .cot-candidate.selected { border-color:#246bfd; background:#edf4ff; box-shadow:inset 3px 0 0 #246bfd; }
+  #cotPaymentModal .cot-candidate input[type=radio] { width:17px; height:17px; margin:0; accent-color:#246bfd; pointer-events:none; }
+  #cotPaymentModal .cot-candidate-fields { display:grid; grid-template-columns:minmax(180px,1.3fr) minmax(130px,.9fr) minmax(100px,.65fr) minmax(190px,1.25fr); align-items:start; gap:12px; min-width:0; }
+  #cotPaymentModal .cot-match-tag { display:inline-flex; align-items:center; flex:none; padding:3px 6px; border-radius:999px; background:#eaf8f2; color:#0d8a5f; font-size:9px; font-weight:700; }
+  #cotPaymentModal .cot-candidate-badge { display:inline-flex; align-items:center; flex:none; padding:5px 8px; border-radius:999px; background:#f7f9fc; color:#667085; font-size:10px; font-weight:700; white-space:nowrap; }
+  #cotPaymentModal .cot-candidate-badge.best { background:#eaf8f2; color:#0d8a5f; }
+  #cotPaymentModal .cot-divider { display:flex; align-items:center; gap:12px; margin:20px 0; color:#667085; font-size:11px; white-space:nowrap; }
+  #cotPaymentModal .cot-divider::before, #cotPaymentModal .cot-divider::after { content:""; flex:1; height:1px; background:#dce3ed; }
+  #cotPaymentModal .cot-search-panel { padding:15px; border:1px solid #dce3ed; border-radius:12px; background:#f7f9fc; }
+  #cotPaymentModal .cot-search-panel h3 { margin:0 0 4px; color:#172033; font-size:13px; }
+  #cotPaymentModal .cot-search-panel > p { margin:0; color:#667085; font-size:12px; }
+  #cotPaymentModal .cot-search { display:grid; grid-template-columns:1fr 1fr auto; align-items:end; gap:10px; margin-top:12px; }
+  #cotPaymentModal .cot-search label { display:block; margin-bottom:5px; color:#667085; font-size:11px; font-weight:650; }
+  #cotPaymentModal .cot-search input { width:100%; height:38px; padding:0 10px; border:1px solid #c8d2e1; border-radius:7px; background:#fff; font:12px inherit; }
+  #cotPaymentModal .cot-search .btn { height:38px; min-height:38px; }
+  #cotPaymentModal .cot-search-results { display:none; margin-top:12px; }
+  #cotPaymentModal .cot-search-results.open { display:block; }
+  #cotPaymentModal .cot-empty-results { padding:14px; border:1px dashed #c8d2e1; border-radius:9px; color:#667085; font-size:12px; text-align:center; }
+  #cotPaymentModal .cot-footer { display:flex; flex:none; align-items:center; justify-content:space-between; gap:12px; padding:12px 24px; border-top:1px solid #e4eaf2; background:#f7f9fc; }
+  #cotPaymentModal .cot-selection { min-width:0; color:#667085; font-size:10px; }
+  #cotPaymentModal .cot-selection strong { display:block; margin-top:2px; color:#263244; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #cotPaymentModal .cot-footer-actions { display:flex; gap:8px; }
+  #cotPaymentModal .cot-footer .btn { min-height:34px; height:34px; padding:0 14px; font-size:12px; }
+  @media(max-width:1000px) { #cotPaymentModal .cot-candidate-fields { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media(max-width:800px) { #confirmedOfflineRefundPage .cot-summary{grid-template-columns:repeat(2,1fr)} #confirmedOfflineRefundPage .cot-notes{grid-template-columns:1fr} #confirmedOfflineRefundPage .cot-note-row{grid-template-columns:1fr;gap:6px} #cotPaymentModal .cot-source-grid{grid-template-columns:1fr} #cotPaymentModal .cot-source-field + .cot-source-field{border-left:0;border-top:1px solid #dce3ed} #cotPaymentModal .cot-search{grid-template-columns:1fr} #cotPaymentModal .cot-search .btn{justify-self:start} #cotPaymentModal .cot-candidate-fields{grid-template-columns:1fr} #cotPaymentModal .cot-footer{align-items:stretch;flex-direction:column} #cotPaymentModal .cot-footer-actions{justify-content:flex-end} }
   /* Keep the fixed selection and ID columns stable while the table scrolls horizontally. */
   #detailsPage .table-wrap > table {
     table-layout: auto;
@@ -8259,11 +8301,28 @@
 
   <div class="modal-backdrop" id="cotPaymentModal">
     <div class="modal">
-      <div class="modal-head cot-modal-head"><div><strong id="cotModalTitle">Select Offline Payment</strong><p id="cotModalSubtitle">Search by Payment ID or Reference ID to select an Offline Payment.</p></div><button class="modal-close" id="cotModalClose" aria-label="Close">×</button></div>
-      <div class="cot-selected" id="cotSelectedMatch"><strong id="cotSelectedTitle">- <span class="cot-matched-tag">Matched</span></strong><span>Automatically matched by Amount, Bank Account, and Reference ID(If have).</span><div class="cot-selected-grid" id="cotSelectedDetails"></div></div>
-      <div class="cot-search"><div><label>Payment ID</label><input id="cotPaymentFilter" placeholder="Enter Payment ID" /></div><div><label>Reference ID</label><input id="cotReferenceFilter" placeholder="Enter Reference ID" /></div><button class="btn primary" id="cotSearchBtn">Search</button></div>
-      <div class="cot-result-wrap"><table><thead><tr><th></th><th>Payment ID</th><th>Transaction Date</th><th>Reference ID</th><th>Fund Direction</th><th>Matching Status</th><th>Agreement Item</th><th>Original Discrepancy ID</th></tr></thead><tbody id="cotResultBody"></tbody></table></div>
-      <div class="cot-footer"><button class="btn" id="cotCancelBtn">Cancel</button><button class="btn primary" id="cotConfirmBtn" disabled>Confirm</button></div>
+      <div class="modal-head cot-modal-head"><div><strong id="cotModalTitle">Match Transaction Detail</strong><p id="cotModalSubtitle">Review pre-matched transactions or search for another Transaction Detail.</p></div><button class="modal-close" id="cotModalClose" aria-label="Close">×</button></div>
+      <div class="cot-modal-body">
+        <section class="cot-source" aria-label="Transaction to match">
+          <div class="cot-source-title">Transaction to match</div>
+          <div class="cot-source-grid" id="cotSourceDetails"></div>
+        </section>
+        <section aria-labelledby="cotPreMatchTitle">
+          <div class="cot-section-head">
+            <div><h3 id="cotPreMatchTitle">Pre-Match</h3><p>Candidates with the same Bank Account and Amount. Reference ID is used to rank the closest match.</p></div>
+            <span class="cot-count" id="cotPreMatchCount">0 candidates</span>
+          </div>
+          <div class="cot-candidate-list" id="cotPreMatchList"></div>
+        </section>
+        <div class="cot-divider">Can’t find the correct transaction?</div>
+        <section class="cot-search-panel" aria-labelledby="cotSearchTitle">
+          <h3 id="cotSearchTitle">Find another Transaction Detail</h3>
+          <p>Search by either Payment ID or Reference ID.</p>
+          <div class="cot-search"><div><label>Payment ID</label><input id="cotPaymentFilter" placeholder="Enter Payment ID" /></div><div><label>Reference ID</label><input id="cotReferenceFilter" placeholder="Enter Reference ID" /></div><button class="btn primary" id="cotSearchBtn">Search</button></div>
+          <div class="cot-search-results" id="cotSearchResults" aria-live="polite"></div>
+        </section>
+      </div>
+      <div class="cot-footer"><div class="cot-selection">Selected Transaction Detail<strong id="cotSelectedPayment">No transaction selected</strong></div><div class="cot-footer-actions"><button class="btn" id="cotCancelBtn">Cancel</button><button class="btn primary" id="cotConfirmBtn" disabled>Confirm Match</button></div></div>
     </div>
   </div>
 
@@ -11198,11 +11257,15 @@ ${lines}
 
     const cotPaymentCandidates = [
       { id: "OTX-260418-003491", paymentId: "SPM1109729558071553718", transactionDate: "2026-04-18 15:25:07", referenceId: "TID:T116913076619", direction: "OUT", bankAccount: "Maybank 4821", amount: "RM39.45", matchingStatus: "Unmatched", agreement: "SPM-IPAY-PAYMENT-FPX", discrepancyId: "10422640368" },
-      { id: "OTX-260417-001087", paymentId: "SPM1109729558071551142", transactionDate: "2026-04-17 16:03:11", referenceId: "TID:T116913076619", direction: "OUT", bankAccount: "Maybank 4821", amount: "RM39.45", matchingStatus: "Unmatched", agreement: "SPM-IPAY-PAYMENT-FPX", discrepancyId: "10422451870" },
-      { id: "OTX-260419-004208", paymentId: "SPM3768049177427396948", transactionDate: "2026-04-19 10:42:36", referenceId: "TID:T117912946626", direction: "OUT", bankAccount: "CIMB 1934", amount: "RM58.80", matchingStatus: "Unmatched", agreement: "SPM-IPAY-PAYMENT-FPX", discrepancyId: "10422622342" }
+      { id: "OTX-260417-001087", paymentId: "SPM1109729558071551142", transactionDate: "2026-04-17 16:03:11", referenceId: "TID:T116913076590", direction: "OUT", bankAccount: "Maybank 4821", amount: "RM39.45", matchingStatus: "Unmatched", agreement: "SPM-IPAY-PAYMENT-FPX", discrepancyId: "10422451870" },
+      { id: "OTX-260419-004208", paymentId: "SPM3768049177427396948", transactionDate: "2026-04-19 10:42:36", referenceId: "TID:T117912946626", direction: "OUT", bankAccount: "Maybank 4821", amount: "RM39.45", matchingStatus: "Unmatched", agreement: "SPM-IPAY-PAYMENT-FPX", discrepancyId: "10422622342" }
     ];
     let cotActiveRowId = "";
     let cotPendingPaymentId = "";
+    let cotMatchContext = { bankAccount: "Maybank 4821", amount: "RM39.45", referenceId: "TID:T116913076619" };
+    let cotPreMatchCandidates = [];
+    let cotSearchCandidates = [];
+    let cotSearchOpen = false;
 
     function getCotCandidate(id) { return cotPaymentCandidates.find(item => item.id === id); }
     function getCotRows() { const { selectedRows, row } = getSelectedRefundRows(); return selectedRows.length ? selectedRows : (row ? [row] : []); }
@@ -11269,46 +11332,91 @@ ${lines}
       document.getElementById("cotAmount").textContent = `RM${Number(totalAmount || 0).toFixed(2)}`;
       renderCotList();
     }
-    function renderCotPaymentResults(list) {
-      document.getElementById("cotResultBody").innerHTML = list.map(item => `<tr class="${item.id === cotPendingPaymentId ? "selected" : ""}" data-cot-candidate="${item.id}"><td><input type="radio" name="cotPayment" ${item.id === cotPendingPaymentId ? "checked" : ""}></td><td>${escapeHtml(item.paymentId)}</td><td>${escapeHtml(item.transactionDate)}</td><td>${escapeHtml(item.referenceId)}</td><td>${escapeHtml(item.direction)}</td><td>${escapeHtml(item.matchingStatus)}</td><td>${escapeHtml(item.agreement)}</td><td>${escapeHtml(item.discrepancyId)}</td></tr>`).join("");
-      document.querySelectorAll("[data-cot-candidate]").forEach(node => node.addEventListener("click", () => { cotPendingPaymentId = node.dataset.cotCandidate; renderCotPaymentResults(list); document.getElementById("cotConfirmBtn").disabled = false; }));
+    function normalizeCotMatchValue(value) { return String(value || "").trim().toLowerCase(); }
+    function cotValuesMatch(left, right) { return Boolean(normalizeCotMatchValue(left)) && normalizeCotMatchValue(left) === normalizeCotMatchValue(right); }
+    function cotDateOnly(value) { return String(value || "-").split(/[ T]/)[0] || "-"; }
+    function getCotMatchContext(row) {
+      return {
+        bankAccount: row?.bankAccount || "Maybank 4821",
+        amount: row?.amount || "RM39.45",
+        referenceId: row?.referenceId || "TID:T116913076619"
+      };
+    }
+    function cotReferenceMatches(item) { return cotValuesMatch(item.referenceId, cotMatchContext.referenceId); }
+    function cotCandidateField(label, value, matched = false) {
+      return `<span><span class="cot-field-label">${escapeHtml(label)}</span><span class="cot-field-value"><span>${escapeHtml(value || "-")}</span>${matched ? '<span class="cot-match-tag">Match</span>' : ""}</span></span>`;
+    }
+    function cotCandidateCard(item, kind) {
+      const isSelected = item.id === cotPendingPaymentId;
+      const bankMatched = cotValuesMatch(item.bankAccount, cotMatchContext.bankAccount);
+      const amountMatched = cotValuesMatch(item.amount, cotMatchContext.amount);
+      const referenceMatched = cotReferenceMatches(item);
+      const badge = kind === "search" ? "Search result" : (referenceMatched ? "Best Match" : "Eligible");
+      return `<label class="cot-candidate${isSelected ? " selected" : ""}" data-cot-candidate="${escapeHtml(item.id)}">
+        <input type="radio" name="cotPayment" ${isSelected ? "checked" : ""} aria-label="Select ${escapeHtml(item.paymentId)}">
+        <span class="cot-candidate-fields">
+          ${cotCandidateField("Payment ID", item.paymentId)}
+          ${cotCandidateField("Bank Account", item.bankAccount, bankMatched)}
+          ${cotCandidateField("Amount", item.amount, amountMatched)}
+          ${cotCandidateField("Reference ID", item.referenceId, referenceMatched)}
+          ${cotCandidateField("Transaction Date", cotDateOnly(item.transactionDate))}
+          ${cotCandidateField("Status", item.matchingStatus)}
+          ${cotCandidateField("Agreement Item", item.agreement)}
+          ${cotCandidateField("Fund Direction", item.direction)}
+        </span>
+        <span class="cot-candidate-badge${referenceMatched && kind !== "search" ? " best" : ""}">${badge}</span>
+      </label>`;
+    }
+    function renderCotCandidateList(targetId, list, kind) {
+      const target = document.getElementById(targetId);
+      target.innerHTML = list.length ? `<div class="cot-candidate-list">${list.map(item => cotCandidateCard(item, kind)).join("")}</div>` : '<div class="cot-empty-results">No matching Transaction Detail found.</div>';
+      target.querySelectorAll("[data-cot-candidate]").forEach(node => node.addEventListener("click", () => {
+        cotPendingPaymentId = node.dataset.cotCandidate;
+        renderCotCandidateLists();
+        updateCotSelectionSummary();
+      }));
+    }
+    function renderCotCandidateLists() {
+      renderCotCandidateList("cotPreMatchList", cotPreMatchCandidates, "pre-match");
+      const searchResults = document.getElementById("cotSearchResults");
+      searchResults.classList.toggle("open", cotSearchOpen);
+      if (cotSearchOpen) renderCotCandidateList("cotSearchResults", cotSearchCandidates, "search");
+    }
+    function updateCotSelectionSummary() {
+      const selected = getCotCandidate(cotPendingPaymentId);
+      document.getElementById("cotSelectedPayment").textContent = selected ? `${selected.paymentId} · ${cotReferenceMatches(selected) ? "Best Match" : "Eligible candidate"}` : "No transaction selected";
+      document.getElementById("cotConfirmBtn").disabled = !selected;
     }
     function openCotPaymentModal(rowId) {
       cotActiveRowId = rowId;
       cotPendingPaymentId = state.cotMatches?.[rowId] || "";
-      const current = getCotCandidate(cotPendingPaymentId);
       const activeRow = getCotRows().find(item => item.id === rowId);
-      const isPayout = String(activeRow?.type || "").trim().toLowerCase() === "over txn";
-      const transactionLabel = isPayout ? "Offline Payout" : "Offline Payment";
-      document.getElementById("cotModalTitle").textContent = `Select ${transactionLabel}`;
-      document.getElementById("cotModalSubtitle").textContent = current ? `Review details or select a different ${transactionLabel}.` : `Search by Payment ID or Reference ID to select an ${transactionLabel}.`;
-      document.getElementById("cotSelectedMatch").classList.toggle("open", Boolean(current));
-      document.getElementById("cotSelectedTitle").innerHTML = `${escapeHtml(current?.id || "-")}<span class="cot-matched-tag">Matched</span>`;
-      document.getElementById("cotSelectedDetails").innerHTML = current ? [
-        ["Payment ID", current.paymentId],
-        ["Transaction Date", current.transactionDate],
-        ["Reference ID", current.referenceId],
-        ["Fund Direction", current.direction],
-        ["Bank Account", current.bankAccount],
-        ["Amount", current.amount],
-        ["Matching Status", current.matchingStatus],
-        ["Agreement Item", current.agreement],
-        ["Original Discrepancy ID", current.discrepancyId]
-      ].map(([label, value]) => {
-        const isMatchedCriterion = label === "Bank Account" || label === "Amount" || (label === "Reference ID" && current.referenceId);
-        const matchTag = isMatchedCriterion ? `<span class="cot-field-match">Matched</span>` : "";
-        return `<div class="cot-selected-field"><small>${escapeHtml(label)}${matchTag}</small><div title="${escapeHtml(value)}">${escapeHtml(value)}</div></div>`;
-      }).join("") : "";
-      document.getElementById("cotPaymentFilter").value = current?.paymentId || "";
-      document.getElementById("cotReferenceFilter").value = current?.referenceId || "";
-      document.getElementById("cotConfirmBtn").disabled = !cotPendingPaymentId;
-      renderCotPaymentResults(cotPaymentCandidates.filter(item => item.matchingStatus === "Unmatched"));
+      cotMatchContext = getCotMatchContext(activeRow);
+      document.getElementById("cotModalTitle").textContent = "Match Transaction Detail";
+      document.getElementById("cotModalSubtitle").textContent = "Review pre-matched transactions or search for another Transaction Detail.";
+      document.getElementById("cotSourceDetails").innerHTML = [
+        ["Bank Account", cotMatchContext.bankAccount],
+        ["Amount", cotMatchContext.amount],
+        ["Reference ID", cotMatchContext.referenceId]
+      ].map(([label, value]) => `<div class="cot-source-field"><span class="cot-field-label">${escapeHtml(label)}</span><span class="cot-field-value">${escapeHtml(value)}</span></div>`).join("");
+      cotPreMatchCandidates = cotPaymentCandidates
+        .filter(item => item.matchingStatus === "Unmatched" && cotValuesMatch(item.bankAccount, cotMatchContext.bankAccount) && cotValuesMatch(item.amount, cotMatchContext.amount))
+        .sort((left, right) => Number(cotReferenceMatches(right)) - Number(cotReferenceMatches(left)));
+      document.getElementById("cotPreMatchCount").textContent = `${cotPreMatchCandidates.length} candidate${cotPreMatchCandidates.length === 1 ? "" : "s"}`;
+      document.getElementById("cotPaymentFilter").value = "";
+      document.getElementById("cotReferenceFilter").value = "";
+      cotSearchCandidates = [];
+      cotSearchOpen = false;
+      renderCotCandidateLists();
+      updateCotSelectionSummary();
       openModal("#cotPaymentModal");
     }
     function searchCotPayments() {
       const payment = document.getElementById("cotPaymentFilter").value.trim().toLowerCase();
       const reference = document.getElementById("cotReferenceFilter").value.trim().toLowerCase();
-      renderCotPaymentResults(cotPaymentCandidates.filter(item => item.matchingStatus === "Unmatched" && (!payment || item.paymentId.toLowerCase().includes(payment)) && (!reference || item.referenceId.toLowerCase().includes(reference))));
+      cotSearchCandidates = cotPaymentCandidates.filter(item => item.matchingStatus === "Unmatched" && (!payment || item.paymentId.toLowerCase().includes(payment)) && (!reference || item.referenceId.toLowerCase().includes(reference)));
+      cotSearchOpen = true;
+      renderCotCandidateLists();
     }
 
     function openConfirmRefundResultPage(title) {
