@@ -6598,7 +6598,7 @@
   #cotPaymentModal .cot-source-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid #dce3ed; background:#fff; }
   #cotPaymentModal .cot-source-field { min-width:0; padding:8px 10px; }
   #cotPaymentModal .cot-source-field + .cot-source-field { border-left:1px solid #dce3ed; }
-  #cotPaymentModal .cot-field-label { display:block; margin-bottom:2px; color:#758196; font-size:9px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+  #cotPaymentModal .cot-field-label { display:flex; align-items:center; flex-wrap:wrap; gap:5px; margin-bottom:2px; color:#758196; font-size:9px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
   #cotPaymentModal .cot-field-value { display:flex; align-items:center; flex-wrap:wrap; gap:5px; min-width:0; color:#263244; font-size:11px; font-weight:550; line-height:1.2; overflow-wrap:anywhere; }
   #cotPaymentModal .cot-section-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:7px; }
   #cotPaymentModal .cot-section-head h3 { margin:0 0 2px; color:#172033; font-size:14px; }
@@ -6610,7 +6610,7 @@
   #cotPaymentModal .cot-candidate.selected { border-color:#246bfd; background:#edf4ff; box-shadow:inset 3px 0 0 #246bfd; }
   #cotPaymentModal .cot-candidate input[type=radio] { width:15px; height:15px; margin:0; accent-color:#246bfd; pointer-events:none; }
   #cotPaymentModal .cot-candidate-fields { display:grid; grid-template-columns:minmax(150px,1.35fr) minmax(95px,.85fr) minmax(70px,.55fr) minmax(125px,1.1fr) minmax(85px,.7fr) minmax(70px,.6fr) minmax(150px,1.25fr) minmax(45px,.45fr); align-items:start; gap:8px; min-width:0; }
-  #cotPaymentModal .cot-match-tag { display:inline-flex; align-items:center; flex:none; padding:2px 5px; border-radius:999px; background:#eaf8f2; color:#0d8a5f; font-size:8px; font-weight:700; }
+  #cotPaymentModal .cot-match-tag { display:inline-flex; align-items:center; flex:none; padding:2px 5px; border-radius:999px; background:#eaf8f2; color:#0d8a5f; font-size:8px; font-weight:700; letter-spacing:normal; text-transform:none; }
   #cotPaymentModal .cot-candidate-badge { display:inline-flex; align-items:center; flex:none; padding:4px 7px; border-radius:999px; background:#f7f9fc; color:#667085; font-size:9px; font-weight:700; white-space:nowrap; }
   #cotPaymentModal .cot-candidate-badge.best { background:#eaf8f2; color:#0d8a5f; }
   #cotPaymentModal .cot-divider { display:flex; align-items:center; gap:10px; margin:10px 0; color:#667085; font-size:10px; white-space:nowrap; }
@@ -11345,7 +11345,7 @@ ${lines}
     }
     function cotReferenceMatches(item) { return cotValuesMatch(item.referenceId, cotMatchContext.referenceId); }
     function cotCandidateField(label, value, matched = false) {
-      return `<span><span class="cot-field-label">${escapeHtml(label)}</span><span class="cot-field-value"><span>${escapeHtml(value || "-")}</span>${matched ? '<span class="cot-match-tag">Match</span>' : ""}</span></span>`;
+      return `<span><span class="cot-field-label">${escapeHtml(label)}${matched ? ' <span class="cot-match-tag">Match</span>' : ""}</span><span class="cot-field-value"><span>${escapeHtml(value || "-")}</span></span></span>`;
     }
     function cotCandidateCard(item, kind) {
       const isSelected = item.id === cotPendingPaymentId;
