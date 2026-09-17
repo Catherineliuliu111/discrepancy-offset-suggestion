@@ -9991,7 +9991,7 @@ ${lines}
         desc: "Applies to discrepancies where the bank settlement is missing and no bank detail will be provided. Resolves the discrepancy upon confirming the bank's recovery.",
         groups: {
           "Statement Recon": [["Account Statement", "A new Account Statement is automatically generated."]],
-          DFR: [["Bank Incurring Amount", "Increased after user manually adds an Account Statement."], ["Over TXN Detail", "Decreases."]]
+          DFR: [["Bank Incurring Amount", "Increased after user manually added an Account Statement."], ["Over TXN Detail", "Decreases."]]
         }
       };
       set("recovery_less", "recover-detail", claimBankAvailable);
@@ -10310,7 +10310,7 @@ ${lines}
       const isDeductionExport = /export deduction list/i.test(String(node.title || ""));
       const visibleChildren = (node.children || []).filter(isOperationNodeVisible);
       const statusUpdateText = isBankDetailAvailable
-        ? "Processing status will change from 'Unprocessed' to 'On-hold'."
+        ? "Processing status will change from 'Unprocessed' to 'Processing'."
         : isRefundExport
           ? "Processing status will change from 'Unprocessed' to 'Processing'."
           : isDeductionExport
