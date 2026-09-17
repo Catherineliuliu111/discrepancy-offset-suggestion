@@ -10078,6 +10078,7 @@ ${lines}
       createPayoutLess: "Statement Recon: Create a new Account Statement based on the selected Bank Account.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Create the offline payout transaction detail based on selected bank account and Less TXN Detail will be written off after discrepancy handling.",
       fundLossOverIn: "Statement Recon: Account Statement already exists.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
       fundLossLessOut: "Statement Recon: Create a new Account Statement.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
+      fundRevenueOverOut: "Statement Recon: Account Statement remains unchanged.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Payment Incurring Amount remains unchanged.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.\nWrite-Off TXN Report: Fund loss/Extra Income tag.",
       confirmedPayoutOver: "Statement Recon: Create a new Account Statement.\nDFR Incurring Amount: the Bank Incurring Amount increases, while Biz Code will be updated if changed the biz code during discrepancy handling.\nDiscrepancy: Over TXN Detail will be written off after discrepancy handling.",
       exportStatusOnly: "N/A",
       processingStatusOnly: "N/A",
@@ -10227,7 +10228,7 @@ ${lines}
       const direction = String(row?.direction || "").trim().toLowerCase();
       if (disposition === "loss" && type === "over txn" && direction === "in") return columnMImpactCopy.fundLossOverIn;
       if (disposition === "loss" && type === "less txn" && direction === "out") return columnMImpactCopy.fundLossLessOut;
-      if (disposition === "revenue" && type === "over txn" && direction === "out") return columnMImpactCopy.blank;
+      if (disposition === "revenue" && type === "over txn" && direction === "out") return columnMImpactCopy.fundRevenueOverOut;
       if (disposition === "revenue" && type === "less txn" && direction === "in") return columnMImpactCopy.paymentLess;
       return "";
     }
