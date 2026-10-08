@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Offset Suggestions — Pair Table</title>
+<link rel="icon" href="data:,">
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,6 +28,8 @@
     display: flex; align-items: center; padding: 16px 28px 14px; background: #fff;
     border-bottom: 1px solid #EEF2F7; font-size: 28px; font-weight: 700; letter-spacing: -.02em; color: #1A1D26;
   }
+  .page-title-text { min-width: 0; }
+  .page-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0; }
 
   .toolbar { display: flex; align-items: center; gap: 10px; padding: 14px 28px; background: #fff; border-bottom: 1px solid #E8EBF0; flex-shrink: 0; flex-wrap: wrap; }
   .tb-group { display: flex; align-items: center; gap: 6px; }
@@ -100,6 +103,7 @@
   .col-order { width: 11%; }
   .col-date { width: 8.5%; }
   .col-agree { width: 14%; }
+  .col-biz { width: 13.5%; }
   .col-type { width: 8.5%; }
   .col-dir { width: 8.5%; }
   .col-ref { width: 11%; }
@@ -119,6 +123,38 @@
   .amt-text { font-weight: 700; font-size: 12px; color: #1F2937; }
   .reason-box { display: flex; flex-wrap: wrap; gap: 4px; padding-top: 2px; }
   .reason-box .reason-pill { font-size: 9px; line-height: 16px; padding: 1px 6px; }
+
+  .editable-head { position: relative; padding-right: 36px; }
+  .head-edit-btn {
+    position: absolute; top: 50%; right: 8px; transform: translateY(-50%);
+    width: 24px; height: 24px; border: 0; border-radius: 7px; background: #E9EDF3;
+    color: #4B5563; cursor: pointer; font-size: 13px; line-height: 24px;
+  }
+  .head-edit-btn:hover { background: #DCE6F8; color: #2469F0; }
+  .bulk-popover {
+    position: absolute; top: 34px; right: 0; z-index: 10; display: none;
+    width: 240px; padding: 12px; border: 1px solid #E2E8F0; border-radius: 12px;
+    background: #fff; box-shadow: 0 14px 34px rgba(15,23,42,0.16);
+    font-size: 13px; font-weight: 400; text-transform: none; letter-spacing: 0; white-space: normal;
+  }
+  .bulk-popover.show { display: block; }
+  .biz-select, .bulk-select {
+    display: block;
+    width: 100%; height: 28px; padding: 0 22px 0 8px; border: 1px solid #D6D9E0;
+    border-radius: 7px; background: #F8FAFC; color: #1F2937; font-family: inherit;
+    font-size: 10px; outline: none;
+  }
+  .biz-select:focus, .bulk-select:focus {
+    border-color: #2469F0; box-shadow: 0 0 0 3px rgba(36,105,240,0.12);
+    background: #fff;
+  }
+  .bulk-btn {
+    display: block;
+    width: 100%; height: 34px; margin-top: 10px; border: 0; border-radius: 8px;
+    background: #2469F0; color: #fff; font-family: inherit; font-size: 13px;
+    font-weight: 600; cursor: pointer;
+  }
+  .bulk-btn:hover { background: #1A56DB; }
 
   .order-link { color: #2469F0; cursor: pointer; font-weight: 500; }
   .order-link:hover { text-decoration: underline; }
@@ -180,8 +216,16 @@
   }
   .btn-subtle:hover { background: #F9FAFB; color: #111827; border-color: #9CA3AF; }
 
+  .toast {
+    position: fixed; top: 24px; right: 24px; z-index: 30; display: none;
+    min-width: 220px; padding: 10px 14px; border: 1px solid #A8E6C0;
+    border-radius: 10px; background: #E6F9F1; color: #007A4D;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14); font-size: 13px;
+  }
+  .toast.show { display: block; }
+
   @media (max-width: 1320px) {
-    table { min-width: 1200px; }
+    table { min-width: 1360px; }
   }
 </style>
 </head>
@@ -197,7 +241,13 @@
     <div class="nav-title">Offset Matching · Pair Table</div>
   </div>
 
-  <div class="page-title">Offset Suggestion For Discrepancy</div>
+  <div class="page-title">
+    <span class="page-title-text">Offset Suggestion For Discrepancy</span>
+    <div class="page-actions">
+      <button class="btn btn-outline-red" onclick="deSelectAll()">Decline</button>
+      <button class="btn btn-primary" onclick="confirmSelected()">Confirm</button>
+    </div>
+  </div>
 
   <div class="toolbar">
     <div class="tb-group">
@@ -245,8 +295,6 @@
 
   <div class="action-bar">
     <span class="sel-count"><strong id="selCount">1</strong> <span class="st">/ 18 pairs</span></span>
-    <button class="btn btn-outline-red" onclick="deSelectAll()">Decline</button>
-    <button class="btn btn-primary" onclick="confirmSelected()">Confirm</button>
   </div>
 
   <div class="table-wrap">
@@ -257,6 +305,13 @@
           <th class="col-order">Order ID</th>
           <th class="col-date">Clearing</th>
           <th class="col-agree">Agreement Item</th>
+          <th class="col-biz editable-head">Biz Code
+            <button class="head-edit-btn" type="button" aria-label="Batch edit Biz Code" aria-expanded="false" aria-controls="bizBulkPopover" onclick="toggleBizBulk(event)">✎</button>
+            <div class="bulk-popover" id="bizBulkPopover">
+              <select class="bulk-select" id="bulkBizCode" aria-label="Batch Biz Code"></select>
+              <button class="bulk-btn" type="button" onclick="applyBizBulk()">Change All in This Page</button>
+            </div>
+          </th>
           <th class="col-type">Discrepancy Type</th>
           <th class="col-dir">Fund Direction</th>
           <th class="col-ref">Reference ID</th>
@@ -287,7 +342,17 @@
   </div>
 </div>
 
+<div class="toast" id="toast">Biz Code updated.</div>
+
 <script>
+const bizOptions = [
+  'SPM-PAYMENT-FPX',
+  'SPM-REFUND-WALLET',
+  'SPM-BANK-DUITNOW',
+  'SPM-PAYOUT-SETTLEMENT',
+  'SPM-ADJUSTMENT-MANUAL'
+];
+
 const baseData = [
   { left:{ o:'104...98406967', d:'2026-05-24', a:'Alto-ShopeePay-0918-Payout-AS', t:'Over TXN', di:'IN', r:'AX4U1M29K29DW', am:'RM34.87' }, right:{ o:'104...99791566', d:'2026-05-27', a:'Alto-ShopeePay-0918-Payout-AS', t:'Less TXN', di:'IN', r:'RFND20260600', am:'RM34.87' }, reasons:['Agreement Item','Amount','Fund Direction','Reference ID'] },
   { left:{ o:'104...98406968', d:'2026-05-28', a:'SPM MY - Wallet', t:'Over TXN', di:'OUT', r:'AX4U1M30K29DW', am:'RM30.24' }, right:{ o:'104...99791567', d:'2026-06-04', a:'SPM MY - Wallet', t:'Over TXN', di:'IN', r:'AX4U1M30K29DW', am:'RM30.24' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] },
@@ -316,8 +381,24 @@ const refreshQueueSeed = [
   { left:{ o:'104...98406988', d:'2026-06-11', a:'SPM MY - Bank', t:'Over TXN', di:'IN', r:'AX4UNEW004', am:'RM240.19' }, right:{ o:'104...99791587', d:'2026-06-11', a:'SPM MY - Bank', t:'Over TXN', di:'OUT', r:'RFND20260621', am:'RM240.19' }, reasons:['Agreement Item','Amount','Opposite Fund Direction'] }
 ];
 
-let visibleData = baseData.map((item, idx) => ({ ...item, id: `pair-${idx + 1}` }));
-let refreshQueue = refreshQueueSeed.map((item, idx) => ({ ...item, id: `new-pair-${idx + 1}` }));
+function defaultBizCode(pair, idx, side) {
+  if (pair[side].a.includes('Wallet')) return side === 'left' ? 'SPM-PAYMENT-FPX' : 'SPM-REFUND-WALLET';
+  if (pair[side].a.includes('Bank')) return 'SPM-BANK-DUITNOW';
+  if (pair[side].a.includes('Payout')) return 'SPM-PAYOUT-SETTLEMENT';
+  return bizOptions[idx % bizOptions.length];
+}
+
+function hydratePair(item, idx, idPrefix) {
+  return {
+    ...item,
+    id: `${idPrefix}-${idx + 1}`,
+    left: { ...item.left, biz: item.left.biz || defaultBizCode(item, idx, 'left') },
+    right: { ...item.right, biz: item.right.biz || defaultBizCode(item, idx + 1, 'right') }
+  };
+}
+
+let visibleData = baseData.map((item, idx) => hydratePair(item, idx, 'pair'));
+let refreshQueue = refreshQueueSeed.map((item, idx) => hydratePair(item, idx, 'new-pair'));
 let selectedIds = new Set(visibleData[0] ? [visibleData[0].id] : []);
 
 function rc(x) {
@@ -350,6 +431,13 @@ function amountHTML(v, dir, extraCls = '') {
   return `<span class="amt-text ${extraCls}">${esc(v)}</span>`;
 }
 
+function bizSelectHTML(pairId, side, value) {
+  const options = bizOptions
+    .map(code => `<option value="${esc(code)}" ${code === value ? 'selected' : ''}>${esc(code)}</option>`)
+    .join('');
+  return `<select class="biz-select" aria-label="${side} Biz Code" onchange="updateBizCode('${esc(pairId)}','${side}',this.value)">${options}</select>`;
+}
+
 function pairLines(leftHTML, rightHTML, multiline = false) {
   return `<div class="pair-stack">
     <div class="pair-line">
@@ -374,6 +462,52 @@ function formatNow() {
   const hh = String(now.getHours()).padStart(2, '0');
   const mi = String(now.getMinutes()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  window.setTimeout(() => toast.classList.remove('show'), 1600);
+}
+
+function updateBizCode(pairId, side, value) {
+  const pair = visibleData.find(item => item.id === pairId);
+  if (!pair) return;
+  pair[side].biz = value;
+  showToast('Biz Code updated.');
+}
+
+function fillBulkBizOptions() {
+  const bulk = document.getElementById('bulkBizCode');
+  if (!bulk || bulk.options.length) return;
+  bulk.innerHTML = `<option value="">Select Biz Code</option>${bizOptions.map(code => `<option value="${esc(code)}">${esc(code)}</option>`).join('')}`;
+}
+
+function toggleBizBulk(event) {
+  event.stopPropagation();
+  fillBulkBizOptions();
+  const popover = document.getElementById('bizBulkPopover');
+  const trigger = event.currentTarget;
+  popover?.classList.toggle('show');
+  trigger?.setAttribute('aria-expanded', String(popover?.classList.contains('show')));
+}
+
+function applyBizBulk() {
+  const bulk = document.getElementById('bulkBizCode');
+  const value = bulk?.value;
+  if (!value) return alert('Please select a Biz Code.');
+  const visiblePairIds = [...document.querySelectorAll('.pair-row')].map(row => row.getAttribute('data-pair-id'));
+  visibleData.forEach(pair => {
+    if (visiblePairIds.includes(pair.id)) {
+      pair.left.biz = value;
+      pair.right.biz = value;
+    }
+  });
+  document.getElementById('bizBulkPopover')?.classList.remove('show');
+  document.querySelector('.head-edit-btn')?.setAttribute('aria-expanded', 'false');
+  render();
+  showToast(`Biz Code changed for ${visiblePairIds.length * 2} discrepancy order(s).`);
 }
 
 function openConfirmModal() {
@@ -441,6 +575,7 @@ function render() {
       <td class="col-order pair-cell">${pairLines(`<span class="order-link">${esc(l.o)}</span>`, `<span class="order-link">${esc(r.o)}</span>`)}</td>
       <td class="col-date pair-cell">${pairLines(esc(l.d), esc(r.d))}</td>
       <td class="col-agree pair-cell">${pairLines(esc(l.a), esc(r.a), true)}</td>
+      <td class="col-biz pair-cell">${pairLines(bizSelectHTML(p.id, 'left', l.biz), bizSelectHTML(p.id, 'right', r.biz), true)}</td>
       <td class="col-type pair-cell">${pairLines(typeHTML(l.t), typeHTML(r.t))}</td>
       <td class="col-dir pair-cell">${pairLines(dirHTML(l.di), dirHTML(r.di))}</td>
       <td class="col-ref pair-cell">${pairLines(`<span class="ref-text">${esc(l.r)}</span>`, `<span class="ref-text">${esc(r.r)}</span>`)}</td>
@@ -483,6 +618,14 @@ function updateCount() {
   const head = document.getElementById('headSelectAll');
   if (head) head.checked = total > 0 && checked === total;
 }
+
+document.addEventListener('click', (event) => {
+  const popover = document.getElementById('bizBulkPopover');
+  if (popover && !popover.contains(event.target) && !event.target.closest('.head-edit-btn')) {
+    popover.classList.remove('show');
+    document.querySelector('.head-edit-btn')?.setAttribute('aria-expanded', 'false');
+  }
+});
 
 function deSelectAll() {
   if (!confirm('Decline all selected offset suggestions?')) return;
