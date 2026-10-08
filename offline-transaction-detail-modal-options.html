@@ -3,526 +3,466 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Offline Transaction Detail - UI Options</title>
+  <title>Select Payment ID</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231677ff'/%3E%3C/svg%3E" />
   <style>
     :root {
-      --ink: #1f2937;
-      --muted: #6b778c;
-      --soft: #f5f7fa;
-      --panel: #ffffff;
-      --line: #dce4ee;
-      --blue: #1687f5;
-      --blue-soft: #eaf4ff;
-      --green: #15956a;
-      --green-soft: #eaf8f2;
-      --orange: #b8790b;
-      --orange-soft: #fff7e6;
-      --shadow: 0 16px 42px rgba(30, 58, 92, .14);
+      --backdrop: rgba(26, 39, 58, .48);
+      --panel: #fff;
+      --text: #1f2937;
+      --muted: #728197;
+      --line: #e4eaf2;
+      --line-soft: #edf1f5;
+      --header: #fafbfd;
+      --blue: #1677ff;
+      --blue-dark: #0958d9;
+      --blue-soft: #f2f8ff;
+      --blue-line: #9bc6f7;
+      --disabled: #eef1f5;
+      --disabled-text: #a6b1c0;
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+
     body {
+      min-width: 320px;
+      min-height: 100vh;
       margin: 0;
-      color: var(--ink);
-      background: #f2f5f8;
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #edf1f6;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
-    button, select { font: inherit; }
-    button { cursor: pointer; }
 
-    .page { max-width: 1420px; margin: 0 auto; padding: 30px 34px 64px; }
-    .page-header {
+    button,
+    input,
+    select { font: inherit; }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
       display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 24px;
-      margin-bottom: 20px;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--backdrop);
     }
-    .eyebrow {
-      color: var(--blue);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .12em;
+
+    .modal {
+      display: flex;
+      width: min(1280px, calc(100vw - 48px));
+      max-height: calc(100vh - 48px);
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #dbe3ed;
+      border-radius: 10px;
+      background: var(--panel);
+      box-shadow: 0 18px 56px rgba(15, 31, 55, .25);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 68px;
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .title-wrap { min-width: 0; }
+
+    h1 {
+      margin: 0;
+      color: #172235;
+      font-size: 19px;
+      font-weight: 650;
+      letter-spacing: 0;
+      line-height: 1.35;
+    }
+
+    .modal-kicker {
+      margin-bottom: 3px;
+      color: var(--blue-dark);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .07em;
       text-transform: uppercase;
     }
-    h1 { margin: 6px 0 0; font-size: 30px; line-height: 1.18; letter-spacing: -.02em; }
-    .page-header p { max-width: 780px; margin: 9px 0 0; color: var(--muted); line-height: 1.55; }
-    .legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      border-radius: 999px;
-      padding: 5px 10px;
+
+    .close {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      place-items: center;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: #7b899c;
+      cursor: pointer;
+      font-size: 24px;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .close:hover { background: #f2f5f8; color: #41516a; }
+
+    .table-scroll {
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1235px;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+    }
+
+    th,
+    td { border-bottom: 1px solid var(--line-soft); }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      height: 45px;
+      padding: 0 12px;
+      background: var(--header);
+      color: #69788d;
       font-size: 11px;
-      font-weight: 800;
+      font-weight: 700;
+      line-height: 15px;
+      text-align: left;
+      vertical-align: middle;
       white-space: nowrap;
     }
-    .pill.blue { color: #1268c6; background: var(--blue-soft); }
-    .pill.green { color: #11744f; background: var(--green-soft); }
-    .pill.gray { color: #64748b; background: #eef2f6; }
-    .pill.orange { color: #99630b; background: var(--orange-soft); }
 
-    .choice-bar {
-      position: sticky;
-      top: 12px;
-      z-index: 5;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 0 20px;
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, .94);
-      box-shadow: 0 7px 20px rgba(31, 55, 82, .07);
-      backdrop-filter: blur(12px);
-    }
-    .choice-label { margin: 0 8px 0 4px; color: var(--muted); font-size: 12px; font-weight: 700; }
-    .choice-bar button {
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      padding: 8px 13px;
-      color: #3c4b60;
-      background: #fff;
+    td {
+      height: 66px;
+      padding: 10px 12px;
+      color: #4c5d74;
       font-size: 12px;
-      font-weight: 800;
+      line-height: 17px;
+      vertical-align: middle;
+      white-space: nowrap;
     }
-    .choice-bar button:hover,
-    .choice-bar button.active { border-color: #8ec5fa; color: #1268c6; background: var(--blue-soft); }
 
-    .option-card {
-      overflow: hidden;
-      margin: 18px 0;
-      border: 1px solid var(--line);
-      border-radius: 15px;
-      background: var(--panel);
-      box-shadow: 0 8px 26px rgba(25, 51, 78, .06);
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr.selected td { background: #f6faff; }
+    tbody tr:hover td { background: #fbfdff; }
+    tbody tr.selected:hover td { background: #f1f7ff; }
+
+    th:first-child,
+    td:first-child {
+      width: 44px;
+      padding-right: 4px;
+      padding-left: 17px;
+      text-align: center;
     }
-    .option-card.recommended { border: 2px solid #83baf0; }
-    .option-head {
+
+    th:nth-child(2), td:nth-child(2) { width: 148px; }
+    th:nth-child(3), td:nth-child(3) { width: 126px; }
+    th:nth-child(4), td:nth-child(4) { width: 148px; }
+    th:nth-child(5), td:nth-child(5) { width: 94px; }
+    th:nth-child(6), td:nth-child(6) { width: 84px; }
+    th:nth-child(7), td:nth-child(7) { width: 100px; }
+    th:nth-child(8), td:nth-child(8) { width: 195px; }
+    th:nth-child(9), td:nth-child(9) { width: 106px; }
+    th:nth-child(10), td:nth-child(10) { width: 190px; }
+
+    .checkbox {
+      width: 15px;
+      height: 15px;
+      margin: 0;
+      accent-color: var(--blue);
+      cursor: pointer;
+      vertical-align: middle;
+    }
+
+    .payment-id,
+    .secondary-id {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+    }
+
+    .payment-id { color: #1e3a63; font-weight: 700; }
+    .secondary-id { color: #566983; }
+
+    .system-code {
+      display: inline-flex;
+      align-items: center;
+      height: 23px;
+      padding: 0 7px;
+      border: 1px solid #dfe7f0;
+      border-radius: 4px;
+      background: #f8fafc;
+      color: #53657d;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+    }
+
+    .amount {
+      color: #263a57;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .direction {
+      display: inline-flex;
+      align-items: center;
+      height: 23px;
+      padding: 0 8px;
+      border-radius: 4px;
+      background: #fff5e8;
+      color: #b86b12;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+
+    .agreement,
+    .clearing-date { color: #53647b; }
+    .clearing-date { font-variant-numeric: tabular-nums; }
+
+    .biz-column {
+      background: var(--blue-soft) !important;
+      color: var(--blue-dark);
+    }
+
+    .biz-heading {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .editable-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      padding: 0 5px;
+      border: 1px solid #b9d9fb;
+      border-radius: 3px;
+      background: #e5f2ff;
+      color: var(--blue-dark);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+
+    .biz-cell { padding: 8px 12px; }
+
+    .biz-select {
+      width: 100%;
+      height: 34px;
+      padding: 0 27px 0 9px;
+      border: 1px solid var(--blue-line);
+      border-radius: 5px;
+      outline: 0;
+      background-color: #fff;
+      color: #224d87;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .biz-select:hover { border-color: var(--blue); }
+    .biz-select:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(22, 119, 255, .14); }
+
+    .modal-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
-      padding: 18px 22px;
-      border-bottom: 1px solid var(--line);
-      background: #fbfdff;
+      min-height: 62px;
+      padding: 12px 20px;
+      border-top: 1px solid var(--line);
     }
-    .option-title { display: flex; align-items: flex-start; gap: 11px; }
-    .option-number {
-      display: grid;
-      width: 27px;
-      height: 27px;
-      place-items: center;
-      flex: 0 0 27px;
-      border-radius: 8px;
-      color: #1268c6;
-      background: var(--blue-soft);
-      font-size: 13px;
-      font-weight: 900;
-    }
-    .option-head h2 { margin: 0; font-size: 18px; }
-    .option-head p { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
-    .option-actions { display: flex; align-items: center; gap: 9px; }
-    .open-button,
-    .primary-button {
-      border: 1px solid var(--blue);
-      border-radius: 8px;
-      padding: 9px 14px;
-      color: #fff;
-      background: var(--blue);
+
+    .selected-status {
+      color: var(--muted);
       font-size: 12px;
-      font-weight: 800;
     }
-    .open-button:hover, .primary-button:hover { background: #0e70d4; }
-    .secondary-button {
-      border: 1px solid #cbd7e5;
-      border-radius: 8px;
-      padding: 9px 14px;
-      color: #415269;
-      background: #fff;
-      font-size: 12px;
-      font-weight: 800;
-    }
-    .secondary-button:hover { border-color: #94a9c2; background: #f8fafc; }
 
-    .option-body { display: grid; grid-template-columns: minmax(210px, .8fr) minmax(570px, 1.7fr); gap: 20px; padding: 20px; }
-    .decision-copy { padding: 9px 4px 9px 4px; }
-    .decision-copy h3 { margin: 0 0 10px; font-size: 14px; }
-    .decision-copy p { margin: 0 0 14px; color: var(--muted); font-size: 12px; line-height: 1.62; }
-    .decision-copy ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-    .decision-copy li { display: flex; gap: 8px; color: #4b5b70; font-size: 12px; line-height: 1.45; }
-    .decision-copy li::before { content: "✓"; color: var(--green); font-weight: 900; }
-    .tradeoff { margin-top: 16px; padding: 10px 11px; border-left: 3px solid #9bc9f5; color: #5e6d82; background: #f5faff; font-size: 11px; line-height: 1.5; }
-
-    .preview-stage {
-      position: relative;
-      min-height: 480px;
-      overflow: hidden;
-      border: 1px solid #dfe7ef;
-      border-radius: 12px;
-      background: #eaf0f5;
-    }
-    .context-page { position: absolute; inset: 0; padding: 18px; background: #f8fafc; }
-    .context-top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 13px; border-bottom: 1px solid #dbe3ec; }
-    .context-title { color: #3f4e62; font-size: 13px; font-weight: 800; }
-    .context-submit { width: 72px; height: 27px; border-radius: 6px; background: #acd4fa; }
-    .context-card { margin-top: 16px; padding: 14px; border: 1px solid #dce4ed; border-radius: 10px; background: #fff; }
-    .context-card h4 { margin: 0 0 12px; color: #526178; font-size: 12px; }
-    .context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-    .context-field { height: 38px; border: 1px solid #e3e9f0; border-radius: 7px; background: #f7f9fb; }
-    .context-table { margin-top: 16px; overflow: hidden; border: 1px solid #dce4ed; border-radius: 10px; background: #fff; }
-    .context-table-head, .context-table-row { display: grid; grid-template-columns: 1.3fr .8fr .8fr 1fr; gap: 9px; padding: 10px 12px; }
-    .context-table-head { color: #718097; background: #f4f7fa; font-size: 10px; font-weight: 800; }
-    .context-table-row { border-top: 1px solid #edf1f5; }
-    .context-line { height: 10px; border-radius: 4px; background: #e9eef4; }
-    .stage-shade { position: absolute; inset: 0; background: rgba(35, 51, 70, .24); }
-
-    .preview-dialog {
-      position: absolute;
-      z-index: 1;
-      border: 1px solid #d9e3ee;
-      border-radius: 14px;
-      background: #fff;
-      box-shadow: var(--shadow);
-    }
-    .preview-dialog.centered { top: 50%; left: 50%; width: min(690px, calc(100% - 36px)); transform: translate(-50%, -50%); }
-    .preview-dialog.drawer { top: 0; right: 0; bottom: 0; width: min(390px, 78%); border-width: 0 0 0 1px; border-radius: 0; }
-    .preview-dialog.review { top: 50%; left: 50%; width: min(830px, calc(100% - 30px)); transform: translate(-50%, -50%); }
-    .dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding: 19px 21px 15px; border-bottom: 1px solid #e6edf4; }
-    .dialog-heading { display: flex; gap: 11px; }
-    .success-icon { display: grid; width: 30px; height: 30px; place-items: center; flex: 0 0 30px; border-radius: 50%; color: #fff; background: var(--green); font-size: 16px; font-weight: 900; }
-    .dialog-head h3 { margin: 0; font-size: 17px; line-height: 1.2; }
-    .dialog-head p { margin: 4px 0 0; color: var(--muted); font-size: 11px; line-height: 1.4; }
-    .close-button { border: 0; padding: 1px 3px; color: #8190a3; background: transparent; font-size: 21px; line-height: 1; }
-    .close-button:hover { color: #334155; }
-    .dialog-body { padding: 17px 21px 19px; }
-    .identity-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
-    .identity-strip.three { grid-template-columns: 1fr 1fr 1fr; }
-    .identity-item { padding: 10px 11px; border: 1px solid #cfe4f9; border-radius: 8px; background: #f5faff; }
-    .field-label { display: block; margin-bottom: 4px; color: #78869a; font-size: 10px; font-weight: 700; }
-    .field-value { display: block; overflow: hidden; color: #253348; font-size: 12px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-    .detail-field { min-width: 0; padding: 10px 11px; border: 1px solid #e1e8f0; border-radius: 8px; background: #fbfdff; }
-    .detail-field.editable { border-color: #8dc1f2; background: #f6fbff; }
-    .field-label-row { display: flex; align-items: center; justify-content: space-between; gap: 7px; margin-bottom: 5px; }
-    .readonly-label { color: #94a2b4; font-size: 9px; font-weight: 700; }
-    .editable-label { color: #1268c6; font-size: 9px; font-weight: 800; }
-    .biz-select {
-      width: 100%;
-      height: 31px;
-      border: 1px solid #b8d7f3;
-      border-radius: 6px;
-      padding: 0 8px;
-      color: #24354c;
-      background: #fff;
-      font-size: 11px;
+    .selected-status strong {
+      color: #354861;
       font-weight: 700;
-      outline: none;
     }
-    .biz-select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22, 135, 245, .13); }
-    .dialog-note { display: flex; gap: 7px; margin-top: 12px; padding: 9px 10px; border-radius: 7px; color: #66768a; background: #f5f7fa; font-size: 10px; line-height: 1.4; }
-    .dialog-note strong { color: #43556d; }
-    .dialog-foot { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 13px 21px 17px; border-top: 1px solid #e6edf4; }
-    .dialog-foot .foot-note { margin-right: auto; color: #8a98aa; font-size: 10px; }
 
-    /* Option A uses a full-page table so several generated transactions can be reviewed together. */
-    #option-a .stage-shade,
-    #option-a .preview-dialog.centered { display: none; }
-    .table-preview,
-    .table-live-page {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      min-width: 0;
-      min-height: 100%;
-      flex-direction: column;
-      background: #fff;
+    .confirm {
+      min-width: 86px;
+      height: 34px;
+      padding: 0 17px;
+      border: 1px solid var(--blue);
+      border-radius: 5px;
+      background: var(--blue);
+      color: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
     }
-    .table-preview { position: absolute; inset: 0; }
-    .table-page-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px 14px; border-bottom: 1px solid #e6edf4; }
-    .table-page-head h3 { margin: 0; color: #1f2937; font-size: 18px; line-height: 1.2; }
-    .table-page-head .table-page-close { color: #8492a5; font-size: 20px; }
-    .table-page-body { flex: 1; min-height: 0; padding: 0 20px; }
-    .transaction-table-wrap { width: 100%; overflow: auto; border: 1px solid #e1e8f0; border-top: 0; }
-    .transaction-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; }
-    .transaction-table th,
-    .transaction-table td { min-width: 128px; padding: 11px 12px; border-right: 1px solid #e6edf4; border-bottom: 1px solid #e6edf4; text-align: left; white-space: nowrap; }
-    .transaction-table th { position: sticky; top: 0; z-index: 1; color: #52647b; background: #f7f9fb; font-size: 10px; font-weight: 800; }
-    .transaction-table th:first-child,
-    .transaction-table td:first-child { min-width: 42px; width: 42px; text-align: center; }
-    .transaction-table th:nth-child(1), .transaction-table td:nth-child(1) { position: sticky; left: 0; z-index: 2; background: #fff; }
-    .transaction-table th:nth-child(1) { background: #f7f9fb; }
-    .transaction-table tr.is-selected td { background: #f2f8ff; }
-    .transaction-table tr.is-selected td:first-child { background: #f2f8ff; }
-    .transaction-table input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--blue); cursor: pointer; }
-    .transaction-table .table-value { color: #26364d; font-weight: 700; }
-    .transaction-table .direction-out { color: #d74949; }
-    .transaction-table .biz-select { min-width: 166px; height: 30px; font-size: 11px; }
-    .table-page-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 13px 20px 17px; border-top: 1px solid #e6edf4; }
-    .table-page-foot .primary-button:disabled { cursor: not-allowed; opacity: .48; }
-    #modal-a.table-layer { align-items: stretch; justify-content: stretch; padding: 0; background: #fff; }
-    #modal-a.table-layer .live-surface { width: 100%; height: 100%; max-height: none; border-radius: 0; box-shadow: none; }
-    #modal-a.table-layer .table-page-head { padding: 25px 34px 18px; }
-    #modal-a.table-layer .table-page-head h3 { font-size: 27px; }
-    #modal-a.table-layer .table-page-body { padding: 0 34px; }
-    #modal-a.table-layer .table-page-foot { padding: 17px 34px 24px; }
-    #modal-a.table-layer .transaction-table th,
-    #modal-a.table-layer .transaction-table td { min-width: 154px; padding: 14px 16px; font-size: 13px; }
-    #modal-a.table-layer .transaction-table th { font-size: 12px; }
-    #modal-a.table-layer .transaction-table .biz-select { min-width: 190px; height: 36px; font-size: 13px; }
 
-    .drawer .dialog-head { padding-top: 22px; }
-    .drawer .dialog-body { height: calc(100% - 137px); overflow: auto; padding-top: 18px; }
-    .drawer .identity-strip, .drawer .detail-grid { grid-template-columns: 1fr; }
-    .drawer .identity-strip { margin-bottom: 10px; }
-    .drawer .detail-grid { gap: 8px; }
-    .drawer .dialog-foot { position: absolute; right: 0; bottom: 0; left: 0; }
-    .drawer .dialog-foot .foot-note { display: none; }
-    .drawer-status { display: inline-flex; align-items: center; gap: 5px; margin-top: 13px; color: #11744f; font-size: 10px; font-weight: 800; }
-    .drawer-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+    .confirm:hover:not(:disabled) { border-color: var(--blue-dark); background: var(--blue-dark); }
+    .confirm:disabled { border-color: var(--disabled); background: var(--disabled); color: var(--disabled-text); cursor: not-allowed; }
 
-    .review-layout { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; }
-    .review-panel { min-width: 0; padding: 12px; border: 1px solid #e1e8f0; border-radius: 9px; background: #fbfdff; }
-    .review-panel h4 { margin: 0 0 10px; font-size: 12px; }
-    .review-panel p { margin: -5px 0 12px; color: var(--muted); font-size: 10px; line-height: 1.45; }
-    .review-panel .identity-strip { grid-template-columns: 1fr; margin-bottom: 9px; }
-    .review-panel .detail-grid { gap: 8px; }
-    .review-highlight { margin-bottom: 10px; padding: 10px; border-radius: 8px; color: #146d4b; background: var(--green-soft); }
-    .review-highlight strong { display: block; font-size: 12px; }
-    .review-highlight span { display: block; margin-top: 3px; color: #579477; font-size: 10px; }
-    .edit-callout { display: flex; gap: 7px; margin-bottom: 10px; padding: 9px 10px; border-left: 3px solid #70b4ef; color: #5c6e85; background: #f2f8ff; font-size: 10px; line-height: 1.45; }
-    .review .dialog-body { padding-bottom: 16px; }
-
-    .live-layer { position: fixed; inset: 0; z-index: 30; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(27, 42, 60, .48); }
-    .live-layer.open { display: flex; }
-    .live-surface { position: relative; width: min(760px, 100%); max-height: min(760px, calc(100vh - 48px)); overflow: auto; border-radius: 14px; background: #fff; box-shadow: 0 26px 80px rgba(14, 29, 49, .28); }
-    .live-layer.drawer-layer { justify-content: flex-end; align-items: stretch; padding: 0; }
-    .drawer-layer .live-surface { width: min(460px, 100%); max-height: none; border-radius: 0; }
-    .live-layer.review-layer .live-surface { width: min(1040px, 100%); }
-    .live-layer .dialog-head, .live-layer .dialog-body, .live-layer .dialog-foot { position: relative; }
-    .live-layer .review-layout { grid-template-columns: 1.1fr .9fr; }
-    body.modal-open { overflow: hidden; }
-    .toast { position: fixed; right: 24px; bottom: 24px; z-index: 40; display: none; padding: 11px 14px; border: 1px solid #b9dfcd; border-radius: 8px; color: #126844; background: #effaf5; box-shadow: 0 9px 25px rgba(25, 57, 80, .12); font-size: 12px; font-weight: 700; }
-    .toast.show { display: block; }
-
-    @media (max-width: 980px) {
-      .page { padding: 22px 14px 44px; }
-      .page-header { display: block; }
-      .legend { justify-content: flex-start; margin-top: 14px; }
-      .option-body { grid-template-columns: 1fr; }
-      .decision-copy { padding: 0; }
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 10;
+      padding: 10px 14px;
+      border: 1px solid #bce4d2;
+      border-radius: 6px;
+      background: #f1fbf6;
+      box-shadow: 0 8px 24px rgba(31, 48, 72, .14);
+      color: #18794e;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity .16s ease, transform .16s ease;
     }
-    @media (max-width: 650px) {
-      h1 { font-size: 25px; }
-      .choice-bar { overflow-x: auto; }
-      .choice-label { display: none; }
-      .option-head { align-items: flex-start; flex-direction: column; }
-      .option-actions { width: 100%; justify-content: space-between; }
-      .preview-stage { min-height: 590px; }
-      .preview-dialog.centered, .preview-dialog.review { width: calc(100% - 22px); }
-      .preview-dialog.drawer { width: 88%; }
-      .identity-strip, .detail-grid, .review-layout { grid-template-columns: 1fr; }
-      .dialog-foot { flex-wrap: wrap; }
-      .dialog-foot .foot-note { width: 100%; margin-right: 0; }
-      .live-layer { padding: 10px; }
-      .live-layer.drawer-layer { padding: 0; }
-      .live-layer .review-layout { grid-template-columns: 1fr; }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 720px) {
+      .backdrop { align-items: flex-start; padding: 14px; }
+      .modal { width: 100%; max-height: calc(100vh - 28px); }
+      .modal-header { min-height: 62px; padding: 13px 15px; }
+      h1 { font-size: 17px; }
+      .modal-footer { padding: 11px 15px; }
+      .confirm { min-width: 82px; }
+      .toast { right: 14px; bottom: 14px; }
     }
   </style>
 </head>
 <body>
-  <main class="page">
-    <header class="page-header">
-      <div>
-        <div class="eyebrow">Refund/Payout Fund</div>
-        <h1>Offline Transaction Detail - UI Options</h1>
-        <p>After confirm refund/payout fund, the fund out transaction detail will generate automatically</p>
-      </div>
-      <div class="legend">
-        <span class="pill green">Created after Submit</span>
-        <span class="pill blue">Biz Code editable</span>
-        <span class="pill gray">Other fields read-only</span>
-      </div>
-    </header>
-
-    <nav class="choice-bar" aria-label="Modal options">
-      <span class="choice-label">Compare options</span>
-      <button class="active" data-scroll="option-a">A · Single-page table</button>
-      <button data-scroll="option-b">B · Side drawer</button>
-      <button data-scroll="option-c">C · Review modal</button>
-    </nav>
-
-    <section class="option-card recommended" id="option-a">
-      <header class="option-head">
-        <div class="option-title">
-          <span class="option-number">A</span>
-          <div><h2>Single-page Transaction Table</h2><p>Shows multiple generated fund out transaction details in one selectable table.</p></div>
+  <div class="backdrop" id="backdrop">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header">
+        <div class="title-wrap">
+          <div class="modal-kicker">Offline Transaction Detail</div>
+          <h1 id="modalTitle">Please select the correct Payment ID</h1>
         </div>
-        <div class="option-actions"><span class="pill blue">Selected option</span><button class="open-button" data-open="modal-a">Open preview</button></div>
+        <button class="close" id="closeButton" type="button" aria-label="Close">&times;</button>
       </header>
-      <div class="option-body">
-        <div class="decision-copy">
-          <h3>Interaction idea</h3>
-          <p>After confirm refund/payout fund, show every generated fund out transaction in a selectable table.</p>
-          <ul><li>Supports selecting multiple Payment IDs.</li><li>All generated fields are visible in one row.</li><li>Biz Code can be edited inline.</li></ul>
-          <div class="tradeoff"><strong>Trade-off:</strong> the wide table may require horizontal scrolling on smaller screens.</div>
-        </div>
-        <div class="preview-stage">
-          <div class="context-page"><div class="context-top"><span class="context-title">Confirm Offline Result</span><span class="context-submit"></span></div><div class="context-card"><h4>Select List</h4><div class="context-grid"><span class="context-field"></span><span class="context-field"></span><span class="context-field"></span><span class="context-field"></span></div></div><div class="context-table"><div class="context-table-head"><span>Refund/Payout Status</span><span>Amount</span><span>Destination</span><span>Reason</span></div><div class="context-table-row"><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span></div><div class="context-table-row"><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span></div></div></div>
-          <div class="stage-shade"></div>
-          <div class="preview-dialog centered">
-            <div class="dialog-head"><div class="dialog-heading"><span class="success-icon">✓</span><div><h3>Offline Transaction Created</h3><p>The Submit action created a new Offline Transaction.</p></div></div><button class="close-button" type="button" aria-label="Close preview">×</button></div>
-            <div class="dialog-body"><div class="identity-strip three"><div class="identity-item"><span class="field-label">Payment ID</span><span class="field-value">1044000098100260</span></div><div class="identity-item"><span class="field-label">Identify ID</span><span class="field-value">OT-20261008-0001</span></div><div class="identity-item"><span class="field-label">Reference ID</span><span class="field-value">RFND-20261008-0001</span></div></div><div class="detail-grid"><div class="detail-field"><span class="field-label">Amount</span><span class="field-value">RM39.45</span></div><div class="detail-field"><span class="field-label">Fund Direction</span><span class="field-value">OUT</span></div><div class="detail-field"><span class="field-label">Agreement Item</span><span class="field-value">Refund to Bank Account / SOF</span></div><div class="detail-field"><span class="field-label">System Code</span><span class="field-value">fundboss</span></div><div class="detail-field"><span class="field-label">Clearing Date</span><span class="field-value">2026-10-08</span></div><div class="detail-field editable"><div class="field-label-row"><span class="field-label" style="margin:0">Biz Code</span><span class="editable-label">Editable</span></div><select class="biz-select" aria-label="Option A Biz Code"><option selected>Offline Refund</option><option>Offline Payment</option><option>Wallet Deduction</option><option>Manual Supplement</option></select></div></div><div class="dialog-note"><strong>ⓘ</strong><span>After confirm refund/payout fund, the fund out transaction detail will generate automatically</span></div></div>
-            <div class="dialog-foot"><span class="foot-note">Record created successfully</span><button class="secondary-button" type="button">View Transaction</button><button class="primary-button" type="button">Done</button></div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <section class="option-card" id="option-b">
-      <header class="option-head">
-        <div class="option-title"><span class="option-number">B</span><div><h2>Right-side Detail Drawer</h2><p>Keeps the Confirm Offline Result page visible while the generated transaction is reviewed in context.</p></div></div>
-        <div class="option-actions"><span class="pill gray">Best for context</span><button class="open-button" data-open="modal-b">Open preview</button></div>
-      </header>
-      <div class="option-body">
-        <div class="decision-copy"><h3>Interaction idea</h3><p>Use a right-side drawer so users can still see the submitted refund or payout details behind the generated transaction.</p><ul><li>Best continuity with the current page.</li><li>Easy to extend with audit information later.</li><li>Feels lighter than a blocking modal.</li></ul><div class="tradeoff"><strong>Trade-off:</strong> the narrower layout needs a longer vertical scan.</div></div>
-        <div class="preview-stage"><div class="context-page"><div class="context-top"><span class="context-title">Refund/Payout Fund - Confirm Offline Result</span><span class="context-submit"></span></div><div class="context-card"><h4>Selected result</h4><div class="context-grid"><span class="context-field"></span><span class="context-field"></span><span class="context-field"></span><span class="context-field"></span></div></div><div class="context-table"><div class="context-table-head"><span>Status</span><span>Type</span><span>Bank Account</span><span>Amount</span></div><div class="context-table-row"><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span></div></div></div><div class="stage-shade"></div><div class="preview-dialog drawer"><div class="dialog-head"><div><div class="dialog-heading"><span class="success-icon">✓</span><div><h3>Offline Transaction Created</h3><p>Generated from the submitted result.</p></div></div><div class="drawer-status">Created successfully</div></div><button class="close-button" type="button" aria-label="Close preview">×</button></div><div class="dialog-body"><div class="identity-strip"><div class="identity-item"><span class="field-label">Identify ID</span><span class="field-value">OT-20261008-0001</span></div><div class="identity-item"><span class="field-label">Reference ID</span><span class="field-value">RFND-20261008-0001</span></div></div><div class="detail-grid"><div class="detail-field"><span class="field-label">Amount</span><span class="field-value">RM39.45</span></div><div class="detail-field"><span class="field-label">Fund Direction</span><span class="field-value">OUT</span></div><div class="detail-field"><span class="field-label">Agreement Item</span><span class="field-value">Refund to Bank Account / SOF</span></div><div class="detail-field"><span class="field-label">Clearing Date</span><span class="field-value">2026-10-08</span></div><div class="detail-field editable"><div class="field-label-row"><span class="field-label" style="margin:0">Biz Code</span><span class="editable-label">Editable</span></div><select class="biz-select" aria-label="Option B Biz Code"><option selected>Offline Refund</option><option>Offline Payment</option><option>Wallet Deduction</option><option>Manual Supplement</option></select></div></div><div class="dialog-note"><strong>ⓘ</strong><span>Only Biz Code is editable. All other values are system-generated.</span></div></div><div class="dialog-foot"><span class="foot-note">Changes apply to this Offline Transaction</span><button class="primary-button" type="button">Save and close</button></div></div></div>
+      <div class="table-scroll">
+        <table>
+          <colgroup>
+            <col style="width:44px" />
+            <col style="width:148px" />
+            <col style="width:126px" />
+            <col style="width:148px" />
+            <col style="width:94px" />
+            <col style="width:84px" />
+            <col style="width:100px" />
+            <col style="width:195px" />
+            <col style="width:106px" />
+            <col style="width:190px" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col"><input class="checkbox" id="selectAll" type="checkbox" aria-label="Select all transactions" /></th>
+              <th scope="col">Payment ID</th>
+              <th scope="col">Identify ID</th>
+              <th scope="col">Reference ID</th>
+              <th scope="col">System Code</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Fund Direction</th>
+              <th scope="col">Agreement Item</th>
+              <th scope="col">Clearing Date</th>
+              <th class="biz-column" scope="col"><span class="biz-heading"><span>Biz Code</span><span class="editable-badge">Editable</span></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input class="checkbox row-checkbox" type="checkbox" aria-label="Select Payment ID 1044000098100260" /></td>
+              <td><span class="payment-id">1044000098100260</span></td>
+              <td><span class="secondary-id">OT-20261008-0001</span></td>
+              <td><span class="secondary-id">RFND-20261008-0001</span></td>
+              <td><span class="system-code">fundboss</span></td>
+              <td class="amount">RM39.45</td>
+              <td><span class="direction">OUT</span></td>
+              <td class="agreement">Refund to Bank Account / SOF</td>
+              <td class="clearing-date">2026-10-08</td>
+              <td class="biz-column biz-cell">
+                <select class="biz-select" aria-label="Biz Code for Payment ID 1044000098100260">
+                  <option>Refund to Bank Account / SOF</option>
+                  <option>Refund to Bank Account / Settlement</option>
+                  <option>Refund to Merchant</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td><input class="checkbox row-checkbox" type="checkbox" aria-label="Select Payment ID 1044000098100261" /></td>
+              <td><span class="payment-id">1044000098100261</span></td>
+              <td><span class="secondary-id">OT-20261008-0002</span></td>
+              <td><span class="secondary-id">RFND-20261008-0002</span></td>
+              <td><span class="system-code">fundboss</span></td>
+              <td class="amount">RM120.00</td>
+              <td><span class="direction">OUT</span></td>
+              <td class="agreement">Refund to Bank Account / SOF</td>
+              <td class="clearing-date">2026-10-08</td>
+              <td class="biz-column biz-cell">
+                <select class="biz-select" aria-label="Biz Code for Payment ID 1044000098100261">
+                  <option>Refund to Bank Account / SOF</option>
+                  <option>Refund to Bank Account / Settlement</option>
+                  <option>Refund to Merchant</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </section>
 
-    <section class="option-card" id="option-c">
-      <header class="option-head">
-        <div class="option-title"><span class="option-number">C</span><div><h2>Wide Review Modal</h2><p>Separates transaction identity from accounting classification for a more explicit review checkpoint.</p></div></div>
-        <div class="option-actions"><span class="pill orange">Best for control</span><button class="open-button" data-open="modal-c">Open preview</button></div>
-      </header>
-      <div class="option-body">
-        <div class="decision-copy"><h3>Interaction idea</h3><p>Use a wider modal when the generated record should feel like a formal review step before the user leaves the operation.</p><ul><li>Most explicit read-only versus editable separation.</li><li>Leaves room for future system metadata.</li><li>Good fit for audit-heavy workflows.</li></ul><div class="tradeoff"><strong>Trade-off:</strong> it is the heaviest interaction and takes more screen space.</div></div>
-        <div class="preview-stage"><div class="context-page"><div class="context-top"><span class="context-title">Confirm Offline Result</span><span class="context-submit"></span></div><div class="context-card"><h4>Review submitted refund result</h4><div class="context-grid"><span class="context-field"></span><span class="context-field"></span><span class="context-field"></span><span class="context-field"></span></div></div><div class="context-table"><div class="context-table-head"><span>Refund/Payout Type</span><span>Destination</span><span>Reason</span><span>Status</span></div><div class="context-table-row"><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span></div></div></div><div class="stage-shade"></div><div class="preview-dialog review"><div class="dialog-head"><div class="dialog-heading"><span class="success-icon">✓</span><div><h3>Review Generated Offline Transaction</h3><p>Confirm the generated record before returning to Discrepancy Details.</p></div></div><button class="close-button" type="button" aria-label="Close preview">×</button></div><div class="dialog-body"><div class="review-layout"><div class="review-panel"><h4>Offline Transaction</h4><p>System-generated transaction details</p><div class="identity-strip"><div class="identity-item"><span class="field-label">Identify ID</span><span class="field-value">OT-20261008-0001</span></div><div class="identity-item"><span class="field-label">Reference ID</span><span class="field-value">RFND-20261008-0001</span></div></div><div class="detail-grid"><div class="detail-field"><span class="field-label">Amount</span><span class="field-value">RM39.45</span></div><div class="detail-field"><span class="field-label">Fund Direction</span><span class="field-value">OUT</span></div><div class="detail-field"><span class="field-label">Agreement Item</span><span class="field-value">Refund to Bank Account / SOF</span></div><div class="detail-field"><span class="field-label">Clearing Date</span><span class="field-value">2026-10-08</span></div></div></div><div class="review-panel"><h4>Accounting Classification</h4><p>Update only the field that requires user input.</p><div class="review-highlight"><strong>Offline Transaction ready</strong><span>All generated values are complete.</span></div><div class="edit-callout"><strong>✎</strong><span>Biz Code is the only editable field in this review.</span></div><div class="detail-field editable"><div class="field-label-row"><span class="field-label" style="margin:0">Biz Code</span><span class="editable-label">Editable</span></div><select class="biz-select" aria-label="Option C Biz Code"><option selected>Offline Refund</option><option>Offline Payment</option><option>Wallet Deduction</option><option>Manual Supplement</option></select></div></div></div></div><div class="dialog-foot"><span class="foot-note">No other fields can be changed in this step</span><button class="secondary-button" type="button">Back to result</button><button class="primary-button" type="button">Done</button></div></div></div>
-      </div>
+      <footer class="modal-footer">
+        <span class="selected-status"><strong id="selectedCount">0</strong> records selected</span>
+        <button class="confirm" id="confirmButton" type="button" disabled>Confirm</button>
+      </footer>
     </section>
-  </main>
-
-  <div class="live-layer" id="modal-a" role="dialog" aria-modal="true" aria-labelledby="modalATitle">
-    <div class="live-surface"><div class="dialog-head"><div class="dialog-heading"><span class="success-icon">✓</span><div><h3 id="modalATitle">Offline Transaction Created</h3><p>After confirm refund/payout fund, the fund out transaction detail will generate automatically</p></div></div><button class="close-button" type="button" data-close aria-label="Close">×</button></div><div class="dialog-body"><div class="identity-strip three"><div class="identity-item"><span class="field-label">Payment ID</span><span class="field-value">1044000098100260</span></div><div class="identity-item"><span class="field-label">Identify ID</span><span class="field-value">OT-20261008-0001</span></div><div class="identity-item"><span class="field-label">Reference ID</span><span class="field-value">RFND-20261008-0001</span></div></div><div class="detail-grid"><div class="detail-field"><span class="field-label">Amount</span><span class="field-value">RM39.45</span></div><div class="detail-field"><span class="field-label">Fund Direction</span><span class="field-value">OUT</span></div><div class="detail-field"><span class="field-label">Agreement Item</span><span class="field-value">Refund to Bank Account / SOF</span></div><div class="detail-field"><span class="field-label">System Code</span><span class="field-value">fundboss</span></div><div class="detail-field"><span class="field-label">Clearing Date</span><span class="field-value">2026-10-08</span></div><div class="detail-field editable"><div class="field-label-row"><span class="field-label" style="margin:0">Biz Code</span><span class="editable-label">Editable</span></div><select class="biz-select" aria-label="Live Option A Biz Code"><option selected>Offline Refund</option><option>Offline Payment</option><option>Wallet Deduction</option><option>Manual Supplement</option></select></div></div><div class="dialog-note"><strong>ⓘ</strong><span>After confirm refund/payout fund, the fund out transaction detail will generate automatically</span></div></div><div class="dialog-foot"><span class="foot-note">Record created successfully</span><button class="secondary-button" type="button" data-toast="Transaction details opened.">View Transaction</button><button class="primary-button" type="button" data-close>Done</button></div></div>
   </div>
 
-  <div class="live-layer drawer-layer" id="modal-b" role="dialog" aria-modal="true" aria-labelledby="modalBTitle">
-    <div class="live-surface"><div class="dialog-head"><div><div class="dialog-heading"><span class="success-icon">✓</span><div><h3 id="modalBTitle">Offline Transaction Created</h3><p>Generated from the submitted result.</p></div></div><div class="drawer-status">Created successfully</div></div><button class="close-button" type="button" data-close aria-label="Close">×</button></div><div class="dialog-body"><div class="identity-strip"><div class="identity-item"><span class="field-label">Identify ID</span><span class="field-value">OT-20261008-0001</span></div><div class="identity-item"><span class="field-label">Reference ID</span><span class="field-value">RFND-20261008-0001</span></div></div><div class="detail-grid"><div class="detail-field"><span class="field-label">Amount</span><span class="field-value">RM39.45</span></div><div class="detail-field"><span class="field-label">Fund Direction</span><span class="field-value">OUT</span></div><div class="detail-field"><span class="field-label">Agreement Item</span><span class="field-value">Refund to Bank Account / SOF</span></div><div class="detail-field"><span class="field-label">Clearing Date</span><span class="field-value">2026-10-08</span></div><div class="detail-field editable"><div class="field-label-row"><span class="field-label" style="margin:0">Biz Code</span><span class="editable-label">Editable</span></div><select class="biz-select" aria-label="Live Option B Biz Code"><option selected>Offline Refund</option><option>Offline Payment</option><option>Wallet Deduction</option><option>Manual Supplement</option></select></div></div><div class="dialog-note"><strong>ⓘ</strong><span>Only Biz Code is editable. All other values are system-generated.</span></div></div><div class="dialog-foot"><span class="foot-note">Changes apply to this Offline Transaction</span><button class="primary-button" type="button" data-close data-toast="Biz Code saved for preview.">Save and close</button></div></div>
-  </div>
-
-  <div class="live-layer review-layer" id="modal-c" role="dialog" aria-modal="true" aria-labelledby="modalCTitle">
-    <div class="live-surface"><div class="dialog-head"><div class="dialog-heading"><span class="success-icon">✓</span><div><h3 id="modalCTitle">Review Generated Offline Transaction</h3><p>Confirm the generated record before returning to Discrepancy Details.</p></div></div><button class="close-button" type="button" data-close aria-label="Close">×</button></div><div class="dialog-body"><div class="review-layout"><div class="review-panel"><h4>Offline Transaction</h4><p>System-generated transaction details</p><div class="identity-strip"><div class="identity-item"><span class="field-label">Identify ID</span><span class="field-value">OT-20261008-0001</span></div><div class="identity-item"><span class="field-label">Reference ID</span><span class="field-value">RFND-20261008-0001</span></div></div><div class="detail-grid"><div class="detail-field"><span class="field-label">Amount</span><span class="field-value">RM39.45</span></div><div class="detail-field"><span class="field-label">Fund Direction</span><span class="field-value">OUT</span></div><div class="detail-field"><span class="field-label">Agreement Item</span><span class="field-value">Refund to Bank Account / SOF</span></div><div class="detail-field"><span class="field-label">Clearing Date</span><span class="field-value">2026-10-08</span></div></div></div><div class="review-panel"><h4>Accounting Classification</h4><p>Update only the field that requires user input.</p><div class="review-highlight"><strong>Offline Transaction ready</strong><span>All generated values are complete.</span></div><div class="edit-callout"><strong>✎</strong><span>Biz Code is the only editable field in this review.</span></div><div class="detail-field editable"><div class="field-label-row"><span class="field-label" style="margin:0">Biz Code</span><span class="editable-label">Editable</span></div><select class="biz-select" aria-label="Live Option C Biz Code"><option selected>Offline Refund</option><option>Offline Payment</option><option>Wallet Deduction</option><option>Manual Supplement</option></select></div></div></div></div><div class="dialog-foot"><span class="foot-note">No other fields can be changed in this step</span><button class="secondary-button" type="button" data-close>Back to result</button><button class="primary-button" type="button" data-close data-toast="Transaction review completed.">Done</button></div></div>
-  </div>
-  <div class="toast" id="toast" role="status"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite">Selected Offline Transaction confirmed.</div>
 
   <script>
-    const toast = document.getElementById("toast");
+    const backdrop = document.getElementById('backdrop');
+    const closeButton = document.getElementById('closeButton');
+    const selectAll = document.getElementById('selectAll');
+    const rowCheckboxes = Array.from(document.querySelectorAll('.row-checkbox'));
+    const selectedCount = document.getElementById('selectedCount');
+    const confirmButton = document.getElementById('confirmButton');
+    const toast = document.getElementById('toast');
+    let toastTimer;
 
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
-      clearTimeout(window.toastTimer);
-      window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    function updateSelection() {
+      const count = rowCheckboxes.filter((checkbox) => checkbox.checked).length;
+      selectedCount.textContent = count;
+      confirmButton.disabled = count === 0;
+      selectAll.checked = count === rowCheckboxes.length;
+      selectAll.indeterminate = count > 0 && count < rowCheckboxes.length;
+      rowCheckboxes.forEach((checkbox) => checkbox.closest('tr').classList.toggle('selected', checkbox.checked));
     }
 
-    function closeModals() {
-      document.querySelectorAll(".live-layer.open").forEach(layer => layer.classList.remove("open"));
-      document.body.classList.remove("modal-open");
-    }
+    rowCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', updateSelection));
 
-    document.querySelectorAll("[data-scroll]").forEach(button => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll("[data-scroll]").forEach(item => item.classList.remove("active"));
-        button.classList.add("active");
-        document.getElementById(button.dataset.scroll)?.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
+    selectAll.addEventListener('change', () => {
+      rowCheckboxes.forEach((checkbox) => { checkbox.checked = selectAll.checked; });
+      updateSelection();
     });
 
-    document.querySelectorAll("[data-open]").forEach(button => {
-      button.addEventListener("click", () => {
-        closeModals();
-        document.getElementById(button.dataset.open)?.classList.add("open");
-        document.body.classList.add("modal-open");
-      });
+    confirmButton.addEventListener('click', () => {
+      if (confirmButton.disabled) return;
+      toast.classList.add('show');
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => toast.classList.remove('show'), 2600);
     });
 
-    document.querySelectorAll("[data-close]").forEach(button => {
-      button.addEventListener("click", () => {
-        const message = button.dataset.toast;
-        closeModals();
-        if (message) showToast(message);
-      });
-    });
-
-    document.querySelectorAll(".live-layer").forEach(layer => {
-      layer.addEventListener("click", event => {
-        if (event.target === layer) closeModals();
-      });
-    });
-
-    const optionATransactions = [
-      { paymentId: "1044000098100260", identifyId: "OT-20261008-0001", referenceId: "RFND-20261008-0001", systemCode: "fundboss", amount: "RM39.45", direction: "OUT", agreementItem: "Refund to Bank Account / SOF", clearingDate: "2026-10-08", bizCode: "Wallet Deduction" },
-      { paymentId: "1044000098100261", identifyId: "OT-20261008-0002", referenceId: "RFND-20261008-0002", systemCode: "fundboss", amount: "RM120.00", direction: "OUT", agreementItem: "Refund to Bank Account / SOF", clearingDate: "2026-10-08", bizCode: "Offline Refund" }
-    ];
-
-    function optionATableMarkup(isLive) {
-      const rows = optionATransactions.map((item, index) => `
-        <tr data-table-a-row="${index}">
-          <td><input type="checkbox" data-table-a-select aria-label="Select Payment ID ${item.paymentId}"></td>
-          <td><span class="table-value">${item.paymentId}</span></td>
-          <td><span class="table-value">${item.identifyId}</span></td>
-          <td><span class="table-value">${item.referenceId}</span></td>
-          <td><span class="table-value">${item.systemCode}</span></td>
-          <td><span class="table-value">${item.amount}</span></td>
-          <td><span class="table-value direction-out">${item.direction}</span></td>
-          <td><span class="table-value">${item.agreementItem}</span></td>
-          <td><span class="table-value">${item.clearingDate}</span></td>
-          <td><select class="biz-select" data-table-a-biz aria-label="Biz Code for Payment ID ${item.paymentId}"><option${item.bizCode === "Offline Refund" ? " selected" : ""}>Offline Refund</option><option${item.bizCode === "Wallet Deduction" ? " selected" : ""}>Wallet Deduction</option><option>Offline Payment</option><option>Manual Supplement</option></select></td>
-        </tr>`).join("");
-      return `<div class="${isLive ? "table-live-page" : "table-preview"}">
-        <div class="table-page-head"><h3>Please select the correct Payment ID</h3></div>
-        <div class="table-page-body"><div class="transaction-table-wrap"><table class="transaction-table"><thead><tr><th aria-label="Select"></th><th>Payment ID</th><th>Identify ID</th><th>Reference ID</th><th>System Code</th><th>Amount</th><th>Fund Direction</th><th>Agreement Item</th><th>Clearing Date</th><th>Biz Code</th></tr></thead><tbody>${rows}</tbody></table></div></div>
-        <div class="table-page-foot"><button class="primary-button" type="button" data-table-a-confirm disabled>Confirm</button></div>
-      </div>`;
-    }
-
-    function bindOptionATable(container, isLive) {
-      const confirmButton = container.querySelector("[data-table-a-confirm]");
-      container.querySelectorAll("[data-table-a-select]").forEach(checkbox => {
-        checkbox.addEventListener("change", () => {
-          checkbox.closest("tr")?.classList.toggle("is-selected", checkbox.checked);
-          const selected = container.querySelectorAll("[data-table-a-select]:checked").length;
-          confirmButton.disabled = selected === 0;
-        });
-      });
-      confirmButton.addEventListener("click", () => {
-        if (confirmButton.disabled) return;
-        if (isLive) closeModals();
-        showToast("Selected Offline Transaction confirmed.");
-      });
-    }
-
-    const optionAStage = document.querySelector("#option-a .preview-stage");
-    if (optionAStage) {
-      optionAStage.insertAdjacentHTML("beforeend", optionATableMarkup(false));
-      bindOptionATable(optionAStage.querySelector(".table-preview"), false);
-    }
-
-    const optionAModal = document.getElementById("modal-a");
-    const optionASurface = optionAModal?.querySelector(".live-surface");
-    if (optionAModal && optionASurface) {
-      optionAModal.classList.add("table-layer");
-      optionASurface.innerHTML = optionATableMarkup(true);
-      bindOptionATable(optionASurface.querySelector(".table-live-page"), true);
-    }
-
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeModals();
-    });
+    closeButton.addEventListener('click', () => { backdrop.style.display = 'none'; });
+    updateSelection();
   </script>
 </body>
 </html>
