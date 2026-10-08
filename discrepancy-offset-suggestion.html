@@ -145,7 +145,7 @@
   .gap-3d { background: #FFF8ED; color: #B8860B; border: 1px solid #FDE7B6; }
   .gap-7d { background: #E6F9F1; color: #007A4D; border: 1px solid #A8E6C0; }
 
-  .action-bar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 14px 28px; border-top: 1px solid #E8EBF0; background: #fff; flex-shrink: 0; }
+  .action-bar { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 12px 28px; border-bottom: 1px solid #E8EBF0; background: #fff; flex-shrink: 0; }
   .sel-count { font-size: 14px; color: #6B7280; margin-right: auto; }
   .sel-count strong { color: #2469F0; font-weight: 600; }
   .sel-count .st { color: #9CA3AF; }
@@ -243,6 +243,12 @@
     </div>
   </div>
 
+  <div class="action-bar">
+    <span class="sel-count"><strong id="selCount">1</strong> <span class="st">/ 18 pairs</span></span>
+    <button class="btn btn-outline-red" onclick="deSelectAll()">Decline</button>
+    <button class="btn btn-primary" onclick="confirmSelected()">Confirm</button>
+  </div>
+
   <div class="table-wrap">
     <table>
       <thead>
@@ -260,12 +266,6 @@
       </thead>
       <tbody id="tbody"></tbody>
     </table>
-  </div>
-
-  <div class="action-bar">
-    <span class="sel-count"><strong id="selCount">1</strong> <span class="st">/ 18 pairs</span></span>
-    <button class="btn btn-outline-red" onclick="deSelectAll()">Decline Suggestion</button>
-    <button class="btn btn-primary" onclick="confirmSelected()">Confirm Suggestion</button>
   </div>
 
 </div></div>
