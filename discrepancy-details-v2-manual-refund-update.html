@@ -6608,7 +6608,9 @@
   #generatedOfflineTransactionModal.open { align-items:center; justify-content:center; padding:20px; background:rgba(17,24,39,.42); }
   #generatedOfflineTransactionModal .modal { display:flex; flex-direction:column; width:min(1080px,100%); max-height:calc(100vh - 80px); overflow:hidden; border-radius:10px; }
   #generatedOfflineTransactionModal .modal-head { flex:none; align-items:center; padding:15px 20px; }
+  #generatedOfflineTransactionModal .modal-head > div { min-width:0; }
   #generatedOfflineTransactionModal .modal-head strong { color:#172033; font-size:17px; }
+  #generatedOfflineTransactionModal .generated-transaction-subtitle { margin:4px 0 0; color:#718096; font-size:11px; line-height:1.45; }
   #generatedOfflineTransactionModal .modal-close { border:0; background:transparent; color:#748196; font-size:26px; line-height:24px; cursor:pointer; }
   #generatedOfflineTransactionModal .generated-transaction-body { flex:1; min-height:0; overflow:auto; }
   #generatedOfflineTransactionModal table { width:100%; min-width:1040px; border-collapse:collapse; table-layout:fixed; }
@@ -8334,7 +8336,7 @@
 
   <div class="modal-backdrop" id="generatedOfflineTransactionModal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="generatedOfflineTransactionTitle">
-      <div class="modal-head"><strong id="generatedOfflineTransactionTitle">Please select the correct Payment ID</strong><button class="modal-close" id="generatedOfflineTransactionClose" aria-label="Close">×</button></div>
+      <div class="modal-head"><div><strong id="generatedOfflineTransactionTitle">Offline Transaction Detail</strong><p class="generated-transaction-subtitle">After confirm refund/payout fund, the fund out transaction detail will generate automatically</p></div><button class="modal-close" id="generatedOfflineTransactionClose" aria-label="Close">×</button></div>
       <div class="generated-transaction-body">
         <table aria-label="Generated Offline Transaction details">
           <thead>

@@ -72,6 +72,13 @@
 
     .title-wrap { min-width: 0; }
 
+    .subtitle {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
     h1 {
       margin: 0;
       color: #172235;
@@ -322,8 +329,8 @@
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <header class="modal-header">
         <div class="title-wrap">
-          <div class="modal-kicker">Offline Transaction Detail</div>
-          <h1 id="modalTitle">Please select the correct Payment ID</h1>
+          <h1 id="modalTitle">Offline Transaction Detail</h1>
+          <p class="subtitle">After confirm refund/payout fund, the fund out transaction detail will generate automatically</p>
         </div>
         <button class="close" id="closeButton" type="button" aria-label="Close">&times;</button>
       </header>
