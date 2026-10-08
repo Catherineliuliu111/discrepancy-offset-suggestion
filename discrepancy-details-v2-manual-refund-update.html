@@ -849,6 +849,18 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .offset-suggestion-count-link {
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .offset-suggestion-count-link:hover,
+    .offset-suggestion-count-link:focus-visible {
+      color: #ad6800;
+      text-decoration: underline;
+      outline: none;
+    }
+
     .refund-modal {
       width: min(1040px, calc(100vw - 48px));
       border-radius: 10px;
@@ -7149,7 +7161,7 @@
           <div class="offset-suggestion-banner" id="offsetSuggestionBanner">
             <span class="offset-suggestion-icon">!</span>
             <div class="offset-suggestion-copy">
-              <span class="offset-suggestion-text">The system has identified <span class="offset-suggestion-count-text">546</span> discrepancies that may be eligible for offset handling.</span>
+              <span class="offset-suggestion-text">The system has identified <a class="offset-suggestion-count-text offset-suggestion-count-link" href="./discrepancy-offset-suggestion.html?action=offset&from=details" aria-label="View Offset Suggestions for Discrepancies">546</a> discrepancies that may be eligible for offset handling.</span>
             </div>
           </div>
 
