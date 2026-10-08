@@ -115,7 +115,7 @@
 
     table {
       width: 100%;
-      min-width: 1235px;
+      min-width: 1195px;
       border-collapse: separate;
       border-spacing: 0;
       table-layout: fixed;
@@ -151,36 +151,17 @@
     }
 
     tbody tr:last-child td { border-bottom: 0; }
-    tbody tr.selected td { background: #f6faff; }
     tbody tr:hover td { background: #fbfdff; }
-    tbody tr.selected:hover td { background: #f1f7ff; }
 
-    th:first-child,
-    td:first-child {
-      width: 44px;
-      padding-right: 4px;
-      padding-left: 17px;
-      text-align: center;
-    }
-
-    th:nth-child(2), td:nth-child(2) { width: 148px; }
-    th:nth-child(3), td:nth-child(3) { width: 126px; }
-    th:nth-child(4), td:nth-child(4) { width: 148px; }
-    th:nth-child(5), td:nth-child(5) { width: 84px; }
-    th:nth-child(6), td:nth-child(6) { width: 100px; }
-    th:nth-child(7), td:nth-child(7) { width: 195px; }
-    th:nth-child(8), td:nth-child(8) { width: 106px; }
-    th:nth-child(9), td:nth-child(9) { width: 190px; }
-    th:nth-child(10), td:nth-child(10) { width: 94px; }
-
-    .checkbox {
-      width: 15px;
-      height: 15px;
-      margin: 0;
-      accent-color: var(--blue);
-      cursor: pointer;
-      vertical-align: middle;
-    }
+    th:nth-child(1), td:nth-child(1) { width: 148px; }
+    th:nth-child(2), td:nth-child(2) { width: 126px; }
+    th:nth-child(3), td:nth-child(3) { width: 148px; }
+    th:nth-child(4), td:nth-child(4) { width: 84px; }
+    th:nth-child(5), td:nth-child(5) { width: 100px; }
+    th:nth-child(6), td:nth-child(6) { width: 195px; }
+    th:nth-child(7), td:nth-child(7) { width: 106px; }
+    th:nth-child(8), td:nth-child(8) { width: 190px; }
+    th:nth-child(9), td:nth-child(9) { width: 94px; }
 
     .payment-id,
     .secondary-id {
@@ -350,7 +331,6 @@
       <div class="table-scroll">
         <table>
           <colgroup>
-            <col style="width:44px" />
             <col style="width:148px" />
             <col style="width:126px" />
             <col style="width:148px" />
@@ -363,7 +343,6 @@
           </colgroup>
           <thead>
             <tr>
-              <th scope="col"><input class="checkbox" id="selectAll" type="checkbox" aria-label="Select all transactions" /></th>
               <th scope="col">Payment ID</th>
               <th scope="col">Identify ID</th>
               <th scope="col">Reference ID</th>
@@ -377,7 +356,6 @@
           </thead>
           <tbody>
             <tr>
-              <td><input class="checkbox row-checkbox" type="checkbox" aria-label="Select Payment ID 1044000098100260" /></td>
               <td><span class="payment-id">1044000098100260</span></td>
               <td><span class="secondary-id">OT-20261008-0001</span></td>
               <td><span class="secondary-id">RFND-20261008-0001</span></td>
@@ -395,7 +373,6 @@
               <td><span class="system-code">fundboss</span></td>
             </tr>
             <tr>
-              <td><input class="checkbox row-checkbox" type="checkbox" aria-label="Select Payment ID 1044000098100261" /></td>
               <td><span class="payment-id">1044000098100261</span></td>
               <td><span class="secondary-id">OT-20261008-0002</span></td>
               <td><span class="secondary-id">RFND-20261008-0002</span></td>
@@ -417,7 +394,6 @@
       </div>
 
       <footer class="modal-footer">
-        <span class="selected-status"><strong id="selectedCount">0</strong> records selected</span>
         <button class="confirm" id="confirmButton" type="button" disabled>Confirm</button>
       </footer>
     </section>
@@ -428,38 +404,18 @@
   <script>
     const backdrop = document.getElementById('backdrop');
     const closeButton = document.getElementById('closeButton');
-    const selectAll = document.getElementById('selectAll');
-    const rowCheckboxes = Array.from(document.querySelectorAll('.row-checkbox'));
-    const selectedCount = document.getElementById('selectedCount');
     const confirmButton = document.getElementById('confirmButton');
     const toast = document.getElementById('toast');
     let toastTimer;
 
-    function updateSelection() {
-      const count = rowCheckboxes.filter((checkbox) => checkbox.checked).length;
-      selectedCount.textContent = count;
-      confirmButton.disabled = count === 0;
-      selectAll.checked = count === rowCheckboxes.length;
-      selectAll.indeterminate = count > 0 && count < rowCheckboxes.length;
-      rowCheckboxes.forEach((checkbox) => checkbox.closest('tr').classList.toggle('selected', checkbox.checked));
-    }
-
-    rowCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', updateSelection));
-
-    selectAll.addEventListener('change', () => {
-      rowCheckboxes.forEach((checkbox) => { checkbox.checked = selectAll.checked; });
-      updateSelection();
-    });
-
     confirmButton.addEventListener('click', () => {
-      if (confirmButton.disabled) return;
       toast.classList.add('show');
       window.clearTimeout(toastTimer);
       toastTimer = window.setTimeout(() => toast.classList.remove('show'), 2600);
     });
 
     closeButton.addEventListener('click', () => { backdrop.style.display = 'none'; });
-    updateSelection();
+    confirmButton.disabled = false;
   </script>
 </body>
 </html>
