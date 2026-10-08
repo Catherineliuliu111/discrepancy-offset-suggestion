@@ -166,12 +166,12 @@
     th:nth-child(2), td:nth-child(2) { width: 148px; }
     th:nth-child(3), td:nth-child(3) { width: 126px; }
     th:nth-child(4), td:nth-child(4) { width: 148px; }
-    th:nth-child(5), td:nth-child(5) { width: 94px; }
-    th:nth-child(6), td:nth-child(6) { width: 84px; }
-    th:nth-child(7), td:nth-child(7) { width: 100px; }
-    th:nth-child(8), td:nth-child(8) { width: 195px; }
-    th:nth-child(9), td:nth-child(9) { width: 106px; }
-    th:nth-child(10), td:nth-child(10) { width: 190px; }
+    th:nth-child(5), td:nth-child(5) { width: 84px; }
+    th:nth-child(6), td:nth-child(6) { width: 100px; }
+    th:nth-child(7), td:nth-child(7) { width: 195px; }
+    th:nth-child(8), td:nth-child(8) { width: 106px; }
+    th:nth-child(9), td:nth-child(9) { width: 190px; }
+    th:nth-child(10), td:nth-child(10) { width: 94px; }
 
     .checkbox {
       width: 15px;
@@ -228,10 +228,7 @@
     .clearing-date { color: #53647b; }
     .clearing-date { font-variant-numeric: tabular-nums; }
 
-    .biz-column {
-      background: var(--blue-soft) !important;
-      color: var(--blue-dark);
-    }
+    .biz-column { color: #596a80; }
 
     .biz-heading {
       display: inline-flex;
@@ -244,10 +241,10 @@
       align-items: center;
       height: 18px;
       padding: 0 5px;
-      border: 1px solid #b9d9fb;
+      border: 1px solid #d8dee8;
       border-radius: 3px;
-      background: #e5f2ff;
-      color: var(--blue-dark);
+      background: #f5f7fa;
+      color: #6f7e92;
       font-size: 9px;
       font-weight: 800;
       letter-spacing: .03em;
@@ -260,18 +257,18 @@
       width: 100%;
       height: 34px;
       padding: 0 27px 0 9px;
-      border: 1px solid var(--blue-line);
+      border: 1px solid #cbd5e1;
       border-radius: 5px;
       outline: 0;
       background-color: #fff;
-      color: #224d87;
+      color: #354861;
       cursor: pointer;
       font-size: 11px;
       font-weight: 600;
     }
 
-    .biz-select:hover { border-color: var(--blue); }
-    .biz-select:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(22, 119, 255, .14); }
+    .biz-select:hover { border-color: #9aaabd; }
+    .biz-select:focus { border-color: #9aaabd; box-shadow: 0 0 0 2px rgba(114, 129, 151, .12); }
 
     .modal-footer {
       display: flex;
@@ -357,12 +354,12 @@
             <col style="width:148px" />
             <col style="width:126px" />
             <col style="width:148px" />
-            <col style="width:94px" />
             <col style="width:84px" />
             <col style="width:100px" />
             <col style="width:195px" />
             <col style="width:106px" />
             <col style="width:190px" />
+            <col style="width:94px" />
           </colgroup>
           <thead>
             <tr>
@@ -370,12 +367,12 @@
               <th scope="col">Payment ID</th>
               <th scope="col">Identify ID</th>
               <th scope="col">Reference ID</th>
-              <th scope="col">System Code</th>
               <th scope="col">Amount</th>
               <th scope="col">Fund Direction</th>
               <th scope="col">Agreement Item</th>
               <th scope="col">Clearing Date</th>
               <th class="biz-column" scope="col"><span class="biz-heading"><span>Biz Code</span><span class="editable-badge">Editable</span></span></th>
+              <th scope="col">System Code</th>
             </tr>
           </thead>
           <tbody>
@@ -384,7 +381,6 @@
               <td><span class="payment-id">1044000098100260</span></td>
               <td><span class="secondary-id">OT-20261008-0001</span></td>
               <td><span class="secondary-id">RFND-20261008-0001</span></td>
-              <td><span class="system-code">fundboss</span></td>
               <td class="amount">RM39.45</td>
               <td><span class="direction">OUT</span></td>
               <td class="agreement">Refund to Bank Account / SOF</td>
@@ -396,13 +392,13 @@
                   <option>Refund to Merchant</option>
                 </select>
               </td>
+              <td><span class="system-code">fundboss</span></td>
             </tr>
             <tr>
               <td><input class="checkbox row-checkbox" type="checkbox" aria-label="Select Payment ID 1044000098100261" /></td>
               <td><span class="payment-id">1044000098100261</span></td>
               <td><span class="secondary-id">OT-20261008-0002</span></td>
               <td><span class="secondary-id">RFND-20261008-0002</span></td>
-              <td><span class="system-code">fundboss</span></td>
               <td class="amount">RM120.00</td>
               <td><span class="direction">OUT</span></td>
               <td class="agreement">Refund to Bank Account / SOF</td>
@@ -414,6 +410,7 @@
                   <option>Refund to Merchant</option>
                 </select>
               </td>
+              <td><span class="system-code">fundboss</span></td>
             </tr>
           </tbody>
         </table>
