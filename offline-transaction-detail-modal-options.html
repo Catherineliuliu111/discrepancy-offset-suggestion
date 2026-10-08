@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Offline Transaction Detail - Modal Options</title>
+  <title>Offline Transaction Detail - UI Options</title>
   <style>
     :root {
       --ink: #1f2937;
@@ -229,6 +229,52 @@
     .dialog-foot { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 13px 21px 17px; border-top: 1px solid #e6edf4; }
     .dialog-foot .foot-note { margin-right: auto; color: #8a98aa; font-size: 10px; }
 
+    /* Option A uses a full-page table so several generated transactions can be reviewed together. */
+    #option-a .stage-shade,
+    #option-a .preview-dialog.centered { display: none; }
+    .table-preview,
+    .table-live-page {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      min-width: 0;
+      min-height: 100%;
+      flex-direction: column;
+      background: #fff;
+    }
+    .table-preview { position: absolute; inset: 0; }
+    .table-page-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px 14px; border-bottom: 1px solid #e6edf4; }
+    .table-page-head h3 { margin: 0; color: #1f2937; font-size: 18px; line-height: 1.2; }
+    .table-page-head .table-page-close { color: #8492a5; font-size: 20px; }
+    .table-page-body { flex: 1; min-height: 0; padding: 0 20px; }
+    .transaction-table-wrap { width: 100%; overflow: auto; border: 1px solid #e1e8f0; border-top: 0; }
+    .transaction-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 11px; }
+    .transaction-table th,
+    .transaction-table td { min-width: 128px; padding: 11px 12px; border-right: 1px solid #e6edf4; border-bottom: 1px solid #e6edf4; text-align: left; white-space: nowrap; }
+    .transaction-table th { position: sticky; top: 0; z-index: 1; color: #52647b; background: #f7f9fb; font-size: 10px; font-weight: 800; }
+    .transaction-table th:first-child,
+    .transaction-table td:first-child { min-width: 42px; width: 42px; text-align: center; }
+    .transaction-table th:nth-child(1), .transaction-table td:nth-child(1) { position: sticky; left: 0; z-index: 2; background: #fff; }
+    .transaction-table th:nth-child(1) { background: #f7f9fb; }
+    .transaction-table tr.is-selected td { background: #f2f8ff; }
+    .transaction-table tr.is-selected td:first-child { background: #f2f8ff; }
+    .transaction-table input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--blue); cursor: pointer; }
+    .transaction-table .table-value { color: #26364d; font-weight: 700; }
+    .transaction-table .direction-out { color: #d74949; }
+    .transaction-table .biz-select { min-width: 166px; height: 30px; font-size: 11px; }
+    .table-page-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 13px 20px 17px; border-top: 1px solid #e6edf4; }
+    .table-page-foot .primary-button:disabled { cursor: not-allowed; opacity: .48; }
+    #modal-a.table-layer { align-items: stretch; justify-content: stretch; padding: 0; background: #fff; }
+    #modal-a.table-layer .live-surface { width: 100%; height: 100%; max-height: none; border-radius: 0; box-shadow: none; }
+    #modal-a.table-layer .table-page-head { padding: 25px 34px 18px; }
+    #modal-a.table-layer .table-page-head h3 { font-size: 27px; }
+    #modal-a.table-layer .table-page-body { padding: 0 34px; }
+    #modal-a.table-layer .table-page-foot { padding: 17px 34px 24px; }
+    #modal-a.table-layer .transaction-table th,
+    #modal-a.table-layer .transaction-table td { min-width: 154px; padding: 14px 16px; font-size: 13px; }
+    #modal-a.table-layer .transaction-table th { font-size: 12px; }
+    #modal-a.table-layer .transaction-table .biz-select { min-width: 190px; height: 36px; font-size: 13px; }
+
     .drawer .dialog-head { padding-top: 22px; }
     .drawer .dialog-body { height: calc(100% - 137px); overflow: auto; padding-top: 18px; }
     .drawer .identity-strip, .drawer .detail-grid { grid-template-columns: 1fr; }
@@ -293,7 +339,7 @@
     <header class="page-header">
       <div>
         <div class="eyebrow">Refund/Payout Fund</div>
-        <h1>Offline Transaction Detail - Modal Options</h1>
+        <h1>Offline Transaction Detail - UI Options</h1>
         <p>After confirm refund/payout fund, the fund out transaction detail will generate automatically</p>
       </div>
       <div class="legend">
@@ -305,7 +351,7 @@
 
     <nav class="choice-bar" aria-label="Modal options">
       <span class="choice-label">Compare options</span>
-      <button class="active" data-scroll="option-a">A · Center modal</button>
+      <button class="active" data-scroll="option-a">A · Single-page table</button>
       <button data-scroll="option-b">B · Side drawer</button>
       <button data-scroll="option-c">C · Review modal</button>
     </nav>
@@ -314,16 +360,16 @@
       <header class="option-head">
         <div class="option-title">
           <span class="option-number">A</span>
-          <div><h2>Centered Confirmation Modal</h2><p>Compact success confirmation with the generated record shown as a clear two-column summary.</p></div>
+          <div><h2>Single-page Transaction Table</h2><p>Shows multiple generated fund out transaction details in one selectable table.</p></div>
         </div>
         <div class="option-actions"><span class="pill blue">Selected option</span><button class="open-button" data-open="modal-a">Open preview</button></div>
       </header>
       <div class="option-body">
         <div class="decision-copy">
           <h3>Interaction idea</h3>
-          <p>After confirm refund/payout fund, show the generated fund out transaction detail immediately and keep the user on the current flow until they acknowledge it.</p>
-          <ul><li>Strong success state is easy to scan.</li><li>Identity fields are separated from accounting fields.</li><li>Biz Code is the only active control.</li></ul>
-          <div class="tradeoff"><strong>Trade-off:</strong> the modal covers the page context while it is open.</div>
+          <p>After confirm refund/payout fund, show every generated fund out transaction in a selectable table.</p>
+          <ul><li>Supports selecting multiple Payment IDs.</li><li>All generated fields are visible in one row.</li><li>Biz Code can be edited inline.</li></ul>
+          <div class="tradeoff"><strong>Trade-off:</strong> the wide table may require horizontal scrolling on smaller screens.</div>
         </div>
         <div class="preview-stage">
           <div class="context-page"><div class="context-top"><span class="context-title">Confirm Offline Result</span><span class="context-submit"></span></div><div class="context-card"><h4>Select List</h4><div class="context-grid"><span class="context-field"></span><span class="context-field"></span><span class="context-field"></span><span class="context-field"></span></div></div><div class="context-table"><div class="context-table-head"><span>Refund/Payout Status</span><span>Amount</span><span>Destination</span><span>Reason</span></div><div class="context-table-row"><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span></div><div class="context-table-row"><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span><span class="context-line"></span></div></div></div>
@@ -417,6 +463,62 @@
         if (event.target === layer) closeModals();
       });
     });
+
+    const optionATransactions = [
+      { paymentId: "1044000098100260", identifyId: "OT-20261008-0001", referenceId: "RFND-20261008-0001", systemCode: "fundboss", amount: "RM39.45", direction: "OUT", agreementItem: "Refund to Bank Account / SOF", clearingDate: "2026-10-08", bizCode: "Wallet Deduction" },
+      { paymentId: "1044000098100261", identifyId: "OT-20261008-0002", referenceId: "RFND-20261008-0002", systemCode: "fundboss", amount: "RM120.00", direction: "OUT", agreementItem: "Refund to Bank Account / SOF", clearingDate: "2026-10-08", bizCode: "Offline Refund" }
+    ];
+
+    function optionATableMarkup(isLive) {
+      const rows = optionATransactions.map((item, index) => `
+        <tr data-table-a-row="${index}">
+          <td><input type="checkbox" data-table-a-select aria-label="Select Payment ID ${item.paymentId}"></td>
+          <td><span class="table-value">${item.paymentId}</span></td>
+          <td><span class="table-value">${item.identifyId}</span></td>
+          <td><span class="table-value">${item.referenceId}</span></td>
+          <td><span class="table-value">${item.systemCode}</span></td>
+          <td><span class="table-value">${item.amount}</span></td>
+          <td><span class="table-value direction-out">${item.direction}</span></td>
+          <td><span class="table-value">${item.agreementItem}</span></td>
+          <td><span class="table-value">${item.clearingDate}</span></td>
+          <td><select class="biz-select" data-table-a-biz aria-label="Biz Code for Payment ID ${item.paymentId}"><option${item.bizCode === "Offline Refund" ? " selected" : ""}>Offline Refund</option><option${item.bizCode === "Wallet Deduction" ? " selected" : ""}>Wallet Deduction</option><option>Offline Payment</option><option>Manual Supplement</option></select></td>
+        </tr>`).join("");
+      return `<div class="${isLive ? "table-live-page" : "table-preview"}">
+        <div class="table-page-head"><h3>Please select the correct Payment ID</h3></div>
+        <div class="table-page-body"><div class="transaction-table-wrap"><table class="transaction-table"><thead><tr><th aria-label="Select"></th><th>Payment ID</th><th>Identify ID</th><th>Reference ID</th><th>System Code</th><th>Amount</th><th>Fund Direction</th><th>Agreement Item</th><th>Clearing Date</th><th>Biz Code</th></tr></thead><tbody>${rows}</tbody></table></div></div>
+        <div class="table-page-foot"><button class="primary-button" type="button" data-table-a-confirm disabled>Confirm</button></div>
+      </div>`;
+    }
+
+    function bindOptionATable(container, isLive) {
+      const confirmButton = container.querySelector("[data-table-a-confirm]");
+      container.querySelectorAll("[data-table-a-select]").forEach(checkbox => {
+        checkbox.addEventListener("change", () => {
+          checkbox.closest("tr")?.classList.toggle("is-selected", checkbox.checked);
+          const selected = container.querySelectorAll("[data-table-a-select]:checked").length;
+          confirmButton.disabled = selected === 0;
+        });
+      });
+      confirmButton.addEventListener("click", () => {
+        if (confirmButton.disabled) return;
+        if (isLive) closeModals();
+        showToast("Selected Offline Transaction confirmed.");
+      });
+    }
+
+    const optionAStage = document.querySelector("#option-a .preview-stage");
+    if (optionAStage) {
+      optionAStage.insertAdjacentHTML("beforeend", optionATableMarkup(false));
+      bindOptionATable(optionAStage.querySelector(".table-preview"), false);
+    }
+
+    const optionAModal = document.getElementById("modal-a");
+    const optionASurface = optionAModal?.querySelector(".live-surface");
+    if (optionAModal && optionASurface) {
+      optionAModal.classList.add("table-layer");
+      optionASurface.innerHTML = optionATableMarkup(true);
+      bindOptionATable(optionASurface.querySelector(".table-live-page"), true);
+    }
 
     document.addEventListener("keydown", event => {
       if (event.key === "Escape") closeModals();
