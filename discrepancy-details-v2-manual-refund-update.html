@@ -8348,7 +8348,7 @@
   <div class="modal-backdrop" id="generatedOfflineTransactionModal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="generatedOfflineTransactionTitle">
       <div class="modal-head"><div><strong id="generatedOfflineTransactionTitle">Offline Transaction Detail</strong></div><button class="modal-close" id="generatedOfflineTransactionClose" aria-label="Close">×</button></div>
-      <div class="generated-safety-notice" role="note"><span class="generated-safety-mark" aria-hidden="true">!</span><div class="generated-safety-copy"><div class="generated-safety-item"><div><strong>No payment will be triggered.</strong>Creating a new Transaction Detail will not trigger the Payment System to pay again. It only creates an Offline Transaction in SPR.</div></div><div class="generated-safety-item"><div><strong>Confirm the Biz Code first.</strong>Verify the Biz Code for each Offline Transaction before confirming.</div></div></div></div>
+      <div class="generated-safety-notice" role="note"><span class="generated-safety-mark" aria-hidden="true">!</span><div class="generated-safety-copy"><div class="generated-safety-item"><div><strong>No payment will be triggered.</strong>Creating a new Offline Transaction Detail will not trigger the Payment System to pay again. It only creates an Offline Transaction Detail in SPR.</div></div><div class="generated-safety-item"><div><strong>Confirm the Biz Code first.</strong>Verify the Biz Code for each Offline Transaction Detail before confirm.</div></div></div></div>
       <div class="generated-batch-summary"><span><strong id="generatedOfflineTransactionCount">0</strong> Offline Transactions generated</span></div>
       <div class="generated-transaction-body">
         <table aria-label="Generated Offline Transaction details">
@@ -11602,6 +11602,23 @@ ${lines}
 
     let pendingGeneratedOfflineOperationTitle = "";
 
+    function agreementItemForBankAccount(bankAccount) {
+      const normalized = String(bankAccount || "").trim().toLowerCase();
+      if (normalized.includes("6024")) return "Bank Account 6024 - Offline";
+      if (normalized.includes("6032")) return "MBB-2C2P-SHOPEE-6599-VM";
+      return "Refund to Bank Account / SOF";
+    }
+
+    function generatedOfflineBankAccount(item, index) {
+      const pendingOutcome = state.pendingRefundPayoutOutcomes?.[item.id];
+      if (pendingOutcome?.bankAccount) return pendingOutcome.bankAccount;
+
+      const reportAccount = document.querySelectorAll(
+        "#bankDetailReportTableBody tr .refund-bank-account-control"
+      )[index]?.value;
+      return reportAccount || "";
+    }
+
     function openGeneratedOfflineTransactionModal(operationTitle) {
       const { selectedRows, row } = getSelectedRefundRows();
       const sourceRows = selectedRows.length ? selectedRows : (row ? [row] : []);
@@ -11623,6 +11640,8 @@ ${lines}
         const amount = item.amount || "RM0.00";
         const direction = item.direction || "OUT";
         const clearingDate = item.clearingDate || currentIsoDate();
+        const bankAccount = generatedOfflineBankAccount(item, index);
+        const agreementItem = agreementItemForBankAccount(bankAccount);
         return `
           <tr>
             <td><span class="generated-payment-id">${escapeHtml(paymentId)}</span></td>
@@ -11630,7 +11649,7 @@ ${lines}
             <td><span class="generated-secondary-id">${escapeHtml(referenceId)}</span></td>
             <td class="generated-amount">${escapeHtml(amount)}</td>
             <td><span class="generated-direction">${escapeHtml(direction)}</span></td>
-            <td>Refund to Bank Account / SOF</td>
+            <td>${escapeHtml(agreementItem)}</td>
             <td>${escapeHtml(clearingDate)}</td>
             <td class="generated-biz-cell">
               <select aria-label="Biz Code for ${escapeHtml(paymentId)}">
