@@ -39,7 +39,7 @@
 <body>
   <main class="shell">
     <header class="header">
-      <div><div class="eyebrow">DataSuite · API 27702 population</div><h1>Discrepancy Handling Region Dashboard</h1><div class="subtitle">All operations · ManualWriteoff / Reversed Agreement Item split · August vs September trend</div></div>
+      <div><div class="eyebrow">DataSuite · API 27702 population</div><h1>Discrepancy Handling Region Dashboard</h1><div class="subtitle">All operations · ManualWriteoff / Reversed Agreement Item split · August vs September comparison</div></div>
       <div class="status">6 / 7 Regions · BR blocked</div>
     </header>
 
@@ -77,10 +77,10 @@
     当前重查为 0。所有 8/9 月趋势均使用同一次重查口径，不混入旧快照数字。</div>
     <h2 class="section-title">ManualWriteoff / Reversed · Agreement Item Details</h2>
     <div id="agreementDetails"></div>
-    <h2 class="section-title">August vs September 2026 · Operation Trend</h2>
+    <h2 class="section-title">August vs September 2026 · Operation Comparison</h2>
     <div id="trendDetails"></div>
         <div class="footnote"><strong>口径说明：</strong>Handling Type 来自差异工单的 <code>last_handling_type</code>，表示最后一次处理类型，不代表完整操作历史。<code>None</code> 表示尚未记录 handling operation。</div>
-    <div class="source">数据来源：<a href="https://datasuite.shopee.io/dataservice/workspace/studio?nodeKey=DATA_API&amp;status=detail&amp;apiId=27702&amp;version=y2qnnptn3x3gelcz">DataSuite API 27702</a> 原口径；2026-09-01 ≤ clearing_date &lt; 2026-10-01；按 detail_id 最新 grass_date、role_code 排除 Credit/CPL、系统自动核销排除、Agreement Item migration 过滤。趋势比较 2026 年 8 月与 9 月；BR 无读取权限，不计入 ALL 汇总。</div>
+    <div class="source">数据来源：<a href="https://datasuite.shopee.io/dataservice/workspace/studio?nodeKey=DATA_API&amp;status=detail&amp;apiId=27702&amp;version=y2qnnptn3x3gelcz">DataSuite API 27702</a> 原口径；2026-09-01 ≤ clearing_date &lt; 2026-10-01；按 detail_id 最新 grass_date、role_code 排除 Credit/CPL、系统自动核销排除、Agreement Item migration 过滤。月度比较 2026 年 8 月与 9 月；BR 无读取权限，不计入 ALL 汇总。</div>
   </main>
 
   <script>
@@ -175,7 +175,7 @@
           const aug=data[op+"/August"],sep=data[op+"/September"];
           return `<section class="agreement-card"><h3>${region} · ${op}</h3><div class="table-box"><table><thead><tr><th>Period</th><th class="number">Orders</th><th class="number">Amount (${c})</th></tr></thead><tbody><tr><td>August 2026</td><td class="number">${format.format(aug.count)}</td><td class="number">${money.format(Number(aug.amount))}</td></tr><tr><td>September 2026</td><td class="number">${format.format(sep.count)}</td><td class="number">${money.format(Number(sep.amount))}</td></tr></tbody></table></div></section>`;
         }).join("");
-        return `<div class="trend-grid">${cards}</div><p class="trend-link"><a href="manual_writeoff_trend_${region.toLowerCase()}_september_2026.html">View ${region} daily trend →</a></p>`;
+        return `<div class="trend-grid">${cards}</div><p class="trend-link"><a href="manual_writeoff_trend_${region.toLowerCase()}_september_2026.html">View ${region} two-month bar comparison →</a></p>`;
       }).join("");
     }
     render();
