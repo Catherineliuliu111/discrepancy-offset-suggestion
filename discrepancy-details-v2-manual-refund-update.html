@@ -7264,7 +7264,7 @@
     #detailsPage .toolbar {
       display: flex;
       flex: 1 1 auto;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
       justify-content: flex-end;
       gap: 8px;
@@ -7292,12 +7292,33 @@
   @media (min-width: 901px) and (max-width: 1480px) {
     #detailsPage .panel-head {
       align-items: flex-start;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 12px;
+    }
+
+    #detailsPage .panel-title-group {
+      flex: 0 0 auto;
       flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
     }
 
     #detailsPage .toolbar {
-      width: 100%;
-      justify-content: flex-start;
+      width: auto;
+      margin-left: auto;
+      justify-content: flex-end;
+    }
+  }
+
+  @media (min-width: 901px) and (max-width: 1200px) {
+    #detailsPage .toolbar {
+      gap: 6px;
+    }
+
+    #detailsPage .toolbar .btn {
+      padding: 0 10px;
+      font-size: 13px;
     }
   }
   </style>
