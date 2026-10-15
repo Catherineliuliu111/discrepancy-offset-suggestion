@@ -3080,6 +3080,7 @@
     #uploadRefundResultPage,
     #claimFundPage,
     #manualClearDiffPage,
+    #updateToSuccessPage,
     #supplementTransactionPage {
       position: static;
       box-sizing: border-box;
@@ -3099,6 +3100,7 @@
     #uploadRefundResultPage::after,
     #claimFundPage::after,
     #manualClearDiffPage::after,
+    #updateToSuccessPage::after,
     #supplementTransactionPage::after {
       content: none;
     }
@@ -3115,6 +3117,7 @@
     #uploadRefundResultPage .manual-refund-title::before,
     #claimFundPage .manual-refund-title::before,
     #manualClearDiffPage .manual-refund-title::before,
+    #updateToSuccessPage .manual-refund-title::before,
     #supplementTransactionPage .manual-refund-title::before {
       content: none;
     }
@@ -3278,6 +3281,58 @@
 
     .operation-page-shell .summary-grid .green {
       color: #0f8f4f;
+    }
+
+    .operation-page-shell .summary-grid .red {
+      color: #ef1010;
+    }
+
+    #updateToSuccessPage .summary-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    #updateToSuccessPage .summary-grid > div {
+      min-height: 70px;
+      padding: 14px 18px;
+      border: 0;
+      background: #fff;
+    }
+
+    #updateToSuccessPage .summary-grid strong,
+    #updateToSuccessPage .summary-grid span {
+      display: inline;
+      font-size: 14px;
+    }
+
+    #updateToSuccessPage .info-card-head {
+      min-height: 62px;
+      padding: 20px 18px 10px;
+      font-size: 18px;
+    }
+
+    #updateToSuccessPage .manual-table-wrap {
+      overflow-x: auto;
+      border-radius: 0 0 12px 12px;
+    }
+
+    #updateToSuccessPage .manual-table {
+      min-width: 1180px;
+    }
+
+    #updateToSuccessPage .trigger-status-icon {
+      display: inline-grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border-radius: 50%;
+      background: #222a35;
+      color: #fff;
+      font-weight: 850;
+    }
+
+    #updateToSuccessPage .attachment-zone {
+      min-height: 132px;
+      font-size: 14px;
     }
 
     .operation-page-shell .manual-table-wrap {
@@ -6852,6 +6907,62 @@
     border: 1px solid #e0ebfa;
   }
 
+  .tour-guide-operation-compare .tour-guide-impact-card {
+    position: relative;
+    min-height: 78px;
+    padding: 13px 14px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(31, 65, 114, .08);
+  }
+
+  .tour-guide-operation-compare .tour-guide-present-card {
+    border-color: #ffd29b;
+    background: linear-gradient(145deg, #fffaf2 0%, #fff 100%);
+  }
+
+  .tour-guide-operation-compare .tour-guide-expected-card {
+    border-color: #9bc7ff;
+    background: linear-gradient(145deg, #f3f8ff 0%, #fff 100%);
+  }
+
+  .tour-guide-operation-compare .tour-guide-expected-card::before {
+    content: "→";
+    position: absolute;
+    top: 50%;
+    left: -17px;
+    z-index: 1;
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    transform: translateY(-50%);
+    border: 1px solid #b8d8ff;
+    border-radius: 50%;
+    background: #fff;
+    color: #1677ff;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .tour-guide-upgrade-badge {
+    display: inline-flex !important;
+    align-items: center;
+    width: fit-content;
+    margin: 0 0 7px !important;
+    padding: 4px 8px;
+    border: 1px solid #ffb14a;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff8a00, #ff5c35);
+    color: #fff !important;
+    font-size: 9px !important;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    box-shadow: 0 5px 12px rgba(255, 105, 42, .24);
+  }
+
   .tour-guide-impact-card strong {
     display: block;
     color: #2c4c77;
@@ -8241,6 +8352,64 @@
           </div>
         </section>
 
+        <section class="hidden" id="updateToSuccessPage">
+          <div class="manual-refund-shell operation-page-shell">
+            <div class="manual-refund-top">
+              <div class="manual-refund-title">Update To Success</div>
+              <button class="btn primary" id="updateToSuccessSubmitBtn">Submit</button>
+              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-head">Select</div>
+              <div class="info-card-body">
+                <div class="summary-grid">
+                  <div><strong>Counts :</strong> <span id="updateSuccessCount">1</span></div>
+                  <div><strong>Fund Direction :</strong> <span class="red" id="updateSuccessDirection">OUT</span></div>
+                  <div><strong>Amount :</strong> <span id="updateSuccessAmount">RM38.44</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-card" id="updateSuccessDataCard">
+              <div class="info-card-head" style="justify-content:space-between;gap:12px;">
+                <span>Discrepant Data</span>
+                <button class="btn" type="button" aria-label="Expand table">↔</button>
+              </div>
+              <div class="manual-table-wrap">
+                <table class="manual-table">
+                  <thead>
+                    <tr>
+                      <th>Trigger Status</th>
+                      <th>Details ID</th>
+                      <th>Reference ID</th>
+                      <th>Voucher ID</th>
+                      <th>System Code</th>
+                      <th>Source Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="updateSuccessTableBody"></tbody>
+                </table>
+              </div>
+              <div class="table-card-tools" style="display:block;"><div class="h-scroll-bar"></div></div>
+              <div class="manual-table-footer">
+                <span>‹</span><div class="pager-chip">1</div><span>›</span>
+                <select class="btn" name="updateSuccessPageSize"><option>20 / page</option></select>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-head">Attachment</div>
+              <div class="info-card-body">
+                <div class="attachment-zone">
+                  <span class="attachment-zone-icon">📎</span>
+                  <span>Drag and drop files, paste screenshots, or browse</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="hidden" id="supplementTransactionPage">
 	          <div class="manual-refund-shell operation-page-shell">
 	            <div class="manual-refund-top">
@@ -8377,9 +8546,9 @@
           <div class="tour-guide-section-title">How to use</div>
           <ol class="tour-guide-steps" id="tourGuideSteps"></ol>
         </div>
-        <div class="tour-guide-impact-grid tour-guide-impact-section">
-          <div class="tour-guide-impact-card" id="tourGuidePresentOperationCard"><strong>Present operation <span class="tour-guide-tag" id="tourGuideUpgradeTag">Upgrade</span></strong><span id="tourGuidePresentOperation"></span></div>
-          <div class="tour-guide-impact-card"><strong>Expected operation</strong><span id="tourGuideExpectedOperation"></span></div>
+        <div class="tour-guide-impact-grid tour-guide-impact-section tour-guide-operation-compare">
+          <div class="tour-guide-impact-card tour-guide-present-card" id="tourGuidePresentOperationCard"><span class="tour-guide-upgrade-badge" id="tourGuideUpgradeTag">Upgrade</span><strong>Present operation</strong><span id="tourGuidePresentOperation"></span></div>
+          <div class="tour-guide-impact-card tour-guide-expected-card"><strong>Expected operation</strong><span id="tourGuideExpectedOperation"></span></div>
         </div>
         <div class="tour-guide-impact-grid tour-guide-impact-section">
           <div class="tour-guide-impact-card"><strong>Statement Recon impact</strong><span id="tourGuideStatementImpact"></span></div>
@@ -9298,7 +9467,7 @@
       // Put payout fixtures first so they are immediately visible on page 1.
       makeDemoRow(1, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Transaction - Confirm Completed Payout - Bank Detail Available", reason: "SPP issuer payout manually completed; bank detail pending" }),
       makeDemoRow(2, { type: "Over TXN", direction: "OUT", channelDirection: "OUT", handlingType: "Confirm Completed Transaction - Confirm Completed Payout - Bank Detail Unavailable", reason: "SPP issuer payout manually completed; no bank detail will be provided" }),
-      makeDemoRow(3, { type: "Less TXN", direction: "IN", handlingType: "Update to Success", sourceStatus: "Pending", reason: "Bank settlement successful; internal payment remains Pending" }),
+      makeDemoRow(3, { type: "Less TXN", direction: "OUT", amount: "RM38.44", handlingType: "Update to Success", sourceStatus: "", reason: "Source payment succeeded while the discrepancy still requires a success update" }),
       makeDemoRow(4, { type: "Diff TXN", direction: "IN", channelDirection: "OUT", handlingType: "On-Hold", reason: "Final accounting treatment is pending external confirmation" }),
       makeDemoRow(5, { type: "Over TXN", direction: "IN", handlingType: "Offset", reason: "Payment and refund exist internally without bank movement" }),
       makeDemoRow(6, { type: "Less TXN", direction: "IN", handlingType: "Offset", reason: "Payment and refund both appear in bank settlement" }),
@@ -9962,7 +10131,7 @@ ${lines}
 
     function continueDirectHandlingOperation(title, disposition = "") {
       if (title === "Update To Success") {
-        completeActiveOperation("Update to Success");
+        openUpdateToSuccessPage();
       } else if (title === "Switch To Statement Recon") {
         openSwitchStatementReconPage();
       } else if (title === "Manual Supplement") {
@@ -11273,7 +11442,7 @@ ${lines}
     }
 
     function getOperationPageIds() {
-      return ["discrepancyInfoPage", "manualRefundPage", "walletRefundPage", "confirmRefundResultPage", "confirmedOfflineRefundPage", "bankDetailReportPage", "uploadRefundResultPage", "uploadClaimFundResultPage", "claimFundPage", "switchStatementReconPage", "manualClearDiffPage", "supplementTransactionPage"];
+      return ["discrepancyInfoPage", "manualRefundPage", "walletRefundPage", "confirmRefundResultPage", "confirmedOfflineRefundPage", "bankDetailReportPage", "uploadRefundResultPage", "uploadClaimFundResultPage", "claimFundPage", "switchStatementReconPage", "manualClearDiffPage", "updateToSuccessPage", "supplementTransactionPage"];
     }
 
     function showOperationPage(pageId, title) {
@@ -11290,6 +11459,27 @@ ${lines}
       const selected = getSelectedRefundRows().row;
       state.activeOperationRowId = selected?.id || state.activeOperationRowId;
       window.scrollTo(0, 0);
+    }
+
+    function openUpdateToSuccessPage() {
+      const { selectedRows, row, totalAmount } = getSelectedRefundRows();
+      const rows = selectedRows.length ? selectedRows : (row ? [row] : []);
+      const selected = rows[0] || {};
+      showOperationPage("updateToSuccessPage", "Update To Success");
+      document.getElementById("updateSuccessCount").textContent = rows.length || 1;
+      document.getElementById("updateSuccessDirection").textContent = String(selected.direction || "OUT").toUpperCase();
+      document.getElementById("updateSuccessAmount").textContent = rows.length
+        ? selectedAmountText(selectedRows, selected, totalAmount)
+        : "RM38.44";
+      document.getElementById("updateSuccessTableBody").innerHTML = `
+        <tr>
+          <td><span class="trigger-status-icon">?</span></td>
+          <td>${escapeHtml(selected.updateSuccessDetailsId || "10404000208002610153227738132179")}</td>
+          <td>${escapeHtml(selected.updateSuccessReferenceId || "SPM7100928144228236289")}</td>
+          <td>${escapeHtml(selected.updateSuccessVoucherId || "1030652300234701374")}</td>
+          <td>${escapeHtml(selected.source || "SPM_INBOUND")}</td>
+          <td>${escapeHtml(selected.sourceStatus || "-")}</td>
+        </tr>`;
     }
 
     function closeOperationPage() {
@@ -12692,6 +12882,7 @@ ${lines}
     document.getElementById("switchStatementReconSubmitBtn")?.addEventListener("click", () => completeActiveOperation("Switch to Statement Recon"));
     document.getElementById("uploadRefundResultSubmitBtn")?.addEventListener("click", () => completeActiveOperation(document.getElementById("uploadRefundResultTitle")?.textContent || "Refund Operation"));
     document.getElementById("manualClearDiffSubmitBtn")?.addEventListener("click", () => completeActiveOperation("Manual Clear Diff"));
+    document.getElementById("updateToSuccessSubmitBtn")?.addEventListener("click", () => completeActiveOperation("Update to Success"));
     document.getElementById("uploadClaimFundResultSubmitBtn")?.addEventListener("click", () => completeActiveOperation(document.getElementById("uploadClaimFundResultTitle")?.textContent || "Claim Fund Operation"));
     document.getElementById("claimFundPageActionBtn")?.addEventListener("click", () => completeActiveOperation(document.getElementById("claimFundPageTitle")?.textContent || "Claim Fund Operation"));
     document.addEventListener("click", (event) => {
@@ -13041,7 +13232,7 @@ ${lines}
       const route = { operation, scenario, caseTags, handleTitle: "", kind: "direct", flowKind: "", nodePath: [], detailSelector: "#operationInfoModal" };
       if (value.includes("update to success")) {
         route.handleTitle = "Update To Success";
-        route.detailSelector = "#discrepancyInfoPage";
+        route.detailSelector = "#updateToSuccessPage";
         return route;
       }
       if (value.includes("switch to statement recon")) {
@@ -13137,7 +13328,7 @@ ${lines}
         if (isLessOut) return type === "less txn" && direction === "out";
         if (isLessIn) return type === "less txn" && direction === "in";
         if (value.includes("switch") || value.includes("claim fund from bank") || value.includes("claim fund from user")) return type === "less txn";
-        if (value.includes("update to success")) return type === "less txn" && direction === "in";
+        if (value.includes("update to success")) return String(row.handlingType || "").toLowerCase().includes("update to success");
         return type === "less txn" && direction === "out";
       }) || state.rows[0];
       if (!desired) return;
