@@ -7157,7 +7157,7 @@
                     <span class="info-dot tip" data-tip="Move an offline Less TXN from Channel Recon to Statement Recon.">i</span>
                   </div>
                   <div class="dropdown-item" data-handle-title="Manual Supplement">
-                    <span>Manual Supplement</span>
+                    <span>Create Missing Transaction Detail</span>
                     <span class="info-dot tip" data-tip="Available only when Discrepancy Type is Less TXN, Source Status is empty, and Source Payment ID is empty.">i</span>
                   </div>
                   <div class="dropdown-item" data-handle-title="Confirm Fund Loss/Revenue">
@@ -8085,7 +8085,7 @@
         <section class="hidden" id="supplementTransactionPage">
 	          <div class="manual-refund-shell operation-page-shell">
 	            <div class="manual-refund-top">
-	              <div class="manual-refund-title" id="supplementTransactionTitle">Manual Supplement</div>
+	              <div class="manual-refund-title" id="supplementTransactionTitle">Create Missing Transaction Detail</div>
 	              <button class="btn primary" id="supplementTransactionSubmitBtn">Submit</button>
 	              <button class="operation-close-btn" data-operation-close aria-label="Close">×</button>
 		            </div>
@@ -9672,7 +9672,7 @@ ${lines}
         ]
       },
       "Manual Supplement": {
-        title: "Manual Supplement",
+        title: "Create Missing Transaction Detail",
         description: "Create the missing system-side transaction detail for a valid bank-side transaction.",
         impact: [
           ["Payment Incurring Amount", "DFR", "Increases under the submitted Biz Code."],
@@ -12305,11 +12305,11 @@ ${lines}
 	    function openSupplementTransactionPage() {
 	      const { rows, row, totalAmount } = getSupplementTransactionRows();
 	      if (state.operationEntryPoint !== "upload" && !rows.every(isSupplementTransactionEligible)) {
-	        showToast("Manual Supplement is only available for Less TXN with empty Source Status and empty Source Payment ID.", "warn");
+	        showToast("Create Missing Transaction Detail is only available for Less TXN with empty Source Status and empty Source Payment ID.", "warn");
 	        return;
 	      }
 	      if (!rows.length) {
-	        showToast("No eligible Less TXN records selected for Manual Supplement.", "warn");
+	        showToast("No eligible Less TXN records selected for Create Missing Transaction Detail.", "warn");
 	        return;
 	      }
 	
