@@ -2037,6 +2037,23 @@
       box-shadow: none;
     }
 
+    .status-refresh-btn {
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0 8px;
+      justify-content: center;
+      border-radius: 999px;
+      color: var(--blue);
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .status-refresh-btn:hover {
+      color: #1d4ed8;
+      border-color: #aeb8c6;
+      background: #f7fbff;
+    }
+
     .filter-grid {
       grid-template-columns: minmax(150px, 180px) minmax(250px, 300px) minmax(190px, 1fr) minmax(190px, 1fr) minmax(220px, 1.15fr) auto auto;
       gap: 9px;
@@ -2157,17 +2174,7 @@
       box-shadow: 1px 0 0 var(--line);
     }
 
-    thead th:nth-child(2),
-    tbody td:nth-child(2) {
-      position: sticky;
-      left: 44px;
-      z-index: 3;
-      background: inherit;
-      box-shadow: 1px 0 0 var(--line);
-    }
-
-    thead th:first-child,
-    thead th:nth-child(2) {
+    thead th:first-child {
       z-index: 5;
       background: #f7f9fb;
     }
@@ -6652,7 +6659,7 @@
   #generatedOfflineTransactionModal .modal-foot .btn.primary:hover { border-color:#2f6fa9; background:#2f6fa9; }
   #generatedOfflineTransactionModal .modal-foot .btn { min-width:92px; min-height:38px; height:38px; padding:0 16px; font-size:12px; }
   @media(max-width:800px) { #generatedOfflineTransactionModal.open { align-items:flex-start; padding:14px; } #generatedOfflineTransactionModal .modal { max-height:calc(100vh - 28px); } #generatedOfflineTransactionModal .modal-head, #generatedOfflineTransactionModal .modal-foot { padding-left:18px; padding-right:18px; } #generatedOfflineTransactionModal .generated-safety-notice { margin-left:18px; margin-right:18px; } }
-  /* Keep the fixed selection and ID columns stable while the table scrolls horizontally. */
+  /* Keep the selection column stable while the table scrolls horizontally. */
   #detailsPage .table-wrap > table {
     table-layout: auto;
   }
@@ -6669,7 +6676,6 @@
   #detailsPage .table-wrap > table thead th:nth-child(2),
   #detailsPage .table-wrap > table tbody td:nth-child(2) {
     box-sizing: border-box;
-    left: 60px;
     width: 260px;
     min-width: 260px;
     max-width: 260px;
@@ -7216,10 +7222,12 @@
           <div class="filters">
             <div class="status-row" id="statusRow">
               <div class="status-label">Processing Status:</div>
+              <button class="btn status-refresh-btn" id="processingStatusRefreshBtn" type="button" aria-label="Refresh processing status" title="Refresh processing status">↻</button>
               <button class="status-chip active" data-status="Unprocessed">Unprocessed ✓</button>
               <button class="status-chip" data-status="On-hold">On-hold</button>
               <button class="status-chip" data-status="Pending Approval">Pending Approval</button>
               <button class="status-chip" data-status="Processing">Processing</button>
+              <button class="btn status-refresh-btn" id="processingOnlyRefreshBtn" type="button" aria-label="Refresh Processing status" title="Refresh Processing status">↻</button>
               <button class="status-chip" data-status="Stuck">Stuck</button>
               <button class="status-chip" data-status="Completed">Completed</button>
             </div>
@@ -12946,6 +12954,18 @@ ${lines}
           chip.textContent = `${status} ✓`;
         }
       });
+    });
+
+    function refreshProcessingStatus() {
+      renderTable();
+      syncActionButtons();
+      showToast("Processing status refreshed", "success");
+    }
+
+    document.getElementById("processingStatusRefreshBtn").addEventListener("click", refreshProcessingStatus);
+    document.getElementById("processingOnlyRefreshBtn").addEventListener("click", event => {
+      event.stopPropagation();
+      refreshProcessingStatus();
     });
 
     document.getElementById("addReference").addEventListener("click", () => {
