@@ -2054,6 +2054,30 @@
       background: #f7fbff;
     }
 
+    .table-status-cell {
+      white-space: nowrap;
+    }
+
+    .table-status-refresh-btn {
+      width: 24px;
+      min-width: 24px;
+      height: 24px;
+      min-height: 24px;
+      margin-left: 6px;
+      padding: 0;
+      justify-content: center;
+      border-radius: 50%;
+      color: var(--blue);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .table-status-refresh-btn:hover {
+      color: #1d4ed8;
+      border-color: #aeb8c6;
+      background: #f7fbff;
+    }
+
     .filter-grid {
       grid-template-columns: minmax(150px, 180px) minmax(250px, 300px) minmax(190px, 1fr) minmax(190px, 1fr) minmax(220px, 1.15fr) auto auto;
       gap: 9px;
@@ -9363,6 +9387,8 @@
         const th = document.createElement("th");
         if (col.key === "select") {
           th.innerHTML = `<input type="checkbox" id="selectAllRows">`;
+        } else if (col.key === "processingStatus") {
+          th.innerHTML = `<span>${col.label}</span><button type="button" class="btn table-status-refresh-btn table-status-header-refresh" aria-label="Refresh Processing Status" title="Refresh Processing Status">↻</button>`;
         } else {
           th.textContent = col.label;
         }
@@ -9384,6 +9410,11 @@
           syncActionButtons();
         });
       }
+
+      tableHeadRow.querySelector(".table-status-header-refresh")?.addEventListener("click", event => {
+        event.stopPropagation();
+        refreshProcessingStatus();
+      });
     }
 
     function processingStatusClass(status) {
@@ -9409,7 +9440,11 @@
           } else if (col.key === "id") {
             td.innerHTML = `<a class="linkish row-link" data-row-id="${row.id}">${row[col.key]}</a>`;
           } else if (col.key === "processingStatus") {
-            td.innerHTML = `<span class="status-pill ${processingStatusClass(row[col.key])}">${row[col.key]}</span>`;
+            const refreshButton = row[col.key] === "Processing"
+              ? `<button type="button" class="btn table-status-refresh-btn table-status-row-refresh" data-row-id="${row.id}" aria-label="Refresh Processing status for ${row.id}" title="Refresh Processing status">↻</button>`
+              : "";
+            td.className = "table-status-cell";
+            td.innerHTML = `<span class="status-pill ${processingStatusClass(row[col.key])}">${row[col.key]}</span>${refreshButton}`;
           } else if (col.key === "operation") {
             td.innerHTML = `
               <div class="table-row-actions">
@@ -9451,6 +9486,13 @@
 
       tableBody.querySelectorAll(".row-writeoff-btn").forEach(button => {
         button.addEventListener("click", () => openManualClearDiffFromRow(button.dataset.rowId, button.dataset.writeoffSource));
+      });
+
+      tableBody.querySelectorAll(".table-status-row-refresh").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          refreshProcessingStatus();
+        });
       });
 
       updatePagination();
