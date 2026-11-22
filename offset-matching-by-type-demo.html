@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agreement Item - Offset Matching by Scenario</title>
+  <style>
+    :root { --ink:#273540; --muted:#647687; --line:#dce5eb; --blue:#1376b4; --green:#18765a; --red:#ab4b3e; --bg:#f4f7f9; }
+    * { box-sizing:border-box; }
+    [hidden] { display:none !important; }
+    body { margin:0; color:var(--ink); background:var(--bg); font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; }
+    button,input,select { font:inherit; }
+    button { cursor:pointer; }
+    button:disabled { opacity:.45; cursor:not-allowed; }
+    h1,h2,h3,p { margin:0; }
+    h1 { font-size:20px; margin-bottom:18px; }
+    h2 { font-size:18px; }
+    h3 { font-size:14px; }
+    .page { max-width:1120px; padding:26px; margin:auto; }
+    .panel { padding:24px; background:#fff; border:1px solid var(--line); border-radius:6px; }
+    .panel h2 { margin-bottom:18px; }
+    .info { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 32px; }
+    .info label { display:block; margin-bottom:6px; color:var(--muted); }
+    .value { min-height:40px; padding:9px 11px; border:1px solid var(--line); border-radius:4px; background:#f8fafb; }
+    .value.editable { display:flex; align-items:center; justify-content:space-between; gap:8px; background:#fff; }
+    .value select { width:100%; border:0; background:transparent; color:var(--ink); }
+    .disabled label,.disabled .value { color:#99a5ae; }
+    .disabled .value { background:#f0f3f5; }
+    .btn { min-height:34px; padding:6px 11px; white-space:nowrap; border:1px solid #c5d4de; border-radius:4px; background:#fff; color:var(--ink); }
+    .btn:hover:not(:disabled) { border-color:var(--blue); color:var(--blue); }
+    .btn.primary { color:#fff; background:var(--blue); border-color:var(--blue); }
+    .btn.primary:hover { color:#fff; background:#08649e; }
+    .btn.icon { flex:none; width:31px; padding:0; font-size:17px; line-height:1; }
+    .btn.ghost { border-color:transparent; background:transparent; color:var(--muted); }
+    .btn.ghost:hover { color:var(--blue); }
+    input[type=text],select.field { min-width:0; width:100%; height:34px; padding:6px 8px; border:1px solid #c5d5df; border-radius:4px; background:#fff; color:var(--ink); }
+    button:focus-visible,input:focus-visible,select:focus-visible { outline:2px solid var(--blue); outline-offset:1px; }
+    input[type=checkbox] { accent-color:var(--blue); }
+    .overlay { position:fixed; inset:0; z-index:5; display:grid; place-items:center; padding:18px; background:#1a2c3990; }
+    .modal { width:min(1000px,100%); max-height:min(92dvh,900px); display:flex; flex-direction:column; overflow:hidden; background:#fff; border-radius:6px; box-shadow:0 18px 55px #13263340; }
+    .modal.preview { width:min(800px,100%); }
+    .modal-head,.modal-foot { flex:none; display:flex; justify-content:space-between; align-items:center; gap:12px; padding:16px 22px; }
+    .modal-head { border-bottom:1px solid var(--line); }
+    .modal-foot { justify-content:flex-end; border-top:1px solid var(--line); }
+    .subline { margin-top:3px; color:var(--muted); font-size:12px; }
+    .modal-body { min-height:0; overflow:auto; padding:0 22px 24px; }
+    .modal.preview .modal-body { padding:18px 22px 24px; }
+    .scene-tabs { display:flex; gap:20px; border-bottom:1px solid var(--line); overflow-x:auto; }
+    .scene-tab { display:inline-flex; align-items:center; gap:6px; flex:none; min-height:50px; padding:12px 2px 10px; border:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted); font-weight:600; white-space:nowrap; cursor:grab; }
+    .scene-tab:hover { color:var(--blue); }
+    .scene-tab[aria-selected=true] { border-bottom-color:var(--blue); color:var(--blue); }
+    .scene-tab.drag-over { box-shadow:inset 3px 0 var(--blue); }
+    .scene-tab:active { cursor:grabbing; }
+    .tab-grip { color:#8496a2; font-size:15px; }
+    .tab-order { color:var(--blue); font-size:11px; }
+    .scenario-body { padding:14px 0 0; }
+    .method { position:relative; padding:7px 12px; border:1px solid var(--line); border-radius:4px; }
+    .method-head { display:flex; align-items:center; gap:8px; min-width:0; }
+    .method-head .number { flex:none; color:var(--blue); font-size:11px; font-weight:700; }
+    .method-head strong { min-width:0; font-size:13px; }
+    .method-open { display:flex; align-items:center; gap:10px; flex:1; min-width:0; padding:3px 0; border:0; background:transparent; color:var(--ink); text-align:left; }
+    .method-open:hover strong { color:var(--blue); }
+    .method-open b { margin-left:auto; color:var(--muted); font-weight:400; }
+    .method-summary { flex:1; min-width:0; color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+    .method-actions { display:flex; flex:none; align-items:center; gap:2px; }
+    .method-details { margin:4px 0 0; }
+    .condition { display:grid; grid-template-columns:48px 220px minmax(0,1fr) auto; align-items:center; gap:8px; min-width:0; padding:5px 0; }
+    .condition > span { min-width:0; color:#365c72; overflow-wrap:anywhere; }
+    .condition-label { color:#273540 !important; font-weight:600; }
+    .condition-match { color:#365c72 !important; }
+    .target-pair { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 18px minmax(0,1fr) minmax(0,1fr); align-items:center; gap:8px; min-width:0; }
+    .target-select { width:100%; height:34px; padding:6px 8px; border:1px solid #e1e7eb; border-radius:6px; background:#fff; color:#365c72; }
+    .target-equals { color:#ac6b20; text-align:center; font-weight:700; }
+    .condition > .btn { flex:none; }
+    .condition-prefix { flex:none; color:var(--muted); font-size:10px; font-weight:700; line-height:1; }
+    .custom-condition { display:grid; grid-template-columns:48px 220px minmax(0,1fr) auto; align-items:center; gap:8px; min-width:0; }
+    .custom-condition .custom-config { display:contents; }
+    .custom-condition-head { display:contents; }
+    .custom-condition-head .custom-title { flex:none; width:180px; }
+    .custom-condition .variant { min-width:0; padding:0; border-top:0; }
+    .custom-condition .variant > .btn { flex:none; }
+    .or { display:flex; align-items:center; justify-content:center; gap:12px; padding:7px 0; color:#926324; font-size:11px; font-weight:700; line-height:1; }
+    .or::before,.or::after { content:""; flex:1; height:1px; background:var(--line); }
+    .method-tools { margin:7px 0 0; }
+    .method-details:has(> .method-tools:first-child) .method-tools { margin-top:3px; }
+    .custom-config { flex:1; min-width:0; }
+    input.custom-title { width:min(230px,100%); height:32px; font-weight:600; }
+    .mapping-controls { display:flex; flex-wrap:wrap; align-items:center; gap:7px 14px; margin:7px 0; color:var(--muted); }
+    .mapping-controls label { display:inline-flex; gap:4px; align-items:center; color:var(--ink); white-space:nowrap; }
+    .mapping-controls input { margin:0; }
+    .variant { display:grid; grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr); align-items:center; column-gap:8px; row-gap:4px; padding:4px 0; border-top:1px solid #eaf0f3; }
+    .variant:first-of-type { border-top:0; }
+    .variant-when { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:7px; }
+    .variant-when label { width:138px; }
+    .variant label { min-width:0; }
+    .variant label span { display:block; margin-bottom:3px; color:var(--muted); font-size:11px; }
+    .variant > label { display:grid; grid-template-columns:max-content minmax(85px,1fr); align-items:center; gap:8px; }
+    .variant .source { margin:0; color:#315f7b; font-size:11px; font-weight:600; line-height:1.2; }
+    .equals { color:#ac6b20; text-align:center; font-weight:700; }
+    select.add-field { width:min(250px,100%); height:34px; padding:6px 8px; border:1px solid #c5d5df; border-radius:4px; background:#fff; color:var(--blue); cursor:pointer; }
+    .add-rule { margin-top:14px; }
+    .feedback { margin-right:auto; color:var(--red); font-size:12px; }
+    .pair { display:grid; grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr) auto; gap:10px; align-items:end; }
+    .pair label { color:var(--muted); font-size:12px; font-weight:600; }
+    .pair input { margin-top:5px; }
+    .pair > span { align-self:center; text-align:center; }
+    .result { margin-top:20px; padding-top:18px; border-top:1px solid var(--line); }
+    .result h3 { margin-bottom:4px; }
+    .result.ok h3 { color:var(--green); }
+    .result.no h3 { color:var(--red); }
+    .result p { color:var(--muted); font-size:12px; }
+    .result-list { margin-top:12px; border-top:1px solid var(--line); }
+    .result-list div { display:flex; gap:12px; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); overflow-wrap:anywhere; }
+    .result-list .match-field { align-items:center; }
+    .result-list .match-copy { display:flex; flex-direction:column; gap:2px; }
+    .result-list .match-name { font-weight:600; color:var(--ink); }
+    .result-list .match-values { color:var(--muted); font-size:12px; }
+    .result-list b { color:var(--green); }
+    @media(max-width:700px) {
+      .page { padding:15px; }
+      .info { grid-template-columns:1fr; }
+      .overlay { padding:0; }
+      .modal { width:100%; height:100dvh; max-height:none; border-radius:0; }
+      .modal-head,.modal-foot { padding:13px 15px; }
+      .modal-body { padding:0 15px 20px; }
+      .modal.preview .modal-body { padding:15px; }
+      .scene-tabs { gap:14px; }
+      .scene-tab { font-size:12px; }
+      .scenario-body { padding-top:12px; }
+      .method-head { flex-wrap:wrap; }
+      .method-open { flex-wrap:wrap; }
+      .method-summary { flex-basis:100%; order:3; }
+      .method-details,.method-tools { margin-left:0; }
+      .variant-when { grid-column:1/-1; }
+      .variant { position:relative; display:flex; flex-direction:column; align-items:stretch; gap:4px; padding-right:24px; }
+      .variant > label { grid-template-columns:minmax(0,1fr) minmax(90px,1fr); }
+      .variant .source { overflow-wrap:anywhere; }
+      .variant .equals { line-height:1; }
+      .variant > .btn { position:absolute; right:0; top:50%; transform:translateY(-50%); }
+      .pair { grid-template-columns:1fr; }
+      .pair > span { display:none; }
+      .pair button { width:100%; }
+    }
+
+    /* Minimal white workspace */
+    body { color:#202b35; background:#fff; font-size:14px; }
+    .page { max-width:1080px; padding:42px 44px; }
+    h1 { margin-bottom:28px; font-size:22px; font-weight:600; letter-spacing:-.01em; }
+    .panel { padding:0; border:0; background:#fff; }
+    .panel h2 { margin-bottom:22px; font-size:18px; font-weight:600; }
+    .info { gap:24px 36px; }
+    .info label { margin-bottom:8px; color:#788592; font-size:12px; }
+    .value { min-height:38px; padding:8px 10px; border-color:#e5eaee; background:#fff; }
+    .value.editable { border-color:#e5eaee; }
+    .btn { border-color:#e1e7eb; border-radius:6px; color:#33424f; }
+    .btn:hover:not(:disabled) { border-color:#b9cbd7; color:#176fa8; }
+    .overlay { background:#fff; }
+    .modal { border:1px solid #e7ecef; border-radius:10px; box-shadow:0 16px 48px #25374614; }
+    .modal-head,.modal-foot { padding:18px 24px; }
+    .modal-head { border-bottom:1px solid #edf1f3; }
+    .modal-foot { border-top:1px solid #edf1f3; }
+    .modal-body { padding:0 24px 26px; }
+    .scene-tabs { gap:24px; border-bottom:1px solid #edf1f3; }
+    .scene-tab { min-height:46px; padding:10px 0 9px; font-weight:500; }
+    .scenario-body { padding-top:18px; }
+    .method { padding:8px 12px; border-color:#e4eaee; border-radius:8px; }
+    .method-head strong { font-weight:600; }
+    .method-summary { color:#788592; }
+    .method-details { margin-top:8px; }
+    .condition { padding:5px 0; }
+    .condition-prefix { color:#71808d; }
+    .custom-condition { padding-top:5px; }
+    .custom-condition-head .custom-title { height:34px; border-color:#e1e7eb; border-radius:6px; }
+    .variant { border-top-color:#f0f3f5; }
+    input[type=text],select.field,select.add-field { border-color:#e1e7eb; border-radius:6px; }
+    .add-rule { margin-top:16px; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>Agreement Item Info</h1>
+    <section class="panel">
+      <h2>Basic Info</h2>
+      <div class="info">
+        <div><label>Agreement Item ID</label><div class="value">Sample agreement item</div></div>
+        <div><label>Agreement Item</label><div class="value">AGREEMENT-ITEM-001</div></div>
+        <div><label>Status</label><div class="value">Live</div></div>
+        <div><label for="handling">Enable Discrepancy Handling</label><div class="value"><select id="handling"><option value="on">On</option><option value="off">Off</option></select></div></div>
+        <div id="matchingField"><label>Offset Suggestion Fuzzy Matching</label><div class="value editable"><span>3 Offset Types configured</span><button class="btn" id="edit" type="button">Edit</button></div></div>
+      </div>
+    </section>
+  </main>
+  <div class="overlay" id="overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-head"><div><h2 id="modalTitle">Offset Suggestion Matching</h2><p class="subline">Default Value · Agreement Item + Amount + Fund Direction</p></div><button class="btn icon" id="close" type="button" aria-label="Close" title="Close">&times;</button></header>
+      <div class="modal-body"><div class="scenario-list" id="scenarios"></div></div>
+      <footer class="modal-foot"><span class="feedback" id="feedback" role="status"></span><button class="btn" id="preview" type="button">Preview</button><button class="btn" id="cancel" type="button">Cancel</button><button class="btn primary" id="save" type="button">Save</button></footer>
+    </div>
+  </div>
+  <div class="overlay" id="previewOverlay" hidden>
+    <div class="modal preview" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+      <header class="modal-head"><div><h2 id="previewTitle">Preview matching</h2><p class="subline">Agreement Item: AGREEMENT-ITEM-001</p></div><button class="btn icon" id="previewClose" type="button" aria-label="Close preview" title="Close">&times;</button></header>
+      <div class="modal-body">
+        <h3 style="margin-bottom:14px">Check a discrepancy pair</h3>
+        <form id="previewForm" class="pair">
+          <label>Discrepancy Order ID A<input type="text" id="orderA" autocomplete="off" placeholder="e.g. 111" required></label><span>+</span>
+          <label>Discrepancy Order ID B<input type="text" id="orderB" autocomplete="off" placeholder="e.g. 222" required></label>
+          <button class="btn primary" type="submit">Check</button>
+        </form>
+        <div class="result" id="result" hidden></div>
+      </div>
+      <footer class="modal-foot"><button class="btn" id="back" type="button">Back to rules</button></footer>
+    </div>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    const escapeHtml = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const clone = value => structuredClone(value);
+    const labels = {"over-less":"Over & Less","over-over":"Over & Over","less-less":"Less & Less"};
+    let nextPath = 5, nextField = 1, nextVariant = 1, selected = "over-less", editingPath = null, draggedScene = null;
+    const field = kind => kind === "custom"
+      ? {id:nextField++,kind,name:`Customer Field ${nextField-1}`,variants:[variant()]}
+      : {id:kind,kind};
+    const variant = () => ({id:nextVariant++,ld:"any",rd:"any",lt:"any",rt:"any",leftKey:"",rightKey:""});
+    const path = kinds => ({id:nextPath++,fields:kinds.map(field)});
+    const initial = () => [
+      {id:"over-less",paths:[path(["reference"])],dims:{direction:false,type:false}},
+      {id:"over-over",paths:[path(["reference"]),path(["target"])],dims:{direction:false,type:false}},
+      {id:"less-less",paths:[path(["reference"])],dims:{direction:false,type:false}}
+    ];
+    let saved = initial(), draft = clone(saved);
+    const scene = id => draft.find(s => s.id === id);
+    const active = () => scene(selected);
+    const name = f => f.kind === "custom" ? f.name || "Customer Field" : f.kind === "reference" ? "Reference ID" : "Target Payment ID";
+    const detail = type => type === "less" ? "Channel Detail" : "Transaction Detail";
+    const referenceSummary = s => `${detail(leftType(s.id))} · Reference ID = ${detail(rightType(s.id))} · Reference ID`;
+    const source = type => type === "less" ? "Channel Detail · Channel Biz Info" : "Transaction Detail · Extra Data";
+    const leftType = id => id === "less-less" ? "less" : "over";
+    const rightType = id => id === "over-less" || id === "less-less" ? "less" : "over";
+    const option = (value,label,current) => `<option value="${value}" ${value === current ? "selected" : ""}>${label}</option>`;
+    const options = (values,current) => values.map(([id,label]) => option(id,label,current)).join("");
+    function renderVariant(s,p,f,v,index) {
+      const sourceLabel = (side) => {
+        const t = side === "left" ? v.lt : v.rt;
+        const fixed = side === "left" ? leftType(s.id) : rightType(s.id);
+        return source(s.dims.type && t !== "any" ? t : fixed);
+      };
+      const select = (label,key,values) => `<label><span>${label}</span><select class="field" data-when="${s.id}:${p.id}:${f.id}:${v.id}:${key}">${options(values,v[key])}</select></label>`;
+      return `<div class="variant">
+        ${s.dims.direction || s.dims.type ? `<div class="variant-when">
+          ${s.dims.direction ? select("A · Fund Direction","ld",[["any","Any"],["in","IN"],["out","OUT"]])+select("B · Fund Direction","rd",[["any","Any"],["in","IN"],["out","OUT"]]) : ""}
+          ${s.dims.type ? select("A · Discrepancy Type","lt",[["any","Any"],["over","Over TXN"],["less","Less TXN"]])+select("B · Discrepancy Type","rt",[["any","Any"],["over","Over TXN"],["less","Less TXN"]]) : ""}
+        </div>` : ""}
+        <label><span class="source">${sourceLabel("left")}</span><input type="text" data-key="${s.id}:${p.id}:${f.id}:${v.id}:leftKey" value="${escapeHtml(v.leftKey)}" placeholder="Field / key" aria-label="${sourceLabel("left")} field / key" autocomplete="off"></label>
+        <span class="equals">=</span>
+        <label><span class="source">${sourceLabel("right")}</span><input type="text" data-key="${s.id}:${p.id}:${f.id}:${v.id}:rightKey" value="${escapeHtml(v.rightKey)}" placeholder="Field / key" aria-label="${sourceLabel("right")} field / key" autocomplete="off"></label>
+      </div>`;
+    }
+    function renderField(s,p,f,isAnd) {
+      const prefix = '<span class="condition-prefix">AND</span>';
+      if (f.kind === "reference") return `<div class="condition">${prefix}<span class="condition-label">Reference ID</span><span class="condition-match">${referenceSummary(s)}</span>
+        <button class="btn icon ghost" type="button" data-remove-field="${p.id}:${f.id}" title="Remove field" aria-label="Remove Reference ID">&times;</button></div>`;
+      if (f.kind === "target") return `<div class="condition">${prefix}<span class="condition-label">Target Payment ID</span><div class="target-pair">
+          <select class="target-select" aria-label="Left fund direction"><option selected>IN</option><option>OUT</option></select>
+          <select class="target-select" aria-label="Left payment field"><option selected>Payment ID</option><option>Target Payment ID</option></select>
+          <span class="target-equals">=</span>
+          <select class="target-select" aria-label="Right fund direction"><option>IN</option><option selected>OUT</option></select>
+          <select class="target-select" aria-label="Right payment field"><option>Payment ID</option><option selected>Target Payment ID</option></select>
+        </div>
+        <button class="btn icon ghost" type="button" data-remove-field="${p.id}:${f.id}" title="Remove field" aria-label="Remove Target Payment ID">&times;</button></div>`;
+      return `<div class="condition custom-condition"><div class="custom-config">
+        <div class="custom-condition-head">${prefix}<input type="text" class="custom-title" value="${escapeHtml(f.name)}" data-name="${p.id}:${f.id}" aria-label="Customer Field name" autocomplete="off"></div>
+        ${f.variants.map((v,i) => renderVariant(s,p,f,v,i)).join("")}
+        ${s.dims.direction || s.dims.type || f.variants.length > 1
+          ? `<button class="btn" type="button" data-add-variant="${p.id}:${f.id}" title="Add values for another Fund Direction or Discrepancy Type">+ Add another case</button>`
+          : ""}
+      </div><button class="btn icon ghost" type="button" data-remove-field="${p.id}:${f.id}" title="Remove field" aria-label="Remove ${escapeHtml(name(f))}">&times;</button></div>`;
+    }
+    function renderMethod(s,p,index) {
+      const open = editingPath === p.id;
+      const title = ["Agreement Item", "Amount", "Fund Direction", ...p.fields.map(name)].join(" + ");
+      return `${index ? '<div class="or" aria-label="Or">OR</div>' : ""}<div class="method" data-path="${p.id}">
+        <div class="method-head"><span class="number">Rule ${index+1}</span>
+          <button class="method-open" type="button" data-edit-path="${p.id}" aria-expanded="${open}">
+            <strong>${escapeHtml(title)}</strong><b>${open ? "⌃" : "⌄"}</b>
+          </button>
+          ${open ? `<div class="method-actions">
+            <button class="btn icon ghost" type="button" data-move="${p.id}:-1" title="Move rule up" aria-label="Move rule up" ${index === 0 ? "disabled" : ""}>↑</button>
+            <button class="btn icon ghost" type="button" data-move="${p.id}:1" title="Move rule down" aria-label="Move rule down" ${index === s.paths.length-1 ? "disabled" : ""}>↓</button>
+            <button class="btn icon ghost" type="button" data-remove-path="${p.id}" title="Remove rule" aria-label="Remove rule">&times;</button>
+          </div>` : ""}
+        </div>
+        ${open ? `<div class="method-details">
+          ${p.fields.map((f,i) => renderField(s,p,f,i > 0)).join("")}
+          <div class="method-tools"><select class="add-field" data-add-field="${p.id}" aria-label="Add matching field to Rule ${index+1}">
+            <option value="" selected>+ Add matching field</option>
+            ${p.fields.some(f => f.kind === "reference") ? "" : '<option value="reference">Reference ID</option>'}
+            ${s.id === "over-over" && !p.fields.some(f => f.kind === "target") ? '<option value="target">Target Payment ID</option>' : ""}
+            <option value="custom">Customer Field</option>
+          </select></div>
+        </div>` : ""}
+      </div>`;
+    }
+    function render() {
+      const s = active();
+      $("scenarios").innerHTML = `<div class="scene-tabs" role="tablist" aria-label="Offset Type priority">
+        ${draft.map((item,index) => `<button class="scene-tab" type="button" role="tab" id="tab-${item.id}" aria-controls="scene-panel" aria-selected="${item.id === selected}" tabindex="${item.id === selected ? 0 : -1}" data-open="${item.id}" draggable="true" title="Drag to reorder"><span class="tab-grip" aria-hidden="true">≡</span><span class="tab-order">${index+1}</span>${labels[item.id]}</button>`).join("")}
+      </div>
+      <section class="scenario-body" id="scene-panel" role="tabpanel" aria-labelledby="tab-${s.id}">
+          ${s.paths.map((p,i) => renderMethod(s,p,i)).join("")}
+          <button class="btn add-rule" type="button" data-add-rule>+ Add matching rule</button>
+      </section>`;
+      $("feedback").textContent = "";
+      $("save").disabled = false;
+      $("save").title = "Save";
+    }
+    function close() { $("overlay").hidden = true; document.body.style.overflow = ""; }
+    function back() { $("previewOverlay").hidden = true; $("overlay").hidden = false; $("preview").focus(); }
+    $("handling").addEventListener("change",() => {
+      const off = $("handling").value === "off";
+      $("matchingField").classList.toggle("disabled",off);
+      $("edit").disabled = off;
+    });
+    $("edit").addEventListener("click",() => {
+      if ($("edit").disabled) return;
+      draft = clone(saved); selected = draft[0].id; editingPath = null; render();
+      $("overlay").hidden = false; document.body.style.overflow = "hidden"; $("close").focus();
+    });
+    $("close").addEventListener("click",close);
+    $("cancel").addEventListener("click",close);
+    $("overlay").addEventListener("click",event => { if (event.target === $("overlay")) close(); });
+    $("scenarios").addEventListener("keydown",event => {
+      const tab = event.target.closest('[role="tab"]');
+      if (!tab || !["ArrowLeft","ArrowRight"].includes(event.key)) return;
+      event.preventDefault();
+      const index = draft.findIndex(s => s.id === selected);
+      const delta = event.key === "ArrowRight" ? 1 : -1;
+      if (event.altKey) {
+        const to = index + delta;
+        if (to >= 0 && to < draft.length) draft.splice(to,0,draft.splice(index,1)[0]);
+      } else selected = draft[(index + delta + draft.length) % draft.length].id;
+      editingPath = null; render();
+      $("scenarios").querySelector(`[data-open="${selected}"]`).focus();
+    });
+    $("scenarios").addEventListener("dragstart",event => {
+      const tab = event.target.closest(".scene-tab");
+      if (!tab) return;
+      draggedScene = tab.dataset.open;
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain",draggedScene);
+    });
+    $("scenarios").addEventListener("dragover",event => {
+      const tab = event.target.closest(".scene-tab");
+      if (!tab || !draggedScene) return;
+      event.preventDefault();
+      $("scenarios").querySelectorAll(".drag-over").forEach(node => node.classList.remove("drag-over"));
+      if (tab.dataset.open !== draggedScene) tab.classList.add("drag-over");
+    });
+    $("scenarios").addEventListener("drop",event => {
+      const tab = event.target.closest(".scene-tab");
+      if (!tab || !draggedScene) return;
+      event.preventDefault();
+      const from = draft.findIndex(s => s.id === draggedScene);
+      const to = draft.findIndex(s => s.id === tab.dataset.open);
+      if (from !== to) draft.splice(to,0,draft.splice(from,1)[0]);
+      selected = draggedScene; draggedScene = null; editingPath = null; render();
+      $("scenarios").querySelector(`[data-open="${selected}"]`).focus();
+    });
+    $("scenarios").addEventListener("dragend",() => {
+      draggedScene = null;
+      $("scenarios").querySelectorAll(".drag-over").forEach(node => node.classList.remove("drag-over"));
+    });
+    const locate = (pathId,fieldId,variantId) => {
+      const p = active().paths.find(p => p.id === Number(pathId));
+      const f = p?.fields.find(f => String(f.id) === String(fieldId));
+      return {p,f,v:f?.variants?.find(v => v.id === Number(variantId))};
+    };
+    $("scenarios").addEventListener("click",event => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      if (button.dataset.open) { selected = button.dataset.open; editingPath = null; render(); $("scenarios").querySelector(`[data-open="${selected}"]`).focus(); return; }
+      if (button.dataset.editPath) {
+        editingPath = editingPath === Number(button.dataset.editPath) ? null : Number(button.dataset.editPath);
+        render(); return;
+      }
+      if (button.dataset.addRule !== undefined) {
+        const added = path([]);
+        active().paths.push(added); editingPath = added.id; render();
+        $("scenarios").querySelector(`[data-add-field="${added.id}"]`)?.focus(); return;
+      }
+      if (button.dataset.move) {
+        const [id,delta] = button.dataset.move.split(":").map(Number);
+        const s = active(), index = s.paths.findIndex(p => p.id === id);
+        const to = index+delta;
+        if (to >= 0 && to < s.paths.length) s.paths.splice(to,0,s.paths.splice(index,1)[0]);
+        render(); return;
+      }
+      if (button.dataset.removePath) {
+        active().paths = active().paths.filter(p => p.id !== Number(button.dataset.removePath));
+        editingPath = null;
+        render(); return;
+      }
+      if (button.dataset.removeField) {
+        const [pathId,fieldId] = button.dataset.removeField.split(":");
+        const p = locate(pathId).p;
+        p.fields = p.fields.filter(f => String(f.id) !== fieldId);
+        render(); return;
+      }
+      if (button.dataset.addVariant) {
+        const [p,f] = button.dataset.addVariant.split(":");
+        locate(p,f).f.variants.push(variant()); render(); return;
+      }
+      if (button.dataset.removeVariant) {
+        const [p,f,v] = button.dataset.removeVariant.split(":");
+        const entry = locate(p,f).f;
+        if (entry.variants.length > 1) entry.variants = entry.variants.filter(x => x.id !== Number(v));
+        render(); return;
+      }
+    });
+    $("scenarios").addEventListener("input",event => {
+      if (event.target.dataset.name) {
+        const [p,f] = event.target.dataset.name.split(":");
+        locate(p,f).f.name = event.target.value;
+      }
+      if (event.target.dataset.key) {
+        const [sceneId,p,f,v,key] = event.target.dataset.key.split(":");
+        locate(p,f,v).v[key] = event.target.value;
+      }
+      $("feedback").textContent = "";
+    });
+    $("scenarios").addEventListener("change",event => {
+      if (event.target.dataset.addField && event.target.value) {
+        const p = active().paths.find(p => p.id === Number(event.target.dataset.addField));
+        if (p) p.fields.push(field(event.target.value));
+        editingPath = p?.id ?? null; render(); return;
+      }
+      if (event.target.dataset.dimension) {
+        active().dims[event.target.dataset.dimension] = event.target.checked;
+        render(); return;
+      }
+      if (event.target.dataset.when) {
+        const [s,p,f,v,key] = event.target.dataset.when.split(":");
+        locate(p,f,v).v[key] = event.target.value; render(); return;
+      }
+      if (event.target.dataset.name) render();
+    });
+    function validate() {
+      const missing = draft.filter(s => !s.paths.length);
+      if (missing.length) return `Missing matching rule for: ${missing.map(s => labels[s.id]).join(", ")}.`;
+      for (const s of draft) {
+        for (const p of s.paths) {
+          for (const f of p.fields.filter(f => f.kind === "custom")) {
+            if (!f.name.trim()) return `${labels[s.id]}: name the Customer Field.`;
+            if (f.variants.length > 1 && !s.dims.direction && !s.dims.type)
+              return `${labels[s.id]}: choose Fund Direction or Discrepancy Type for multiple cases.`;
+            for (const v of f.variants)
+              if (!v.leftKey.trim() || !v.rightKey.trim()) return `${labels[s.id]}: complete both value fields for ${f.name}.`;
+            const keys = [
+              ...(s.dims.direction ? ["ld","rd"] : []),...(s.dims.type ? ["lt","rt"] : [])
+            ];
+            for (let i=0; i<f.variants.length; i++) for (let j=i+1; j<f.variants.length; j++) {
+              const a=f.variants[i], b=f.variants[j];
+              const count = v => keys.filter(k => v[k] !== "any").length;
+              if (count(a) === count(b) && keys.every(k => a[k] === "any" || b[k] === "any" || a[k] === b[k]))
+                return `${labels[s.id]}: ${f.name} has overlapping value mappings.`;
+            }
+          }
+        }
+      }
+      return "";
+    }
+    function showValidationError(error) {
+      const invalid = draft.find(s => error.startsWith(labels[s.id])) || draft.find(s => !s.paths.length);
+      if (invalid && invalid.id !== selected) {
+        selected = invalid.id; editingPath = null; render();
+      }
+      $("feedback").textContent = error;
+    }
+    $("save").addEventListener("click",() => {
+      const error = validate();
+      if (error) { showValidationError(error); return; }
+      saved = clone(draft); close();
+    });
+    const orders = {
+      "111":{type:"over",direction:"in",agreement:"AGREEMENT-ITEM-001",amount:125,reference:"REF-101",payment:"PAY-900",extra:{Approval_Code:"APP-7",Card_Number:"4111"}},
+      "222":{type:"less",direction:"in",agreement:"AGREEMENT-ITEM-001",amount:125,reference:"REF-101",biz:{Approval_Code:"APP-7",Card_Number:"4111"}},
+      "333":{type:"less",direction:"in",agreement:"AGREEMENT-ITEM-001",amount:125,reference:"REF-333",biz:{Approval_Code:"APP-7",Card_Number:"4111"}},
+      "334":{type:"less",direction:"in",agreement:"AGREEMENT-ITEM-001",amount:130,reference:"REF-101",biz:{Approval_Code:"APP-7"}},
+      "444":{type:"over",direction:"in",agreement:"AGREEMENT-ITEM-001",amount:125,reference:"REF-444",payment:"PAY-444",extra:{Approval_Code:"APP-44"}},
+      "555":{type:"over",direction:"out",agreement:"AGREEMENT-ITEM-001",amount:125,reference:"REF-555",target:"PAY-444",extra:{Approval_Code:"APP-55"}},
+      "556":{type:"over",direction:"out",agreement:"AGREEMENT-ITEM-001",amount:125,reference:"REF-444",target:"PAY-444",extra:{Approval_Code:"APP-44"}},
+      "777":{type:"less",direction:"in",agreement:"AGREEMENT-ITEM-001",amount:125,reference:"REF-777",biz:{Approval_Code:"APP-77"}},
+      "888":{type:"less",direction:"out",agreement:"AGREEMENT-ITEM-001",amount:125,reference:"REF-777",biz:{Approval_Code:"APP-77"}}
+    };
+    const equal = (a,b) => a !== undefined && a !== null && a !== "" && b !== undefined && b !== null && b !== "" && String(a) === String(b);
+    const matches = (v,a,b,dims) =>
+      (!dims.direction || (v.ld === "any" || v.ld === a.direction) && (v.rd === "any" || v.rd === b.direction))
+      && (!dims.type || (v.lt === "any" || v.lt === a.type) && (v.rt === "any" || v.rt === b.type));
+    const specificity = (v,dims) => [
+      ...(dims.direction ? [v.ld,v.rd] : []),...(dims.type ? [v.lt,v.rt] : [])
+    ].filter(value => value !== "any").length;
+    function checkPath(s,p,a,b) {
+      for (const [left,right] of [[a,b],[b,a]]) {
+        const checks = p.fields.map(f => {
+          if (f.kind === "reference") return {name:name(f),a:left.reference,b:right.reference};
+          if (f.kind === "target") return {name:name(f),a:left.payment,b:right.target,valid:left.direction === "in" && right.direction === "out"};
+          const v = f.variants.filter(v => matches(v,left,right,s.dims)).sort((x,y) => specificity(y,s.dims)-specificity(x,s.dims))[0];
+          if (!v) return {name:name(f),valid:false};
+          return {name:name(f),a:(left.type === "less" ? left.biz : left.extra)?.[v.leftKey.trim()],
+            b:(right.type === "less" ? right.biz : right.extra)?.[v.rightKey.trim()]};
+        });
+        if (checks.every(c => c.valid !== false && equal(c.a,c.b))) return checks;
+      }
+      return null;
+    }
+    $("preview").addEventListener("click",() => {
+      const error = validate();
+      if (error) { showValidationError(error); return; }
+      $("overlay").hidden = true; $("previewOverlay").hidden = false;
+      $("orderA").value = ""; $("orderB").value = ""; $("result").hidden = true; $("orderA").focus();
+    });
+    $("back").addEventListener("click",back);
+    $("previewClose").addEventListener("click",back);
+    $("previewForm").addEventListener("submit",event => {
+      event.preventDefault();
+      const a=orders[$("orderA").value.trim()], b=orders[$("orderB").value.trim()];
+      const result=$("result");
+      if (!a || !b) {
+        result.className="result no"; result.innerHTML="<h3>No matching Rule</h3><p>Discrepancy Order ID not found in demo data.</p>";
+        result.hidden=false; return;
+      }
+      const type=a.type===b.type ? `${a.type}-${b.type}` : "over-less";
+      const mandatory=a.agreement===b.agreement && a.amount===b.amount &&
+        (type==="over-less" ? a.direction===b.direction : a.direction!==b.direction);
+      let hit=null;
+      if (mandatory) for (const [sceneIndex,s] of draft.entries()) {
+        if (s.id !== type) continue;
+        for (const [pathIndex,p] of s.paths.entries()) {
+          const checks=checkPath(s,p,a,b);
+          if (checks) { hit={sceneIndex,pathIndex,checks}; break; }
+        }
+        if (hit) break;
+      }
+      result.className=`result ${hit ? "ok" : "no"}`;
+      const shown = value => value === undefined || value === null || value === "" ? "—" : String(value);
+      const baseChecks = hit ? [
+        {name:"Agreement Item",a:a.agreement,b:b.agreement,operator:"="},
+        {name:"Amount",a:a.amount,b:b.amount,operator:"="},
+        {name:"Fund Direction",a:a.direction.toUpperCase(),b:b.direction.toUpperCase(),operator:type === "over-less" ? "=" : "≠"}
+      ] : [];
+      const allChecks = hit ? [...baseChecks, ...hit.checks] : [];
+      result.innerHTML=hit ? `<h3>Matched by ${labels[type]} · Rule ${hit.pathIndex+1}</h3>
+        <p>Rule Priority ${hit.pathIndex+1}</p>
+        <div class="result-list">
+        ${allChecks.map(c => `<div class="match-field"><span class="match-copy"><span class="match-name">${escapeHtml(c.name)}</span><span class="match-values">${escapeHtml(shown(c.a))} ${c.operator || "="} ${escapeHtml(shown(c.b))}</span></span><b>✓</b></div>`).join("")}</div>`
+        : "<h3>No matching Rule</h3>";
+      result.hidden=false;
+    });
+  </script>
+</body>
+</html>
