@@ -16,12 +16,12 @@
     h1 { font-size:20px; margin-bottom:18px; }
     h2 { font-size:18px; }
     h3 { font-size:14px; }
-    .page { max-width:1120px; padding:26px; margin:auto; }
-    .panel { padding:24px; background:#fff; border:1px solid var(--line); border-radius:6px; }
+    .page { max-width:1240px; padding:22px 28px 44px; margin:auto; }
+    .panel { padding:24px 26px 30px; background:#fff; border:1px solid var(--line); border-radius:6px; margin-bottom:22px; }
     .panel h2 { margin-bottom:18px; }
-    .info { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 32px; }
+    .info { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px 70px; }
     .info label { display:block; margin-bottom:6px; color:var(--muted); }
-    .value { min-height:40px; padding:9px 11px; border:1px solid var(--line); border-radius:4px; background:#f8fafb; }
+    .value { min-height:40px; padding:9px 11px; border:1px solid var(--line); border-radius:4px; background:#f7f8fa; }
     .value.editable { display:flex; align-items:center; justify-content:space-between; gap:8px; background:#fff; }
     .value select { width:100%; border:0; background:transparent; color:var(--ink); }
     .disabled label,.disabled .value { color:#99a5ae; }
@@ -37,7 +37,8 @@
     button:focus-visible,input:focus-visible,select:focus-visible { outline:2px solid var(--blue); outline-offset:1px; }
     input[type=checkbox] { accent-color:var(--blue); }
     .overlay { position:fixed; inset:0; z-index:5; display:grid; place-items:center; padding:18px; background:#1a2c3990; }
-    .modal { width:min(1000px,100%); max-height:min(92dvh,900px); display:flex; flex-direction:column; overflow:hidden; background:#fff; border-radius:6px; box-shadow:0 18px 55px #13263340; }
+    .modal { width:min(1000px,100%); max-height:min(92dvh,900px); display:flex; flex-direction:column; overflow:hidden; background:#fff; border-radius:10px; box-shadow:0 18px 55px #13263340; }
+    .modal.confirm { width:min(720px,100%); }
     .modal.preview { width:min(800px,100%); }
     .modal-head,.modal-foot { flex:none; display:flex; justify-content:space-between; align-items:center; gap:12px; padding:16px 22px; }
     .modal-head { border-bottom:1px solid var(--line); }
@@ -116,9 +117,24 @@
     .result-list .match-name { font-weight:600; color:var(--ink); }
     .result-list .match-values { color:var(--muted); font-size:12px; }
     .result-list b { color:var(--green); }
+    .confirm-copy { padding:28px 24px 34px; }
+    .confirm-copy .danger { margin-bottom:14px; color:#f00; font-size:22px; font-weight:700; }
+    .confirm-copy p { margin:0 0 18px; font-size:18px; line-height:1.5; }
+    .confirm-copy label { display:block; margin-bottom:8px; font-size:17px; }
+    .confirm-copy code { padding:4px 10px; border:1px solid #ff9c9c; border-radius:8px; background:#fff5f5; color:#f04444; font:inherit; }
+    .confirm-copy input { width:100%; height:52px; padding:10px 14px; border:1px solid #e1e7eb; border-radius:10px; font-size:18px; }
+    .confirm-error { min-height:20px; margin-top:8px; color:#d9363e; font-size:13px; }
+    .config-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 36px; }
+    .config-item label { display:block; margin-bottom:8px; color:#788592; font-size:12px; }
+    .config-item .value { display:flex; align-items:center; justify-content:space-between; min-height:56px; background:#f7f8fa; }
+    .config-item .btn { min-height:34px; padding:5px 13px; color:#fff; background:#1890ff; border-color:#1890ff; }
+    .config-item .btn:hover:not(:disabled) { color:#fff; background:#0c7bd1; }
+    .info-icon { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; margin-left:4px; border:1px solid #aeb8c1; border-radius:50%; color:#7a8791; font-size:11px; font-style:normal; }
+    .label-with-info { display:flex !important; align-items:center; }
     @media(max-width:700px) {
       .page { padding:15px; }
       .info { grid-template-columns:1fr; }
+      .config-grid { grid-template-columns:1fr; }
       .overlay { padding:0; }
       .modal { width:100%; height:100dvh; max-height:none; border-radius:0; }
       .modal-head,.modal-foot { padding:13px 15px; }
@@ -144,11 +160,11 @@
 
     /* Minimal white workspace */
     body { color:#202b35; background:#fff; font-size:14px; }
-    .page { max-width:1080px; padding:42px 44px; }
-    h1 { margin-bottom:28px; font-size:22px; font-weight:600; letter-spacing:-.01em; }
+    .page { max-width:1240px; padding:28px 36px 48px; }
+    h1 { margin-bottom:30px; font-size:22px; font-weight:600; letter-spacing:-.01em; }
     .panel { padding:0; border:0; background:#fff; }
-    .panel h2 { margin-bottom:22px; font-size:18px; font-weight:600; }
-    .info { gap:24px 36px; }
+    .panel h2 { margin-bottom:26px; font-size:18px; font-weight:600; }
+    .info { gap:24px 70px; }
     .info label { margin-bottom:8px; color:#788592; font-size:12px; }
     .value { min-height:38px; padding:8px 10px; border-color:#e5eaee; background:#fff; }
     .value.editable { border-color:#e5eaee; }
@@ -178,15 +194,30 @@
 </head>
 <body>
   <main class="page">
-    <h1>Agreement Item Info</h1>
+    <h1>Agreement Item Info #3228499971749</h1>
     <section class="panel">
       <h2>Basic Info</h2>
       <div class="info">
-        <div><label>Agreement Item ID</label><div class="value">Sample agreement item</div></div>
-        <div><label>Agreement Item</label><div class="value">AGREEMENT-ITEM-001</div></div>
+        <div><label>Agreement Item ID</label><div class="value">3228499971749</div></div>
+        <div><label>Agreement Item</label><div class="value">SPM-MY-PAYNET-QR</div></div>
+        <div><label>Create Time</label><div class="value">2026-02-09 19:13:58</div></div>
+        <div><label>Update Time</label><div class="value">2026-05-19 15:13:15</div></div>
         <div><label>Status</label><div class="value">Live</div></div>
+        <div><label>Agreement Item Category</label><div class="value">Payment</div></div>
+        <div><label>Description</label><div class="value">SPM-MY-PAYNET-QR</div></div>
+        <div><label>Label</label><div class="value">SPP</div></div>
+        <div><label>Role</label><div class="value">-</div></div>
+        <div><label>Migration Date</label><div class="value">-</div></div>
         <div><label for="handling">Enable Discrepancy Handling</label><div class="value"><select id="handling"><option value="on">On</option><option value="off">Off</option></select></div></div>
-        <div id="matchingField"><label>Offset Suggestion Fuzzy Matching</label><div class="value editable"><span>3 Offset Types configured</span><button class="btn" id="edit" type="button">Edit</button></div></div>
+        <div id="matchingField"><label class="label-with-info">Offset Suggestion Fuzzy Matching <i class="info-icon" title="Configure the matching fields used to generate offset suggestions">i</i></label><div class="value editable"><span id="matchingSummary">3 Offset Types configured</span><button class="btn" id="edit" type="button">Edit</button></div></div>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Config Info</h2>
+      <div class="config-grid">
+        <div class="config-item"><label>Agreement Config</label><div class="value"><span>-</span><button class="btn" id="agreementConfigEdit" type="button">Edit</button></div></div>
+        <div class="config-item"><label>Recon Tag Config <i class="info-icon" title="Recon tag configuration">i</i></label><div class="value"><span>-</span><button class="btn" type="button">Edit</button></div></div>
+        <div class="config-item"><label>Discrepancy Handling Config</label><div class="value"><span>-</span><button class="btn" type="button">Edit</button></div></div>
       </div>
     </section>
   </main>
@@ -212,6 +243,19 @@
       <footer class="modal-foot"><button class="btn" id="back" type="button">Back to rules</button></footer>
     </div>
   </div>
+  <div class="overlay" id="confirmOverlay" hidden>
+    <div class="modal confirm" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <header class="modal-head"><h2 id="confirmTitle">Confirmation Required</h2><button class="btn icon" id="confirmClose" type="button" aria-label="Close confirmation">&times;</button></header>
+      <div class="confirm-copy">
+        <div class="danger">You are going to change configuration. Are you absolutely sure?</div>
+        <p>To prevent accidental actions we will need you to confirm your intention.</p>
+        <label for="confirmInput">Please enter <code>MY_LIVE</code> to proceed or close this modal to cancel.</label>
+        <input id="confirmInput" type="text" autocomplete="off" aria-describedby="confirmError">
+        <div class="confirm-error" id="confirmError" role="alert"></div>
+      </div>
+      <footer class="modal-foot"><button class="btn" id="confirmCancel" type="button">Cancel</button><button class="btn primary" id="confirmPublish" type="button" disabled>Confirm</button></footer>
+    </div>
+  </div>
   <script>
     const $ = id => document.getElementById(id);
     const escapeHtml = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -228,7 +272,7 @@
       {id:"over-over",paths:[path(["reference"]),path(["target"])],dims:{direction:false,type:false}},
       {id:"less-less",paths:[path(["reference"])],dims:{direction:false,type:false}}
     ];
-    let saved = initial(), draft = clone(saved);
+    let saved = initial(), draft = clone(saved), pendingDraft = null;
     const scene = id => draft.find(s => s.id === id);
     const active = () => scene(selected);
     const name = f => f.kind === "custom" ? f.name || "Customer Field" : f.kind === "reference" ? "Reference ID" : "Target Payment ID";
@@ -315,6 +359,26 @@
       $("save").title = "Save";
     }
     function close() { $("overlay").hidden = true; document.body.style.overflow = ""; }
+    function openEditor() {
+      draft = clone(saved); selected = draft[0].id; editingPath = null; render();
+      $("overlay").hidden = false; $("confirmOverlay").hidden = true; document.body.style.overflow = "hidden"; $("close").focus();
+    }
+    function closeConfirmation() {
+      $("confirmOverlay").hidden = true;
+      $("confirmInput").value = "";
+      $("confirmError").textContent = "";
+      $("confirmPublish").disabled = true;
+      document.body.style.overflow = "";
+    }
+    function openConfirmation() {
+      pendingDraft = clone(draft);
+      $("overlay").hidden = true;
+      $("confirmOverlay").hidden = false;
+      $("confirmInput").value = "";
+      $("confirmError").textContent = "";
+      $("confirmPublish").disabled = true;
+      $("confirmInput").focus();
+    }
     function back() { $("previewOverlay").hidden = true; $("overlay").hidden = false; $("preview").focus(); }
     $("handling").addEventListener("change",() => {
       const off = $("handling").value === "off";
@@ -323,9 +387,9 @@
     });
     $("edit").addEventListener("click",() => {
       if ($("edit").disabled) return;
-      draft = clone(saved); selected = draft[0].id; editingPath = null; render();
-      $("overlay").hidden = false; document.body.style.overflow = "hidden"; $("close").focus();
+      openEditor();
     });
+    $("agreementConfigEdit").addEventListener("click", openEditor);
     $("close").addEventListener("click",close);
     $("cancel").addEventListener("click",close);
     $("overlay").addEventListener("click",event => { if (event.target === $("overlay")) close(); });
@@ -479,7 +543,27 @@
     $("save").addEventListener("click",() => {
       const error = validate();
       if (error) { showValidationError(error); return; }
-      saved = clone(draft); close();
+      openConfirmation();
+    });
+    $("confirmInput").addEventListener("input", event => {
+      const valid = event.target.value.trim() === "MY_LIVE";
+      $("confirmPublish").disabled = !valid;
+      $("confirmError").textContent = event.target.value && !valid ? "Please enter MY_LIVE exactly to confirm publication." : "";
+    });
+    $("confirmPublish").addEventListener("click", () => {
+      if ($( "confirmInput").value.trim() !== "MY_LIVE" || !pendingDraft) return;
+      saved = pendingDraft;
+      pendingDraft = null;
+      $("matchingSummary").textContent = `${saved.length} Offset Types configured`;
+      closeConfirmation();
+    });
+    $("confirmCancel").addEventListener("click", () => {
+      pendingDraft = null;
+      closeConfirmation();
+    });
+    $("confirmClose").addEventListener("click", () => {
+      pendingDraft = null;
+      closeConfirmation();
     });
     const orders = {
       "111":{type:"over",direction:"in",agreement:"AGREEMENT-ITEM-001",amount:125,reference:"REF-101",payment:"PAY-900",extra:{Approval_Code:"APP-7",Card_Number:"4111"}},
